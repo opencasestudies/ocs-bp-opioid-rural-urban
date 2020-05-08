@@ -71,7 +71,12 @@ Here I get the population for each county from https://data.census.gov/cedsci/ta
  
 ![](plot/pop_ctm.png) 
  
-The ACS conducts recurring surveys every few months that are used for different periods. The 1-year survey does not use much data, and the number of observations that are reliably reported is resultantly restricted because of the number of poor estimates generated for a portion of the country. 5 year data should suffice! 
+The ACS conducts recurring surveys every few months that 
+are used for different periods. The 1-year survey does not 
+use much data, and the number of observations that are reliably 
+reported is resultantly restricted because of the number of 
+poor estimates generated for a portion of the country. 
+5 year data should suffice! 
  
 
 
@@ -89,11 +94,6 @@ pop2012 <- read_pop('2012.csv')
 pop2013 <- read_pop('2013.csv')
 pop2014 <- read_pop('2014.csv')
 ```
-
-
-
-
-
 
 
 ## Washinton Post
@@ -153,7 +153,7 @@ dfCSS<-Reduce(function(x,y) left_join(x, y,
 summary(dfCSS)
 ```
 
-## How does the density changes over years?
+### How does the density changes over years?
 
 
 ```{r}
@@ -186,6 +186,7 @@ ggarrange(m1, m2, nrow =2)
 
 ```
 
+The density in these states doesn't change too much from 2010 to 2014.
 
 ## NCHS U/R data
 
@@ -209,7 +210,7 @@ summary(dfNCHS)
 ```
 
 
-## How does the number of rural and urban areas change over years?
+### How does the number of rural and urban areas change over years?
 
 ```{r}
 cnt <- bind_cols(dfCSS %>% count(UB10) %>% select( Urban = UB10, count10 = n) ,
@@ -280,7 +281,7 @@ summarized_county_annual(county = "DOLORES", state = "CO", key = "WaPo")
 
 
 
-### annual_data
+### annual_data collection
 
 ```{r, eval=FALSE}
 state <- dfarcos$BUYER_STATE[1:3143]
@@ -299,7 +300,7 @@ dfAnnualDosage <- read.csv('annual_dosage_unit.csv', header=TRUE, row.names=1) %
 ```
 
 
-# Analysis of annual data
+## Merge data
 
 
 ```{r}
@@ -316,7 +317,30 @@ summary(dfAnnual)
 ```
 
 
+## t-test
+http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
+
+```{r}
+res1 <- t.test(DOSAGE_UNIT ~ UB14, data = dfAnnual, var.equal = TRUE)
+res1
+
+```
+
+In the result above :
+
+1. t is the t-test statistic value (t = -80.001),
+2. df is the degrees of freedom (df= 26978),
+3. p-value is the significance level of the t-test (p-value = 2.2e-16).
+4. conf.int is the confidence interval of the mean at 95% (conf.int = [-8777381, -8357569]);
+5. sample estimates is he mean value of the sample (mean = 833128, 9400603).
+
+
+The p-value is around 0. It's less than the significance level alpha = 0.05. 
+In conclusion, there is significant difference between the variances of the two sets of data.
+
+
 # EDA
+
 
 ## Across year
 
@@ -328,7 +352,27 @@ ggplot(dfAnnual , aes(x = YEAR, y = DOSAGE_UNIT, colour = YEAR)) +
   theme_minimal()
 ```
 
+We need normalization since the trend is not obvious. From the plot 
+we can see without normalization, data are squished. 
 
+```{r}
+d0 <- dfAnnual  %>% group_by(STATE,YEAR) %>%
+     summarise( mean_DOSAGE = mean(DOSAGE_UNIT))
+
+p0 <- ggplot(d0, aes(x = YEAR, y = mean_DOSAGE, color = STATE)) + 
+  geom_line_interactive(aes(group= STATE, 
+  data_id = abbr2state(STATE), tooltip = abbr2state(STATE) ), 
+  show.legend = FALSE)+
+  labs(title = "Mean Dosage Across State")+
+  theme_minimal()
+
+girafe(code = print(p0) )
+```
+
+State California has larger amount of dosage than others while
+North Dakota has the lowest.
+
+## Normalization
 
 ```{r}
 df <- dfAnnual %>% filter(YEAR %in% c('2010', '2011', '2012', '2013', '2014'))
@@ -355,15 +399,28 @@ subset(df, YEAR =='2014')  %>% group_by(UB14) %>%
   mutate( gp_DOSAGE = MinMax(DOSAGE_UNIT) ) )
 ```
 
-Density Normalization
+
+
+
+Why Density Normalization?
 
 ![](plot/norm_dens.png)
 
 
 
-Group Min-max normalization, (usually called feature scaling) performs a linear transformation on the original data. This technique gets all the scaled data in the range [0,1]. The formula to achieve this is the following:
+Min-max normalization, (usually called feature scaling) performs 
+a linear transformation on the original data. This technique gets 
+all the scaled data in the range [0,1]. The formula to achieve 
+this is the following:
 $$ z = \frac{x-min(x)}{max(x)-min(x)}$$
-Min-max normalization preserves the relationships among the original data values. The cost of having this bounded range is that we will end up with smaller standard deviations, which can suppress the effect of outliers. The reason I use `group_by` to preprocess is that I would like to show the difference between the use of dosuage in rural and urban more clearly, which preserves some properties. Here I am not intend to transform the target variable's range but to highlight the importance of classification.
+Min-max normalization preserves the relationships among 
+the original data values. The cost of having this bounded range is 
+that we will end up with smaller standard deviations, which can suppress 
+the effect of outliers. The reason I use `group_by` to preprocess is that 
+I would like to show the difference between the use of dosuage in rural and 
+urban more clearly, which preserves some properties. Here I am not intend 
+to transform the target variable's range but to highlight the importance 
+of classification.
 
 
 The mean of the series should not be a function of time rather should be a constant.
@@ -398,12 +455,30 @@ ggarrange(p1, p2, p3,p4, nrow = 2, ncol=2)
 
 ```
 
+## Across State with Denstiy Normalizaiton
+
+```{r, fig.width=5, fig.height = 6}
+d1 <- df_dens  %>% group_by(STATE,YEAR) %>%
+     summarise( mean_DOSAGE = mean(dens_DOSAGE))
+
+p8 <- ggplot(d1, aes(x = YEAR, y = mean_DOSAGE, color = STATE)) + 
+  geom_line_interactive(aes(group= STATE, 
+  data_id = abbr2state(STATE), tooltip = abbr2state(STATE) ), 
+  show.legend = FALSE)+
+  labs(title = "Mean dens_Dosage Across State")+
+  theme_minimal()
+
+girafe(code = print(p8) )
+```
 
 
-why we need normalization? From the plot we can see without normalization, data
-are squished. 
+Mean dens_dosage in Florida are obviously the highest, and that of 
+District of Columbia is the lowest! Different 
+from result without normalization.
 
-## Focus on 2010,2012,2013
+
+
+## How rural and urban areas differ for prescription rates. 
 
 
 This plot further indicates the importance of normalization
@@ -472,45 +547,51 @@ as well as higher prevalences of chronic pain among persons
 living in rural areas.  
 
 
+## LMER
+https://www.rensvandeschoot.com/tutorials/lme4/
 
-```{r, fig.width=5, fig.height = 6}
-d1 <- df_dens  %>% group_by(STATE,YEAR) %>%
-     summarise( mean_DOSAGE = mean(DOSAGE_UNIT))
+multilevel regression 
 
-
-p0 <- ggplot(d1, aes(x = YEAR, y = mean_DOSAGE, color = STATE)) + 
-  geom_line_interactive(aes(group= STATE, 
-  data_id = abbr2state(STATE), tooltip = abbr2state(STATE) ), 
-  show.legend = FALSE)+
-  labs(title = "Mean Dosage Amount Across State")+
-  theme_minimal()
-
-girafe(code = print(p0) )
+```{r}
+l1 <- lmer(dens_DOSAGE ~ 1 + (1|YEAR), data = df_dens)
+summary(l1)
 ```
 
-
-Mean dosage use in county California, Arizona and Delaware are higher than other couties
-while mean dosage in South Dakota and North Dakota are the lowest. 
-
+```{r}
+l2 <- lmer(dens_DOSAGE ~ 1 + (1|UB14), data = df_dens)
+summary(l2)
+```
 
 # Time Series Analysis on State Level
 
 ```{r}
-getStateDrug <- function(s){
+#summarized_county_monthly(state = 'CA',key = "WaPo") 
+
+getMonthDrug <- function(s){
   data = summarized_county_monthly(state = s,key = "WaPo")  %>% 
   group_by(year,month) %>%
   summarise( mean_DOSAGE = mean(DOSAGE_UNIT))%>%
-  mutate(id=paste(as.factor(year), '-',month), STATE=s)%>% 
+  mutate(id = as.Date(paste(year,as.character(month),'01',sep='-') ),
+         STATE=s)%>% 
   select(id, STATE,mean_DOSAGE) 
 }
 
-dfState <- rbind(ca,nd)
+
+ca <- getMonthDrug('CA')
+nd <- getMonthDrug('ND')
+fl <- getMonthDrug('FL')
+dc <- getMonthDrug('DC')
+dfState <- rbind(ca,nd,fl,dc)
 ```
 
 
 ```{r}
 ggplot(dfState , aes(x = id, y = mean_DOSAGE)) + 
   geom_line(aes(color = STATE,group = STATE), size = 1) +
-  scale_color_manual(values = c("#00AFBB", "#E7B800")) +
-  theme_minimal()
+  theme_minimal()+
+  scale_x_date(date_minor_breaks = "2 years")
+
 ```
+
+
+Autoregression??
