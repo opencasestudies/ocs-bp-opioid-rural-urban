@@ -1,0 +1,293 @@
+---
+title: "Untitled"
+author: "kexin wang"
+date: "3/26/2020"
+output: html_document
+---
+```{r}
+library(readxl)
+library(devtools)
+library(usethis)
+library(tidyverse)
+#devtools::install_github('wpinvestigative/arcos')
+library(openintro)
+library(arcos)
+```
+# Washinton Post
+```{r}
+dfCSSraw <- read_excel("PctUrbanRural_County.xls")
+
+dim(dfCSSraw)
+colnames(dfCSSraw)
+```
+
+1. Contain population for rural and urban(Urbanized Areas and Urban Clusters) population, checking below.
+2. Check the sum of "POPPCT_RURAL","POPPCT_URBAN", South Dakota, Lake has sum 100.1. Consider as typo.
+
+```{r}
+sum(rowSums(dfCSSraw[,c("POP_UA","POP_UC")])!=dfCSSraw$POP_URBAN) 
+sum(rowSums(dfCSSraw[,c("POPPCT_RURAL","POPPCT_URBAN")])!=100) 
+dfCSSraw[dfCSSraw$POPPCT_URBAN+dfCSSraw$POPPCT_RURAL!=100,]
+```
+
+Use abbreviation to keep the same format as package `arcos`: Alabama to AL 
+
+
+```{r}
+dfCSSraw %>% select(STATENAME,COUNTYNAME,POP_URBAN,POP_RURAL ) %>%
+  mutate(POP_TOTAL = sum(POP_URBAN,POP_RURAL),state2abbr(STATENAME))
+
+
+
+```
+
+Puerto Rico contains 78 rows, both of these two dataset don't contain its information, will drop later.
+
+```{r}
+f1 <- as.data.frame(table(dfCSSraw$STATENAME))
+f2 <- as.data.frame(table(state2abbr(dfCSSraw$STATENAME)))
+sum(f1$Freq)
+sum(f2$Freq)
+
+
+dim(county_list(key = "WaPo"))  #has not information for Puerto Rico
+```
+
+`dfcss` is used to save urban and rural in 2010 and calculate the total number 
+
+```{r}
+dfCSSraw$COUNTYNAME <- gsub('LaSalle','La Salle', dfCSSraw$COUNTYNAME)
+dfCSSraw$COUNTYNAME <- gsub('Do??a Ana','Dona Ana', dfCSSraw$COUNTYNAME)
+
+
+
+dfcss <- dfCSSraw %>% select(STATE,COUNTY,STATENAME,COUNTYNAME,POP_URBAN,POPPCT_URBAN,POP_RURAL,POPPCT_RURAL) %>%
+  filter(STATENAME !='Puerto Rico') %>%
+  mutate(STATENAME2 = state2abbr(STATENAME),FIPS= paste(STATE,COUNTY,sep=""))
+
+
+dfcss$PopWstTotal = rowSums(dfcss[,5:6])
+
+dim(dfcss)
+head(dfcss)
+```
+
+
+# use a fix criterion 50,000
+
+
+```{r}
+summary(dfcss$PopWstTotal)
+#df_wst[df_wst$PopWstTotal> ave(df_wst$PopWstTotal, df_wst$STATE), ]
+
+
+#dfCSS<- dfcss %>%
+#   mutate(Urban10 = ifelse(PopWstTotal> ave(dfcss$PopWstTotal, dfcss$STATE),1,0))  %>%
+#  select(FIPS,STATE = STATENAME2,COUNTY = COUNTYNAME,PopWstTotal, Urban10)
+
+
+dfCSS<- dfcss %>%
+   mutate(Urban10 = ifelse(PopWstTotal> 50000,1,0), FIPS = str_remove(FIPS, "^0+"))  %>%
+  select(FIPS,STATE= STATENAME2,COUNTY=COUNTYNAME,PopWstTotal, Urban10)
+
+
+dfCSS
+```
+I can group by column STATE and find mean of column PopWstTotal of each group, find rows in each group whose PopWstTotal values are higher than the group average.
+
+
+# NCHS U/R data
+
+```{r}
+dfNCHSraw <- read_excel("NCHSURCodes2013.xlsx")
+
+colnames(dfNCHSraw )
+```
+
+
+the code can be considered as the population level. I downloaded the expanantion below 
+
+- https://www.cdc.gov/nchs/data/data_acces_files/NCHSUrbruralFileDocumentationInternet2.pdf
+
+1. Large central metro -  NCHS-defined ???central??? counties of MSAs of 1 million or more population (population of 1 million or more))
+2. large fringe metro - NCHS-defined ???fringe??? counties of MSAs of 1 million or more population   (population of 1 million or more)
+3. Medium metro Counties within MSAs of 250,000 - 999,999 population
+4. Small metro Counties within MSAS of 50,000 to - 249,999 population
+5. Micropolitan Counties in micropolitan statistical areas
+6. Noncore Counties not within micropolitan statistical areas
+
+- https://www.cdc.gov/nchs/data/series/sr_02/sr02_166.pdf
+1. County urban-rural assignments under the 2013 NCHS scheme are very similar to those under the 2006 NCHS scheme.
+2. The 2013 NCHS scheme was constructed using the same methodology used for the 2006 scheme, but it is based on 2010 census data rather than 2000 census data
+3. Comparison of the 2013 and 2006
+NCHS scheme assignments for each
+county showed that (9%) had
+different category assignments in the
+two scheme. shifting from
+a less urban metropolitan category to a
+more urban one. The largest differences in the
+category counts occur for the medium
+metro level
+4. The discriminant analysis confirmed that
+large central metro and large fringe
+metro counties continue to differ on key
+characteristics and that the classification
+rules continue to work well.
+
+
+
+
+
+population density,
+
+put a picture / link
+
+```{r,fig.height= 15, fig.width= 15}
+
+dfNCHS <- dfNCHSraw %>% select(FIPS = "FIPS code",County = 'County name', STATE = 'State Abr.', Code13 ='2013 code' , Code06 ='2006 code') %>%
+  mutate(newCounty = str_replace_all(County, c(" Municipality| Census Area| Borough| City and Borough| County| city| Parish"),"")) %>%
+  mutate(COUNTY = str_replace_all(newCounty, "LaSalle","La Salle"))%>%
+  #mutate(KEY = paste(newCounty2,STATE), FIPS = paste(0,FIPScode,sep="")) %>%
+  #mutate(FIPS = paste(0,FIPScode,sep="")) %>%
+  select(FIPS,STATE,COUNTY,Code13, Code06) %>%
+  mutate( FIPS = as.character(FIPS),Urban13 = ifelse(Code13 <=4, 1,0), Urban06 = ifelse(Code06 <=4, 1,0))   #population larger than 50,000
+
+
+dim(dfNCHS)
+head(dfNCHS)
+```
+
+The "KEY" is not unique as there are multiple records, remove duplicate here.
+
+```{r}
+
+#dfNCHS[!duplicated(dfNCHS$FIPS),]
+tab <- as.data.frame(table(dfNCHS$FIPS))
+tab[tab$Freq > 1,]
+
+```
+
+County information difference:
+some county has information in NCHS but not in CSS, compare the dimension, both CSS and arcos has 3143 while NCHS has 3149, so these 6 county are addiontonal, will be droped in later merging.
+
+```{r}
+dfNCHS %>% filter(STATE %in% c('SD', 'VA', 'AK')) %>% group_by(STATE) %>% tally()
+dfCSS %>% filter(STATE %in% c('SD', 'VA', 'AK')) %>% group_by(STATE) %>% tally() 
+```
+
+
+
+
+# Package Arcos
+
+```{r}
+county_population(county = "Baldwin", state = 'AL' , key = "WaPo")
+```
+
+#write a function to loop through each county and state to get their population.
+
+```{r}
+getPop <- function(s,c){
+  s = toString(s)
+  c = toString(c)  
+  county_population(county = c, state = s, key = "WaPo") %>%
+  filter(year == 2010) %>%
+  select(FIPS = countyfips, STATE = BUYER_STATE, COUNTY = county_name, PopArcosTotal=population)
+}
+```
+
+
+map the function on the first 1000??? 1001-2000 rows to get the population column in the arcos data, save as daatset `dfarcos`
+
+```{r}
+dfarcos <- county_list(key = "WaPo") 
+dim(dfarcos)
+```
+
+```{r}
+temp1 <- dfarcos$BUYER_STATE[1:1000]
+temp2 <- dfarcos$BUYER_COUNTY[1:1000]
+
+
+df1 <- map2_dfr(temp1,temp2,function(x,y){getPop(x,y)})
+```
+
+```{r}
+temp1 <- dfarcos$BUYER_STATE[1001:2000]
+temp2 <- dfarcos$BUYER_COUNTY[1001:2000]
+
+
+df2 <- map2_dfr(temp1,temp2,function(x,y){getPop(x,y)})
+```
+
+```{r}
+temp1 <- dfarcos$BUYER_STATE[2001:2917]
+temp2 <- dfarcos$BUYER_COUNTY[2001:2917]
+
+
+df3 <- map2_dfr(temp1,temp2,function(x,y){getPop(x,y)})
+```
+
+http://lenkiefer.com/2016/08/23/us-pop-map-1790-2010/
+
+
+"CLIFTON FORGE CITY" "VA" has no population information, row 2918, will assign NA in later merging.
+
+```{r}
+temp1 <- dfarcos$BUYER_STATE[2919:3143]
+temp2 <- dfarcos$BUYER_COUNTY[2919:3143]
+
+
+df4 <- map2_dfr(temp1,temp2,function(x,y){getPop(x,y)})
+```
+
+
+
+
+```{r}
+dim(df3)
+dim(df4)
+```
+
+1.why I don't use NAME?? not consistent column name. 
+2.Also some county has no value for 2010,that's why their value are different.
+
+```{r}
+county_population(county = "SKAGWAY HOONAH ANGOON", state = "AK", key = "WaPo") 
+county_population(county =  "PRINCE OF WALES HYDER" , state = "AK", key = "WaPo")
+county_population(county =  "WRANGELL" , state = "AK", key = "WaPo") 
+```
+
+Now compare if the population are same
+
+```{r}
+write.csv(rbind(df1,df2,df3,df4),'poparcos.csv')
+
+dfArcos <- read.csv('poparcos.csv', header=TRUE, row.names=1)
+  
+dfArcos <-  dfArcos %>% mutate(Urban = ifelse(PopArcosTotal> ave(dfArcos$PopArcosTotal, dfArcos$STATE),1,0),
+                                FIPS = as.character(FIPS))
+ # mutate(Urban = ifelse(PopArcosTotal> ave(dfArcos$PopArcosTotal, dfArcos$STATE),1,0),  KEY = as.character(KEY)) 
+
+dfArcos
+```
+
+
+
+
+left_join to get full dataset.
+
+
+```{r}
+DF <- dfArcos[, c('FIPS', 'STATE','COUNTY')]%>%  #'Urban',
+  left_join(dfCSS[, c('FIPS','Urban10')] ,by='FIPS') %>%
+  left_join(dfNCHS[, c('FIPS','Urban13','Urban06')],by='FIPS') 
+
+
+dim(DF)
+df2[rowSums(is.na(DF)) > 0,]
+
+
+write.csv(DF,'population.csv')
+
+```
