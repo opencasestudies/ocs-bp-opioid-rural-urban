@@ -28,7 +28,7 @@ library(devtools)
 library(usethis)
 library(tidyverse)
 library(openintro)
-library(arcos)
+#library(arcos)
 library(ggiraph)
 library(ggpubr)
 library(ggfortify)
@@ -227,19 +227,19 @@ dfPOP <- dfCSS[,c('FIPS','STATE','COUNTY','DENS14','DENS13','DENS12','DENS11','D
 
 ```
 
-## DOSAGE data
+## DOSAGE data (remove this)
 
 
 We have to use summarise function, and these two are useful function, others may provide pills for each pharmacy in a county but not what we need.
 
-```{r}
+```{r, eval = FALSE}
 summarized_county_annual(county = "Mingo", state = "WV",key = "WaPo") %>%
   select(FIPS = countyfips, STATE = BUYER_STATE, COUNTY = BUYER_COUNTY,DOSAGE_UNIT)
 #summarized_county_monthly(county = "Mingo", state = "WV",key = "WaPo")  #300 thousand
 ```
 
 
-```{r}
+```{r, eval = FALSE}
 getDrug <- function(s,c){
   s = toString(s)
   c = toString(c)  
@@ -255,7 +255,7 @@ getDrug <- function(s,c){
 
 ignore such county without information
 
-```{r}
+```{r, eval = FALSE}
 summarized_county_annual(county = "DOLORES", state = "CO", key = "WaPo")
 ```
 
@@ -263,7 +263,7 @@ summarized_county_annual(county = "DOLORES", state = "CO", key = "WaPo")
 
 ### annual_data collection
 
-```{r}
+```{r, eval = FALSE}
 dfarcos <- county_list(key = "WaPo") 
 dim(dfarcos)
 
@@ -282,7 +282,7 @@ write.csv( dfDosage %>% mutate( FIPS,'data/annual_dosage_unit.csv')
 
 ```
 
-
+# start here for drug data
 
 ```{r}
 dfAnnualDosage <- read.csv('data/annual_dosage_unit.csv', header=TRUE, row.names=1) %>%
