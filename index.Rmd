@@ -170,7 +170,12 @@ library(httr)
 library(jsonlite)
 library(here)
 library(readr)
+library(magrittr)
+library(dplyr)
+library(tidyr)
 library(readxl)
+library(naniar)
+
 library(devtools)
 library(usethis)
 library(tidyverse)
@@ -257,28 +262,21 @@ https://www.cdc.gov/nchs/products/databriefs/db356.htm
 *** 
 There are some important considerations regarding this data analysis to keep in mind: 
 
-1) This analysis is exploratory and, as such, does not intend to provide inferential conclusions.  
+According to the [Washington Post data](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/ about the DEA data:
 
-2) This dashboard only uses one source of data. There may be school shooting events that are not listed in this data or errors in this data.
+>"It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else."
 
-According to the database website:
-
->"This database was developed from open-source information and may include reporting errors."
-
-Furthermore, according to this [article](https://link.springer.com/article/10.1007/s11920-012-0331-6) schools are not required to report school shootings unless they resulted in a suicide or homicide, therefore there may be more events that result in only injury or no injuries or death that may not be included.
-
-There are indeed events in the dataset that include zero deaths and zero injuries, but it is very likely that many of these events are not listed.
-
-Avocado... this source from 2013 says that schools are not required to report.. is this still true?
+Furthermore, we define counties as being rural or urban however there can be great variation within a county and we used land area values form only 2010 even though these can fluctuate. Therefore the way we categorized counties should be seen as an approximation.
 
 
 # **What are the data?**
 *** 
 
-We will use data two sources:
+We will use data from two sources:
 
-1) The US census for population and urabnicity ratings
-2) The [Washington Post data](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/)from the [Drug Enforcement Administration (DEA)](https://www.dea.gov/) about opioid shipments to pharmacies around the US
+1) The US census for land area of counties to allow us to extimate county-level population density  
+
+2) The [Washington Post data](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/)from the [Drug Enforcement Administration (DEA)](https://www.dea.gov/) about opioid ([oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) and [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf)) pill shipments to pharmacies and paractitionaers around the US at the county-level
 
 This dataset was released in July of 2019 and has been controversial as according to the Washington Post:
 
@@ -286,11 +284,19 @@ This dataset was released in July of 2019 and has been controversial as accordin
 
 See [here](https://www.washingtonpost.com/national/2019/07/20/opioid-files/?arc404=true) for more details about how this database was released.
 
+The [Washington Post](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/)states that they:
+>.. cleaned the data to include only information on shipments of oxycodone and hydrocodone pills. We did not include data on 10 other opioids because they were shipped in much lower quantities...
+
+>It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else.
 
 This data was part of the [Automated Reports and Consolidated Ordering System (ARCOS)]https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/ of the DEA in which:
 
 > manufacturers and distributors report their controlled substances transactions
 
+Their [website](https://www.deadiversion.usdoj.gov/arcos/index.html#background) indicates that: 
+> The Controlled Substances Act of 1970  created the requirement for Manufacturers and Distributors to report their controlled substances transactions to the Attorney General. The Attorney General delegates this authority to the Drug Enforcement Administration (DEA).
+
+> ARCOS is an automated, comprehensive drug reporting system which monitors the flow of DEA controlled substances from their point of manufacture through commercial distribution channels to point of sale or distribution at the dispensing/retail level - hospitals, retail pharmacies, practitioners, mid-level practitioners, and teaching institutions. Included in the list of controlled substance transactions tracked by ARCOS are the following: All Schedules I and II materials (manufacturers and distributors); Schedule III narcotic and gamma-hydroxybutyric acid (GHB) materials (manufacturers and distributors); and selected Schedule III and IV psychotropic drugs (manufacturers only).
 
 The annual report about the data from 2019, can be found [here](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/report_yr_2019.pdf).
 
@@ -303,28 +309,45 @@ This [link](https://arcos-api.ext.nile.works/__swagger__/) takes you to the Wash
 
 There was also an R package on cran called [arcos](https://cran.r-project.org/package=arcos) for interacting with the API, but this has been archived.  This package is however still available [here](https://github.com/wpinvestigative/arcos) on Github.
 
+See [here](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/) for more information about how to access the Washington Post DEA database.
 
-
-
-# population data
-
-Data about the population of each county was otained from this [dataset](https://data.census.gov/cedsci/table?q=population&hidePreview=true&tid=ACSDT5Y2010.B01003&vintage=2018&g=0100000US.050000) from the US census.
-
-![](plot/pop_ctm.png) 
- 
 
 # **Data Import**
 *** 
+
+## Land Area
+
+We will also need land area data for our calculations of population density. 
+
+We obtained county land area data from the US census Bureau at this [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011.html#LND)
+
+This [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011/file-layout.html) explains how the data is formated.
+
+We will use the `read_excel()` function of the `readxl` package to import the data.
+
+```{r}
+land <- readxl::read_excel(here::here("data", "LND01.xls"))
+land <- as_tibble(land)
+
+head(land)
+```
+
+
+
+
+
+
+
+
 ## Accessing APIs
 
 The `httr` package formats what are called "GET requests" so that they will work properly.
-The `jsonlinte` package alows you to convert the data from `JSON` to a differet format that is easier to work with.
+The `jsonlite` package alows you to convert the data from `JSON` to a differet format that is easier to work with.
 
-APIs typically require a password or key to gain access. Thus the httr package helps to authenticate your data request. Often these keys are something that you do not want to share, unless the API is public.
+APIs typically require a password or key to gain access. Thus the `httr` package helps to authenticate your data request. Often these keys are something that you do not want to share, unless the API is public.
 
-In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed public, and currently "uO4EK6I" is published as a key to use on the [github page](https://github.com/wpinvestigative/arcos) for the `arcos` package.
+In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed public, and currently "uO4EK6I" is publicly published as a key to use on the [github page](https://github.com/wpinvestigative/arcos) for the `arcos` package. We will use that here to access the API.
 
-https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/
 
 ## Population Data
 
@@ -357,23 +380,26 @@ knitr::include_graphics(here::here("img", "execute.png"))
 
 This gives us the following output:
 
-curl -X GET "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I" -H  "accept: application/json"
+`curl -X GET "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I" -H  "accept: application/json"`
 
-We can copy the URL section "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I" and use it in the `GET()` function of the `httr` package (note that some of the data will take longer ):
+We can copy the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package (note that some of the data will take longer ):
 
 ```{r}
 county_pop_json<-httr::GET(url = "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I")
 ```
 
+If we needed to specify a username and password, we would do so using the `authenticate()` function of the `httr` package within the `GET` function. The `authenticate()` function takes `user`, `password` and `type` arguments.
+
+
 Now we have a [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) file of the data. 
 
-JSON files are [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that they dont take up much memory and they are human readible files that help act as an intermeidary between websites and servers and allows for easy transmission of data from for example APIs.
+JSON files are [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that they dont take up much memory and they are human readible files to make transmitting data from websites easier.
 
 
 ```{r}
 county_pop_json
 ```
-Here we can see that the object called `countyjson` is a `json` object. You will also see that the Satus is `200`, which means that we were sucessful in retreiving the data from the API.
+Here we can see that the object called `countyjson` is a `json` object. You will also see that the `Satus` is `200`, which means that we were sucessful in retreiving the data from the API.
 
 Now we can use the `content()` funtion of the `httr` package to extract the text from the file:
 
@@ -382,95 +408,637 @@ county_pop_text <-httr::content(county_pop_json, "text")
 ```
 
 
-Now to get the data into a more readible format , we can use the `fromJson` function of the `jsonlite` package
+Now to get the data into a more readible format , we can use the `fromJSON()` function of the `jsonlite` package. We will also convert the data into a [tibble](https://tibble.tidyverse.org/) (which is a the tidyverse version of a data frame) by using the `as_tibble()` function of the `tibble` package.
+
 ```{r}
 county_pop <- jsonlite::fromJSON(county_pop_text, flatten = TRUE)
 county_pop <- tibble::as_tibble(county_pop)
+```
 
-glimpse(county_pop)
+We can use the `glimpse()` function and the `distinct()` function of the `dplyr` package to get a better sense of the data. The `distinct()` function allows us to take a look at the unique values of the `year` variable.
 
-distinct(county_pop, year)
+```{r}
+dplyr::glimpse(county_pop)
+
+
+dplyr::distinct(county_pop,year)
 
 ```
 
+It looks like we have data from 2006-2014.
 
 
-
-```{r, eval = FALSE}
+```{r, eval = FALSE, echo = FALSE}
 write.csv(county_pop, file = here::here("data", "county_pop_arcos.csv"))
 save(county_pop, file =  here::here("data", "county_pop_arcos.rda"))
 ```
 
-```{r}
-head(read.csv('data/2010.csv', header=TRUE) )
+```{r, echo = FALSE}
+load(here::here("data", "county_pop_arcos.rda"))
 ```
 
+We are also interested in opioid pill shipment data at the county level. 
 
+## Monthly Shipment Data
 
-We are also interested in pill shipment data at the county level. 
+Here is the result of the same steps using the API for this data:
 
-Here is the result of the same steps for this data:
+`curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I" -H  "accept: application/json"`
 
-curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I" -H  "accept: application/json"
-
-Again, we can copy the URL section https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I" and use it in the `GET()` function of the `httr` package (note that this may take a minute):
-
-```{r}
-countyjson<-httr::GET(url = "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I")
-```
+Again, we can copy the URL section `"https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package (note that this may take a minute as this is larger data):
 
 ```{r, eval = FALSE}
+countyjson <- httr::GET(url = "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I")
 countyjson_text <-httr::content(countyjson, "text")
-```
-
-```{r, eval = FALSE}
 county <- jsonlite::fromJSON(countyjson_text, flatten = TRUE)
-county <- tibble::as_tibble(county)
-write.csv(county, file = here::here("data", "county_monthly.csv"))
-save(county, file =  here::here("data", "county_monthly.rda"))
+monthlyDosage <- tibble::as_tibble(county)
 ```
 
+```{r, echo = FALSE, eval = FALSE}
+write.csv(monthlyDosage, file = here::here("data", "county_monthly.csv"))
+save(monthlyDosage, file =  here::here("data", "county_monthly.rda"))
+```
 
+```{r, echo = FALSE}
+load(here::here("data", "county_monthly.rda"))
+```
 
-
+Now let's ta
 ```{r}
-monthlyDosage <- read.csv(here::here("data", "county_monthly.csv"), header=TRUE, row.names=1)
-                          
-head(monthlyDosage)
+glimpse(monthlyDosage)
 distinct(monthlyDosage, year)
 
 ```
+Looks like we have the same years of data.
+
+## Annual Shipment Data
+
+From the API we get the following output for the combined_county_annual data `curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I" -H  "accept: application/json"`
+
+```{r, eval = FALSE}
+county_annual_json<-httr::GET(url =  "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I")
+county_annual_json_text <-httr::content(county_annual_json, "text")
+county_annual <- jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
+annualDosage <- tibble::as_tibble(county_annual)
+```
+
+```{r, echo = FALSE, eval = FALSE}
+write.csv(annualDosage, file = here::here("data", "county_annual.csv"))
+save(annualDosage, file =  here::here("data", "county_annual.rda"))
+```
+
+```{r, echo=FALSE}
+load(here::here("data", "county_annual.rda"))
+```
 
 
 ```{r}
-dfAnnualDosage <- read.csv(here::here("data", "annual_dosage_unit.csv"), header=TRUE, row.names=1) %>%
-  mutate(FIPS = as.character(FIPS))
+glimpse(annualDosage)
+```
 
-head(dfAnnualDosage)
+Looks good. 
+
+
+# **Data Exploration**
+***
+
+Now let's take a deaper look at the data to see if we have any missing data using the `naniar` package.
+
+We can use the `vis_miss()` function to create a plot of missing data.
+
+Let's start with the land area data.
+```{r}
+naniar:: vis_miss(land)
+```
+Looks like there is no missing data.
+
+How about the population data:
+
+```{r}
+vis_miss(county_pop)
+```
+We are missing some values for the `Name` and `variable` data, but we don`t intend to use these, so this should be ok. It is however a good idea to check these rows to see if anything strange is happening.
+
+Let's use the `filter()` function of the `dplyr` package and the `is.na()` base function to see more about the data that does not have countyfips codes.
+
+We will also start using the `%>%` pipe of the `magrittr` package for our assignments.
+
+
+<details> <summary>Click here if you are unfamiliar with piping in R, which uses this `%>%` operator</summary>  
+
+
+By [piping](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"} we mean using the `%>%` pipe operator which is accessible after loading the `tidyverse` or several of the packages within the tidyverse like `dplyr` because they load the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}. 
+This allows us to perform multiple sequential steps on one data input. 
+
+***
+
+</details> 
+
+```{r}
+county_pop %>% filter(is.na(NAME))
+```
+This looks ok. So let's now move on to the DEA data. We will need to use the `gg_mis_var()` function to create a simpler plot for the `monthlyDosage` data as it is too large to create the other type of figure. and we will also use the `pct_miss()` function to calculate the percentage missing. 
+
+```{r}
+vis_miss(annualDosage)
+naniar::pct_miss(monthlyDosage)
+naniar::gg_miss_var(monthlyDosage)
+```
+Interesting, we appear to be missing `countyfips` codes for a small percentage of our annual data and about 30% of our monthly data.
+
+
+```{r}
+annualDosage %>% filter(is.na(countyfips))
+```
+
+
+It looks like the missing data is data for Puerto Rico- this makes sense that it doesnt have countyfips codes.
+
+Let's see if there is any data other than data for Puerto Rico that is also missing `countyfips` values.
+
+
+
+```{r, eval = FALSE}
+annualDosage %>% filter(is.na(countyfips)) %>%
+ filter(BUYER_STATE != "PR")
+```
+
+#### {.scrollable }
+```{r, echo = FALSE}
+annualDosage %>% filter(is.na(countyfips)) %>%
+ filter(BUYER_STATE != "PR") %>%
+  # this allows us to show the full output in the rendered rmarkdown
+ print(n = 1e4)
+```
+####
+
+It looks like there is also data for other territories in the data set. As well as some counties with no name.
+
+
+For some reason the rows for the Montgomery county of Arkansa are also missing a `countyfips` value.
+
+```{r}
+annualDosage %>% filter(is.na(countyfips)) %>%
+ filter(BUYER_STATE == "AR")
+```
+
+
+According to this [website](https://www.nrcs.usda.gov/wps/portal/nrcs/detail/national/home/?cid=nrcs143_013697) thie fIPS code is 05097.
+
+
+We will update these values in the next section.
+
+
+Let's also look through our monthly data as well to make sure that we have a similar situation as the annual data:
+
+```{r, eval = FALSE}
+monthlyDosage %>% 
+  filter(is.na(countyfips))
+```
+
+#### {.scrollable }
+```{r, echo = FALSE}
+monthlyDosage %>% 
+  filter(is.na(countyfips)) %>%
+  # this allows us to show the full output in the rendered rmarkdown
+ print(n = 1e7)
+```
+####
+# **Data Wrangling**
+***
+
+## Cleaning land data
+We want the `LND110210D` column which is the data from the year 2010.
+
+LND = Land Area
+110 = unit square miles (subgroup-code of the group) * avocado I found this somehwere else.. the census info was vauge would like to confirm that that is indeed what the sugroup code shows us
+2 = century
+10 = 2010 (based on the century)
+D = Data
+
+Thus we can select the county names, the county numeric codes, and the `LND110210D`column by using the `select()` function of the `dplyr` package.
+
+```{r}
+county_area <- land %>% select(Areaname, STCOU, LND110210D)
+county_area
+```
+
+ 
+
+## Updating `countyfips`
+
+We will use the `case_when()` function of the `dplyr` package recode the `NA` values for the rows for the `MONGOMERY` county of `AR` to be `05097`. First we need to specify for these particular rows. Becuase there Montgomery may be a county name in other states, we need to evaluate when the `BUYER_STATE` is `AR` and when the `BUYER_COUNTY` is `MONTGOMERY`. We will use the `&` opperator to indcate that both conditions must be true. We will then recode the `coutryfips` values for these rows to be `"05097"` using the `~` symbol. All other values need to stay the same. Thus we need to use `TRUE ~` to recode all the other `countyfips` values to what they currently are. Otherwise these would autmatically be `NA`.
+
+```{r}
+
+annualDosage %<>% 
+  mutate(countyfips = case_when(BUYER_STATE == "AR" & 
+                               BUYER_COUNTY == "MONTGOMERY" ~ as.character("05097"),
+                               TRUE ~ countyfips))
+
+```
+
+Now we can check that we indeed fixed our data.
+
+```{r}
+annualDosage %>% 
+  filter(is.na(countyfips)) %>%
+  filter(BUYER_STATE == "AR")
+
+annualDosage %>% 
+  filter(BUYER_COUNTY == "MONTGOMERY") %>%
+  filter(BUYER_STATE == "AR")
+```
+Great! We fixed it.
+
+
+We will also check if we need to do the same four the `monthlyDosage` data.
+
+
+```{r}
+monthlyDosage %>% 
+  filter(BUYER_COUNTY == "MONTGOMERY") %>%
+  filter(BUYER_STATE == "AR")
+```
+
+Looks like we do. 
+
+#### {.recall_code_question_block}
+<b><u> Question Opportunity </u></b>
+
+See if you can fix these rows for the `monthlyDosage` data without looking at the code for the `annualDosage` data.
+
+####
+
+
+<details> <summary> Click here to reveal the code. </summary>
+
+```{r}
+monthlyDosage %<>% 
+  mutate(countyfips = case_when(BUYER_STATE == "AR" & 
+                               BUYER_COUNTY == "MONTGOMERY" ~ as.character("05097"),
+                               TRUE ~ countyfips))
+
+monthlyDosage %>% 
+  filter(BUYER_COUNTY == "MONTGOMERY") %>%
+  filter(BUYER_STATE == "AR")
+```
+
+</details>
+
+
+OK, we also had some rows that didn't have county names because they were just missing or the data was for US territories. We will remove the values that dont have county names.
+
+First let's take a look at them agian and check the `monthlyDosage` data.
+
+```{r}
+annualDosage %>% filter(is.na(BUYER_COUNTY))
+monthlyDosage %>% filter(is.na(BUYER_COUNTY))
+```
+
+We can filter out these values by using the `!` exclamation mark before the `is.na()` function.
+
+```{r}
+
+annualDosage %<>%  filter(!is.na(BUYER_COUNTY))
+monthlyDosage %<>%  filter(!is.na(BUYER_COUNTY))
+
+annualDosage %>% filter(is.na(BUYER_COUNTY))
+monthlyDosage %>% filter(is.na(BUYER_COUNTY))
+
+```
+
+Let's check if our land area data has information for US territories. If not, we will remove the data for the territories in our `monthlyDosage` and `annualDosage` data. However, this would be very interesting and imporatant to investigate. We can use the `str_detect()` function of the `stringr` package, which contains lots of functions for looking for patterns in character strings, to look for data from Puerto Rico. 
+
+***
+<details> <summary> Click here for an explanation about character strings </summary>
+
+There are several classes of data in R programming. 
+Character is one of these classes. 
+A character string is an individual data value made up of characters. 
+This can be a paragraph, like the legend for the table, or it can be a single letter or number like the letter `"a"` or the number `"3"`. 
+
+If data are of class character, than the numeric values will not be processed like a numeric value in a mathematical sense. 
+
+</details>
+
+
+***
+
+The `str_detect()` function allows us to look for a particular pattern. It does not have to be the full value, there can be a partial match. Thus we can look to see if there are any `PR` strings withing the vlaues of the the `Areaname` variable. 
+
+```{r}
+county_area %>% filter(str_detect(string = Areaname, pattern = "PR"))
+```
+
+You can see using a different abbreviation, that this code does as intended:
+
+```{r}
+county_area %>% filter(str_detect(string = Areaname, pattern = "AR"))
+```
+OK, so it does mot look like there is any territory land area data in this dataset. Thus we will also remove these from the `annualDosage` and `monthlyDosage` tibbles.
+
+#### {.recall_code_question_block}
+<b><u> Question Opportunity </u></b>
+
+Do you recall how to do this?
+
+####
+
+
+<details> <summary> Click here to reveal the code. </summary>
+```{r}
+annualDosage %<>% filter(!is.na(countyfips))
+monthlyDosage %<>% filter(!is.na(countyfips))
+```
+</details> 
+
+
+
+```{r}
+naniar:: vis_miss(annualDosage)
+```
+Great! Now there is no missing data in our annual data.
+
+
+
+
+## Rural and Urban Counties
+
+Defining if a region is rural or urban is actually quite complicated as the overall population changes, the structure of our towns and cities changes, and the access between different locations changes over time. Please see this [report](https://www2.census.gov/geo/pdfs/reference/ua/Defining_Rural.pdf) form the US Census Beureau about the history of this definition. 
+
+According to several [definitions](https://www.hrsa.gov/rural-health/about-us/definition/index.html) - urban **areas** are often defined as those with greater than 50,000 people. However, there are also
+[definitions](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/) of rural areas being based on  "population densities of less than 500 people per square mile and places with fewer than 2,500 people". Typically counties are made up of multiple areas. 
+
+The census estimates rural and urban areas around the US relatively often. However, census collections about these measuresments does not occur every year.
+
+Thus we will define a county as rural or urban based on the population density using the USDA [definition]((https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/)) that we described above:
+
+rural  = population densities of less than 500 people per square mile, as well as places with fewer than 2,500 people   
+  uban = populations densities of greater than 500 people per square mile
+
+
+
+Ideally we would want land area from each year, as these do fluctuate a bit, however, this should be a decent approximation as 2010 is in the middle of our time span.
+
+We will therefore calculate the density as the number of people per square mile by dividing the population values by the land area values. To do so we first need to combine our `county_area` and our `county_pop` data together. First we want to make sure that we have one column, in our case the  column that contains the numeric code for the counties, in the same format and with the same name in both the tibbles that we wish to combine. 
+
+We can use the `rename()` function of the `dplyr` package to rename the `STCOU` column to be `countyfips`. The new name is always listed first before the old name with this function like so: `rename(new_name = old_name)`.
+
+```{r}
+county_area %<>%
+  rename(countyfips = STCOU)
+```
+
+
+We can use the `mutate()` funtion of the `dplyr` package to make the `countyfips` variable a factor in both tibbles. 
+
+What exactly is a factor?
+
+***
+<details> <summary> Click here for an explanation of data classes in R </summary>
+
+There are several classes of data in R programming. 
+Character is one of these classes. 
+A character string is an individual data value made up of characters. 
+This can be a paragraph, like the legend for the table, or it can be a single letter or number like the letter `"a"` or the number `"3"`. 
+
+If data are of class character, than the numeric values will not be processed like a numeric value in a mathematical sense. 
+
+If you want your numeric values to be interpreted that way, they need to be converted to a numeric class. 
+The options typically used are integer (which has no decimal place) and double precision (which has a decimal place). 
+
+A variable that is a [factor](https://www.stat.berkeley.edu/~s133/factors.html#:~:text=Conceptually%2C%20factors%20are%20variables%20in,refered%20to%20as%20categorical%20variables.&text=Factors%20in%20R%20are%20stored,when%20the%20factor%20is%20displayed.) has a set of particular values called levels. Even if these are numeric, they will be interpreted as level not as a mathematical numnber. You can modify the order of these levels with the `forcats` package.
+
+</details>
+
+
+***
+
+
+```{r}
+county_pop %<>%
+  mutate(countyfips = as.factor(countyfips))
+
+county_area %<>%
+  mutate(countyfips = as.factor(countyfips))
+```
+
+Great! Now we are ready to combine our data together.
+
+We can do so using one of the  `*_join()`functions of the `dplyr` package.
+
+There are several ways to join data using the `dplyr` package.
+
+
+```{r, echo = FALSE, outwidth = "50%"}
+knitr::include_graphics(here::here("img", "join.png"))
+```
+
+##### [[source]](https://dplyr.tidyverse.org/reference/join.html)
+
+Here is  a visualization of these options:
+
+```{r, echo = FALSE, outwidth = "50%"}
+knitr::include_graphics(here::here("img", "join_image.png"))
+```
+
+##### [[source]](https://rstudio.com/resources/cheatsheets/)
+
+See [here](https://dplyr.tidyverse.org/reference/join.html) for more details about joining data.
+
+Since the population data came from the API, we probably have information about opioid pill shipments for each of the included counties. Since the land area data came from a different source, it may contain additional counties that are not in our population or drug shipment data.  Thus we will use the `left_join()` function where x in this case will be the `county_pop`  and y will be the `country_area`. Thus we will add the `LND110210D` (land area) values for all counties that match `county_pop` based on the `countyfips` column that they have in common. 
+
+
+```{r}
+county_info <-left_join(county_pop, county_area)
+```
+
+We are now ready to calculate the population density per square mile. We can create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. 
+
+```{r}
+county_info %<>%
+  mutate(density = population/LND110210D)
+
+county_info
+```
+
+
+Great, now we are ready to create a variable that classifies if a county was rural or urban based on our definition of rural counties being those with less than 500 people per square mile as well as those with less than 2,500 people. We will use the `case_when()` function of the `dplyr` package to calssify the new `rural_urban` variable as either `"Urban"` or `"Rural"` based on the evaluations of the `density` and the `population` variables. If the density is greater than or equal to 500 people per square mile, then the county will be coded as `"Urban"`, alternatively if the density is less than 500 people per square mile or the population is less than 2500, than the county will be coded as `"Rural"`. The `|` opperator is used to indicate that either expression should result in coding the county as `"Rural"`
+
+```{r}
+
+county_info %<>%
+  mutate(rural_urban = case_when(density  >= 500 ~ "Urban",
+                                 density  < 500 | population < 2500 ~ "Rural"))
+```
+
+We can use the `count()` function of the `dplyr` package to see how many of each this resulted in:
+
+```{r}
+count(county_info, rural_urban)
+```
+
+We will now combine the `monthlyDosage` and the `annualDosage` data with the `count_info` tibble.
+
+#### {.think_question_block}
+<b><u> Question Opportunity </u></b>
+
+How might we do this?
+
+####
+
+
+<details> <summary> Click here to reveal the code. </summary>
+
+```{r}
+monthlyDosage %<>%
+  mutate(countyfips = as.factor(countyfips))
+
+
+Monthly <-left_join(monthlyDosage, county_info)
+
+
+annualDosage %<>%
+  mutate(countyfips = as.factor(countyfips))
+  
+Annual <-left_join(annualDosage, county_info)
+
+```
+</details>
+
+```{r}
+glimpse(Monthly)
+glimpse(Annual)
+```
+
+Great, now we should have the data that we need for the case study. 
+```{r,echo= FALSE, eval = TRUE}
+write.csv(Annual, file = here::here("data","Wrangled", "Annual_opioid_data.csv"))
+save(Annual, file =  here::here("data","Wrangled", "Annual_opioid_data.rda"))
+write.csv(Monthly, file = here::here("data","Wrangled", "Monthly_opioid_data.csv"))
+save(Monthly, file =  here::here("data", "Wrangled","Monthly_opioid_data.rda"))
+```
+
+Notice how there is a variable called `DOSAGE_UNIT`. This indicates the number of pills shipped to a pharmacy in this county that were either [oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) or [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf).
+
+Let's do a check to see how complete our data is. We can use the `vis_miss()` function `naniar` package to create a plot that shows if we have any missing data.
+
+```{r}
+naniar:: gg_miss_var(Annual)
+
+naniar:: gg_miss_var(Annual)
+
+
+naniar:: gg_miss_var(Monthly)
+
+
+```
+
+Need to figure this out
+```{r}
+Annual %>%
+  filter(is.na(STATE))
+```
+
+
+# **Data Analysis and Visualization**
+***
+
+### How has population density changed over the years in different states?
+
+
+```{r}
+dens_df <- county_info  %>% group_by(BUYER_STATE, year) %>%
+     summarise( mean_DENS = mean(density, na.rm = TRUE))
+dens_df %<>%
+rename(STATE = BUYER_STATE) %>%
+  mutate(year = as.factor(year))
+
+ ggplot(dens_df, aes(x =STATE, y = mean_DENS, col=year, group = year)) + 
+  geom_point() + 
+  theme_minimal()+
+  theme(axis.title.x=element_blank())
+```
+
+We can see that the density is fairly similar for most states, however DC, MA, NJ, NY, RI, and VA have much higher densities. 
+
+
+```{r}
+
+ ggplot(dens_df, aes(x =year, y = log(mean_DENS), col=year, group = year)) + 
+  geom_boxplot() + 
+  geom_jitter(width = .1)+
+  theme_minimal()+
+  theme(axis.title.x=element_blank())
+
 ```
 
 
 
-# **Data Exploration and Wrangling**
-***
-
-Classify population as being rural or urban based on the criteria of greater than 50,000
-https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/
 ```{r}
-county_pop %>%
-  mutate(rural_urban = case_when(population > 50000 ~ "Urban",
-                                 population <= 50000 ~ "Rural"))
 
+dens_df <- county_info  %>% group_by( year) %>%
+     summarise( mean_DENS = mean(density, na.rm = TRUE))
+dens_df %<>%
+  mutate(year = as.factor(year))
+
+ ggplot(dens_df, aes(x =year, y = mean_DENS)) + 
+  geom_point() +
+  geom_smooth() +
+  theme_minimal()+
+  theme(axis.title.x=element_blank())
+```
+
+The density doesn't appear to change that much from 2006 to 2014. 
+
+
+### How have the number of rural and urban areas changed over years?
+
+```{r}
+
+R_U <- county_info  %>% group_by( year) %>%
+     count(rural_urban)
+
+ ggplot(R_U, aes(x =year, y =n, col=rural_urban, group =rural_urban)) + 
+  geom_point() + 
+   geom_smooth()+
+   facet_wrap(~rural_urban, scales = "free")+
+  theme_minimal()+
+  theme(axis.title.x=element_blank())
 ```
 
 
 ```{r, eval = FALSE}
-left_join(monthlyDosage, county_pop)
+
+cnt <- bind_cols(dfCSS %>% count(UB10) %>% select( Urban = UB10, count10 = n) ,
+         dfCSS %>% count(UB11) %>% select( count11 = n) ,
+         dfCSS %>% count(UB12) %>% select( count12 = n) ,
+         dfCSS %>% count(UB13) %>% select( count13 = n),
+         dfCSS %>% count(UB14) %>% select( count14 = n) ) %>% 
+        mutate( Urban = as.factor(Urban) )
+
+formattable( cnt,list( 
+`count11` = formatter("span",  style = ~ style(color = 
+   ifelse(`count11`>`count10`, "red", "green")), 
+  ~ icontext(ifelse(`count11`>`count10`,"arrow-up", "arrow-down"), `count11`) ),
+`count12` = formatter("span",  style = ~ style(color = 
+   ifelse(`count12`>`count11`, "red", "green")), 
+  ~ icontext(ifelse(`count12`>`count11`,"arrow-up", "arrow-down"), `count12`) ),
+ `count13` = formatter("span",  style = ~ style(color = 
+   ifelse(`count13`>`count12`, "red", "green")), 
+  ~ icontext(ifelse(`count13`>`count12`,"arrow-up", "arrow-down"), `count13`) ),
+ `count14` = formatter("span",  style = ~ style(color = 
+   ifelse(`count14`>`count13`, "red", "green")), 
+  ~ icontext(ifelse(`count14`>`count13`,"arrow-up", "arrow-down"), `count14`) )
+ ) )
 
 ```
 
-# **Data Analysis and Visualization**
-***
+
+
+
+
 # **Summary**
 *** 
 
