@@ -69,71 +69,73 @@ avocado update url
 # **Motivation**
 *** 
 
-Washington Post case study:
-- Question: How did opioid prescription rates differ by region over time around the US from 2006-2012?
-- Description: We will evaluate prescription rates of opioid pain medication across states/counties from 2006-2012.  We will investigate how rural and urban areas differ for prescription rates. We will reference work like this as our motivation: https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w
-- Why is this important? This analysis demonstrates how different regions of the country may have been more at risk for opioid addiction crises due to differing rates of opioid prescription. This will help inform students about how evidence-based intervention decisions are made in this area.
-- Data:  The data is now obtainable from an R package called arcos. In addition we will use information about state and county urbanization estimates from here: https://www.census.gov/programs-surveys/geography/guidance/geo-areas/urban-rural/2010-urban-rural.html
-- Major Data Science Objectives:
-1) loading data from data package
-2) wrangling - joining dplyr
-3) map visualization - ggplot /maps/mapdata/ggmap
-- Statistics objectives: Linear regression analysis to evaluate the association of urbanization/population density and opioid prescription rates over time.
+
+In this case study we will be examining the number of opioid pills (specifically [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States), as they are the top two abused opioids) shipped to pharmacies and paractitionaers at the county-level around the United States (US) from 2006 to 2014.
+
+This data comes from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/) after legal action by the owner of the [Charleston Gazette-Mail](https://www.wvgazettemail.com/) in West Virginia and the [Washington Post](https://www.washingtonpost.com/).
+
+We will investigate how the number of shipped pills compares for rural and urban counties. This analysis will demonstrate how different regions of the country may have been more at risk for opioid addiction crises due to differing rates of opioid prescription (using the number of pills as a proxy for perscription rates). This will help inform students about how evidence-based intervention decisions are made in this area.  
 
 This case study is motivated by this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w):
 
 #### {.reference_block}
 
-García, M. C. et al. Opioid Prescribing Rates in Nonmetropolitan and Metropolitan Counties Among Primary Care Providers Using an Electronic Health Record System — United States, 2014–2017. MMWR Morb. Mortal. Wkly. Rep. 68, 25–30 (2019). DOI: [http://dx.doi.org/10.15585/mmwr.mm6802a1](http://dx.doi.org/10.15585/mmwr.mm6802a1)
+García, M. C. et al. Opioid Prescribing Rates in Nonmetropolitan and Metropolitan Counties Among Primary Care Providers Using an Electronic Health Record System — United States, 2014–2017. MMWR Morb. Mortal. Wkly. Rep. 68, 25–30 (2019). DOI: [10.15585/mmwr.mm6802a1](http://dx.doi.org/10.15585/mmwr.mm6802a1)
 
 ####
 
-This article explores rates of opioid shipments to rural and urban communties and the difficulties of intereting such data.
+This article explores rates of opioid perscriptions in rural and urban communties in the United States using the [Athenahealth electronic health record (EHR) system](https://landing.athenahealth.com/g/improvecare?cmp=10672941&utm_salesforce=7016f000001yWQMAA2&utm_medium=cpc&utm_campaign=1%20Branded%20Experimental&utm_adgroup=ModBroad&utm_source=google&utm_term=%2Bathena%20%2Bhealth&utm_type=b&gclid=Cj0KCQjwtZH7BRDzARIsAGjbK2bn_oxyd0jNBGQkPMcSSpEuGbzLUqL8m-tuAQWMZ-smUNLLjtztB7EaAgSlEALw_wcB) for 31,422 primary care providers from January 2014 to March 2017.
+
+The main takeaways from this article were:
+
+> Among 70,237 fatal drug overdoses in 2017, prescription opioids were involved in 17,029 (24.2%).
+
+> The percentage of patients prescribed an opioid was higher in **rural** than in urban areas. 
+
+> Higher opioid prescribing rates put patients **at risk for addiction and overdose**.
 
 
+Indeed,  this was confirmed by another [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed heroin users.
 
-This article states that
+#### {.reference_block}
 
-> "
+Cicero, T. J., Ellis, M. S., Surratt, H. L. & Kurtz, S. P. The Changing Face of Heroin Use in the United States: A Retrospective Analysis of the Past 50 Years. JAMA Psychiatry 71, 821 (2014). [DOI:10.1001/jamapsychiatry.2014.366](https://doi.org/10.1001/jamapsychiatry.2014.366)
 
-However previous studies note some commonalities such as:
+####
 
-> ""
+They found that:
 
+> Respondents who began using heroin in the 1960s were predominantly young men (82.8%; mean age, 16.5 years) whose first opioid of abuse was heroin (80%).
 
+> However, more **recent users** were older (mean age, 22.9 years) men and women **living in less urban areas (75.2%)** who were **introduced to opioids through prescription drugs (75.0%)**.
 
-
-
-
-They also point out that:
-
-> ""
-
-Given this need for more research to better understand why these events occur and how they could be averted, in this case study we will demonstrate how to create a resource for others to more easily and interactively access data about school shootings. To do so we will create what is called a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report for a database. Dashboards summarize the data in a database and typically allow for users to interact with the data in some way.
-
-[Here](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/htmlwidgets-highcharter.html) you can see an example of a dashboard created in R.
+> Heroin use has changed from an inner-city, minority-centered problem to one that has a more widespread geographical distribution, involving **primarily white men and women in their late 20s living outside of large urban areas**.
 
 
+```{r, out.width = "50%", echo = FALSE, fig.align ="center"}
+include_graphics(here::here("img", "james-yarema-5tyMgag0wRo-unsplash.jpg"))
+```
 
-####[[source]](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/)
+<span>Photo by <a href="https://unsplash.com/@jamesyarema?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">James Yarema</a> on <a href="https://unsplash.com/s/photos/pills?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+
+#### [[source]](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/)
 
 
 # **Main Questions**
 *** 
 
 #### {.main_question_block}
-<b><u> Our main questions: </u></b>
+<b><u> Our main question: </u></b>
 
-1) What has been the yearly rate of school shootings and where have they occurred in the last 50 years (from January 1970 to June 2020)? 
+ How did opioid shipment rates differ between rural and urban regions over time around the US from 2006-2014?
 
-2) What are the characteristics of these events?
 
 ####
 
 # **Learning Objectives** 
 *** 
 
-In this case study, we will demonstrate how to create a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report about a database. We will especially focus on using packages and functions from the [`Tidyverse`](https://www.tidyverse.org/){target="_blank"}, such as `package_name`, `package_name`. The tidyverse is a library of packages created by RStudio. While some students may be familiar with previous R programming packages, these packages make data science in R more legible and intuitive.
+In this case study, we will demonstrate how to obtain data from an [Application Programming Interface (API)](https://en.wikipedia.org/wiki/API), which is an interface that allows users to more easily interact with a database. We will also especially focus on using packages and functions from the [`Tidyverse`](https://www.tidyverse.org/){target="_blank"}, such as `dplyr`, `tidyr`. The tidyverse is a library of packages created by RStudio. While some students may be familiar with previous R programming packages, these packages make data science in R more legible and intuitive.
 
 
 ```{r, out.width = "20%", echo = FALSE, fig.align ="center"}
@@ -145,19 +147,20 @@ The skills, methods, and concepts that students will be familiar with by the end
 
 Data science skills:  
   
-1. Importing text from a Google Sheets document (`googlesheets4`)  
-2. Converting date formats (`lubridate`)  
-3. Geocoding data (`ggmap`)  and creating a jitter for geocoded data on a map (`SF`)
-4. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`)  
+1. Importing data from an [API](https://en.wikipedia.org/wiki/API) (`httr` and `jasonlite`)  
+2. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`) 
+3. How to join data with `dplyr`
+4. How to create formatted tables of data with `formattable`
 5. How to create data visualizations with `ggplot2` 
-6. An introductory understand of R Markdown  
-7. How to create an interactive table (`DT`)  
-8. How to create a map (`leaflet`)  
-9. How to create an interactive dashboard with `flexdashboard` and `shiny`  
+6. How to look for missing data in a dataset (`naniar`)
+
 
 Statistical concepts and methods:  
   
-1. Calculating percentages for data with missing values  
+1. Understanding of when and why data normalization is useful
+2. Understanding of when and why data transformation is useful
+3. How to implement a t-test in R
+4. How to interpte a t-test in R
 
 *** 
 
@@ -166,28 +169,38 @@ We will begin by loading the packages that we will need:
 
 
 ```{r}
+library(readxl)
+library(tibble)
 library(httr)
 library(jsonlite)
+library(stringr)
+
+
 library(here)
 library(readr)
 library(magrittr)
 library(dplyr)
 library(tidyr)
-library(readxl)
-library(naniar)
 
-library(devtools)
-library(usethis)
-library(tidyverse)
-library(openintro)
-#library(arcos)
-library(ggiraph)
-library(ggpubr)
-library(ggfortify)
-library(ggpol)
-library(lme4)
+library(naniar)
+library(ggplot2)
+
+library(ggpol) #creates geomjitter
+library(ggiraph) # creates interactive plot for plots that are difficult to label because they have so many elements
+library(ggpubr) #ggarange 
+
+# library(devtools)
+# library(usethis)
+# library(tidyverse)
+# library(openintro)
+# #library(arcos)
+# library(ggiraph)
+# library(ggpubr)
+# library(ggfortify)
+# library(ggpol)
+# library(lme4)
 library(formattable)
-library(reshape2)
+
 ```
 
 
@@ -198,7 +211,6 @@ Package   | Use in this case study
 ---------- |-------------
 [here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
 [readr](https://readr.tidyverse.org/) |  to import the data  as a csv file  
-[googlesheets4](https://googlesheets4.tidyverse.org/) | to import directly from Google Sheets
 [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
@@ -223,17 +235,114 @@ The first time we use a function, we will use the `::` to indicate which package
 
 # **Context**
 *** 
+**What exactly are opioids?**
 
-According to this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w) from the [Morbidity and Mortality Weekly Report (MMWR)](https://www.cdc.gov/mmwr/about.html) of the [Centers for Disease Control and Prevention (CDC)](https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention)
+According to the [DEA](https://www.dea.gov/taxonomy/term/331) and the [Alta Mira addiction treatment center](https://www.altamirarecovery.com/opiates/difference-opiates-opioids/):
 
-> Drug overdose is the leading cause of unintentional injury-associated death in the United States.
+Opioids (also known as narcotics which comes from the Greek word for "stupor"), describes a class of drugs that contain [opium](https://en.wikipedia.org/wiki/Opium) (the poppy plant - [*Papaver somniferum*](https://en.wikipedia.org/wiki/Papaver_somniferum)), are derived from opium, or contain a semi-synthetic or synthetic substitute for opium.
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img","ingo-doerrie-Ti6Sk5rZRP8-unsplash.jpg" ))
+
+```
+
+<span>Photo by <a href="https://unsplash.com/@ingodoerrie?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Ingo Doerrie</a> on <a href="https://unsplash.com/s/photos/opium?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
 
+Hoewver, technically, opioids are substances that bind to the [opioid receptors](https://www.sciencedaily.com/releases/2007/10/071014163647.htm#:~:text=The%20opioid%20system%20consists%20of,and%20potentially%20initiating%20addictive%20behaviors.) in the body, which are involved in the sensation of `pain` and the experience of [reward](https://en.wikipedia.org/wiki/Reward_system#:~:text=The%20reward%20system%20is%20a,involve%20pleasure%20as%20a%20core). There are actually opioids that naturally are made by the human body, the most well known being the [endorphins](https://www.medicalnewstoday.com/articles/320839#:~:text=Endorphins%20are%20chemicals%20produced%20by,surgery%20or%20for%20pain%2Drelief.).
 
-https://lancasteronline.com/news/local/report-compares-drug-overdoses-to-other-causes-of-death-in-the-us/article_24efaa58-dc50-11e7-869e-f39fbf46bfa2.html
+
+Oppoid drugs tend to be addictive becuase they modulate the [reward system](https://en.wikipedia.org/wiki/Reward_system#:~:text=The%20reward%20system%20is%20a,involve%20pleasure%20as%20a%20core). This is the part of the brain that reinforces behaviors (normally these are behaviours such as drinking water or eating food) by causing the experience of pleasure (through the release of a neurotransmitter called [dopamine](https://en.wikipedia.org/wiki/Dopamine)). 
+
+This same system can be activated by both opioids that naturally occur in the body, as well as opioid perscription drugs and other addictive drugs. Activation of this sytem by drug use  leads to very high releases of Dopamine and the sensation of pleasure which ultimately leads to reinforced use of that drug.
+
+```{r, echo = FALSE}
+knitr::include_graphics("https://www.drugabuse.gov/sites/default/files/styles/content_image_large/public/drugstargetthebrainspleasurecenter.gif?itok=Ffd_PCeb")
+```
+
+#### [[source]](https://www.drugabuse.gov/publications/drugs-brains-behavior-science-addiction/drugs-brain)
 
 
-According to this [article](https://www.cdc.gov/mmwr/volumes/67/wr/mm675152e1.htm?s_cid=mm675152e1_w) 
+In general, opioids medications and drugs have been found to dull the senses, releive pain, supress cough, reduce respiration and heart rate, induce constipation, and induce feelings of euphoria. They have a high potential for abuse and addiction.
+
+Drugs within this class include (with perscription drug brand names are shown in parentheses): 
+
+1) Non-synthetic purified: Morhpine, Codeine, Thebaine
+2) Semi-synthetic:  Heroin, Oxycodone (OxyContin, Oxecta, Roxicodone), and Hydrocodone ( Vicodin, Lortab, Lorcet)), oxymorphone (Opana), Hydromorphone (Dilaudid, Exalgo)
+3) Synthetic: Meperidine (Demerol), Methadone (Methadose, Dolophine), and Fentanyl (Abstral, Actiq, Fentora, Duragesic, Lazanda, Subsys), Tramadol (ConZip, Ryzolt, Ultram)
+
+
+```{r, echo = FALSE, out.width="40%"}
+knitr::include_graphics(here::here("img","Opium_pod_cut_to_demonstrate_fluid_extraction1.jpg" ))
+
+```
+
+##### [[source]](https://en.wikipedia.org/wiki/File:Opium_pod_cut_to_demonstrate_fluid_extraction1.jpg)
+
+Opium comes from the fluid (which is also called poppy tears) inside the seed capusules of the [*Papaver somniferum*](https://en.wikipedia.org/wiki/Papaver_somniferum) plant. This contains morphine, codeine, and thebaine. This is then dried. 
+
+Opium has been used by humans since 5000 BCE and it has been used across the world. See [here](https://en.wikipedia.org/wiki/Opium) for an interesting overview of the history. 
+
+
+Opium derived medications were historically used in United States to treat a variety of ailments besides pain including: cholera, dysentery, tubuerculosi, and mental illness.  
+
+Of note, they state that "from 1898 to 1910 heroin was marketed as a non-addictive morphine substitute and cough medicine for children"!
+
+Here you can see a photo of a bottle of herion:
+
+
+```{r, echo = FALSE, out.width="40%"}
+knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Bayer_Heroin_bottle.jpg/220px-Bayer_Heroin_bottle.jpg")
+```
+
+#### [[source]](https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Bayer_Heroin_bottle.jpg/220px-Bayer_Heroin_bottle.jpg)
+
+Opioids have continued to be used in the treatment of pain. 
+
+## The Opioid Epidemic 
+
+The opioid epidemic began in the late 1990s. 
+
+According to the [US department of health and human services (HHS)](
+https://www.hhs.gov/opioids/about-the-epidemic/index.html):
+
+> In the late 1990s, pharmaceutical companies reassured the medical community that patients would not become addicted to opioid pain relievers and healthcare providers began to prescribe them at greater rates.
+
+> Increased prescription of opioid medications led to **widespread misuse** of both prescription and non-prescription opioids before it became clear that these medications could indeed be highly addictive.
+
+> In 2017 the [HHS](https://www.hhs.gov) declared a public health emergency 
+
+See [here](https://en.wikipedia.org/wiki/Timeline_of_the_opioid_epidemic) for a timeline of the epidemic in the US and [here](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) for more detials about the epidemic.
+
+
+According to this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w) from the [Morbidity and Mortality Weekly Report (MMWR)](https://www.cdc.gov/mmwr/about.html) of the [Centers for Disease Control and Prevention (CDC)](https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention):
+
+> Drug overdose is the **leading cause** of unintentional injury-associated death in the United States.
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "Opioids_Infographic.png"))
+```
+
+##### [[source]](https://www.hhs.gov/opioids/sites/default/files/2019-11/Opioids%20Infographic_letterSizePDF_10-02-19.pdf)
+
+
+According to the [CDC](https://www.cdc.gov/drugoverdose/epidemic/index.html), there were 3 waves of the epidemic:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "2018-3-Wave-Lines-Mortality.png"))
+
+```
+
+#### [[source]](https://www.cdc.gov/drugoverdose/images/epidemic/2018-3-Wave-Lines-Mortality.png)
+
+You can see that moth recent overdose deaths were due to the use of synthetic opioids, where as previous high levels of overdoses (till about 2015) were attributable to natural and semi-synthetic opioids (which is what we will look at in this case study). 
+
+They state that: 
+
+> From 1999–2018, almost **450,000** people died from an **overdose involving any opioid**, including prescription and illicit opioids.
+
+
+Importantly rates appear to differ across states, according to this [CDC report](https://www.cdc.gov/mmwr/volumes/67/wr/mm675152e1.htm?s_cid=mm675152e1_w) 
 
 
 ```{r}
@@ -243,6 +352,11 @@ knitr::include_graphics("https://www.cdc.gov/mmwr/volumes/67/wr/figures/mm675152
 
 [[source]](https://www.cdc.gov/mmwr/volumes/67/wr/figures/mm675152e1-F.gif)
 
+
+According to the [motivating report](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs/mm6802a1-H.pdf) for our case study: 
+
+Perscription rates are now declining, however, perscription of opioids was found to be higher in rural areas rather than urban ares. 
+
 ```{r}
 knitr::include_graphics(here::here("img", "context.png"))
 
@@ -250,12 +364,7 @@ knitr::include_graphics(here::here("img", "context.png"))
 
 ##### [[source]](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs/mm6802a1-H.pdf)
  
-https://www.cdc.gov/nchs/products/databriefs/db356.htm
-
-
-
-
-
+It is important to identify locations where people are particularly vulernable to target interventions for communities that need it the most.
 
  
 # **Limitations**
@@ -266,7 +375,9 @@ According to the [Washington Post data](https://www.washingtonpost.com/national/
 
 >"It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else."
 
-Furthermore, we define counties as being rural or urban however there can be great variation within a county and we used land area values form only 2010 even though these can fluctuate. Therefore the way we categorized counties should be seen as an approximation.
+Furthermore, we will define counties as being rural or urban however there can be great variation within a county and we used land area values form only 2010 even though these can fluctuate. Therefore the way we categorized counties should be seen as an approximation.
+
+Finally, overdose deaths are often due to the use of multiple substances. Simply because a county recieved more pills does not  mean that people in that county would experience more drug overdoses. It is also important to remember that perscription opioids only account for a portion of the drug overdose deaths reported in this time period. However, according to this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) 75% of heroin users surveyed were introduced to opioids through perscription drug use.
 
 
 # **What are the data?**
@@ -285,6 +396,7 @@ This dataset was released in July of 2019 and has been controversial as accordin
 See [here](https://www.washingtonpost.com/national/2019/07/20/opioid-files/?arc404=true) for more details about how this database was released.
 
 The [Washington Post](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/)states that they:
+
 >.. cleaned the data to include only information on shipments of oxycodone and hydrocodone pills. We did not include data on 10 other opioids because they were shipped in much lower quantities...
 
 >It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else.
@@ -294,6 +406,8 @@ This data was part of the [Automated Reports and Consolidated Ordering System (A
 > manufacturers and distributors report their controlled substances transactions
 
 Their [website](https://www.deadiversion.usdoj.gov/arcos/index.html#background) indicates that: 
+
+
 > The Controlled Substances Act of 1970  created the requirement for Manufacturers and Distributors to report their controlled substances transactions to the Attorney General. The Attorney General delegates this authority to the Drug Enforcement Administration (DEA).
 
 > ARCOS is an automated, comprehensive drug reporting system which monitors the flow of DEA controlled substances from their point of manufacture through commercial distribution channels to point of sale or distribution at the dispensing/retail level - hospitals, retail pharmacies, practitioners, mid-level practitioners, and teaching institutions. Included in the list of controlled substance transactions tracked by ARCOS are the following: All Schedules I and II materials (manufacturers and distributors); Schedule III narcotic and gamma-hydroxybutyric acid (GHB) materials (manufacturers and distributors); and selected Schedule III and IV psychotropic drugs (manufacturers only).
@@ -304,12 +418,11 @@ As this is a very large dataset, thus the Washington Post created an [applicatio
 
 An API is a computational interface that simplifies interactacts with a data or file system for a user. It is similar to a [Graphical User Interface GUI](https://en.wikipedia.org/wiki/Graphical_user_interface), yet it allows the user some more flexibility/functionality.
 
-
 This [link](https://arcos-api.ext.nile.works/__swagger__/) takes you to the Washington Post ARCOS API. 
 
 There was also an R package on cran called [arcos](https://cran.r-project.org/package=arcos) for interacting with the API, but this has been archived.  This package is however still available [here](https://github.com/wpinvestigative/arcos) on Github.
 
-See [here](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/) for more information about how to access the Washington Post DEA database.
+See [here](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/) for more information about how to get access the Washington Post DEA database.
 
 
 # **Data Import**
@@ -317,32 +430,32 @@ See [here](https://www.washingtonpost.com/national/2019/07/18/how-download-use-d
 
 ## Land Area
 
-We will also need land area data for our calculations of population density. 
+We will need land area data for our calculations of population density. 
 
 We obtained county land area data from the US census Bureau at this [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011.html#LND)
 
 This [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011/file-layout.html) explains how the data is formated.
 
-We will use the `read_excel()` function of the `readxl` package to import the data.
+We will use the `read_excel()` function of the `readxl` package to import the data. We will also convert the data into a [tibble](https://tibble.tidyverse.org/) (which is a the tidyverse version of a data frame) by using the `as_tibble()` function of the `tibble` package.
 
 ```{r}
 land <- readxl::read_excel(here::here("data", "LND01.xls"))
 land <- as_tibble(land)
+```
 
+We can take a look at the data using the base `head()` function which will show the frist 6 rows.
+
+```{r}
 head(land)
 ```
 
-
-
-
-
-
-
+Looks good!
 
 ## Accessing APIs
 
-The `httr` package formats what are called "GET requests" so that they will work properly.
-The `jsonlite` package alows you to convert the data from `JSON` to a differet format that is easier to work with.
+The `httr` package formats what are called "GET requests" so that they will work properly. This allows for the data to be retrieved from the API.
+
+The `jsonlite` package alows you to convert the data from `JSON` (often used by APIs) to a differet format that is easier to work with.
 
 APIs typically require a password or key to gain access. Thus the `httr` package helps to authenticate your data request. Often these keys are something that you do not want to share, unless the API is public.
 
@@ -382,7 +495,7 @@ This gives us the following output:
 
 `curl -X GET "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I" -H  "accept: application/json"`
 
-We can copy the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package (note that some of the data will take longer ):
+We can copy the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package :
 
 ```{r}
 county_pop_json<-httr::GET(url = "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I")
@@ -390,15 +503,23 @@ county_pop_json<-httr::GET(url = "https://arcos-api.ext.nile.works/v1/county_pop
 
 If we needed to specify a username and password, we would do so using the `authenticate()` function of the `httr` package within the `GET` function. The `authenticate()` function takes `user`, `password` and `type` arguments.
 
+Here is an example:
 
-Now we have a [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) file of the data. 
+```{r, eval = FALSE}
+GET(url = "https://exampleURL", authenticate(user = "username", password = "password", type = "basic"))
+```
 
-JSON files are [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that they dont take up much memory and they are human readible files to make transmitting data from websites easier.
+The default type is `"basic"` and typcally what is needed.
 
+Now that we have used the `GET` function, we have a [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) file of the data. 
+
+JSON files are [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that they don't take up much memory and they are human readible files to make transmitting data from websites easier.
 
 ```{r}
 county_pop_json
 ```
+
+
 Here we can see that the object called `countyjson` is a `json` object. You will also see that the `Satus` is `200`, which means that we were sucessful in retreiving the data from the API.
 
 Now we can use the `content()` funtion of the `httr` package to extract the text from the file:
@@ -407,25 +528,43 @@ Now we can use the `content()` funtion of the `httr` package to extract the text
 county_pop_text <-httr::content(county_pop_json, "text")
 ```
 
+This will be a very large string at this point, we can take a look at part of it by using the `str_sub()` function of the `stringr` package. In this case we will only look at the first 400 characters.
 
-Now to get the data into a more readible format , we can use the `fromJSON()` function of the `jsonlite` package. We will also convert the data into a [tibble](https://tibble.tidyverse.org/) (which is a the tidyverse version of a data frame) by using the `as_tibble()` function of the `tibble` package.
+What is a string or a chracter?
+
+***
+<details> <summary> Click here for an explanation about character strings if you are not yet familiar </summary>
+
+There are several classes of data in R programming. 
+Character is one of these classes. 
+A character string is an individual data value made up of characters. 
+This can be a paragraph, like the legend for the table, or it can be a single letter or number like the letter `"a"` or the number `"3"`. 
+
+If data are of class character, than the numeric values will not be processed like a numeric value in a mathematical sense. 
+
+</details>
+***
+
+```{r}
+stringr::str_sub(county_pop_text, start = 1, end = 400)
+```
+
+
+Now to get the data into a more readible format , we can use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()` 
 
 ```{r}
 county_pop <- jsonlite::fromJSON(county_pop_text, flatten = TRUE)
-county_pop <- tibble::as_tibble(county_pop)
+county_pop <- as_tibble(county_pop)
 ```
 
 We can use the `glimpse()` function and the `distinct()` function of the `dplyr` package to get a better sense of the data. The `distinct()` function allows us to take a look at the unique values of the `year` variable.
 
 ```{r}
 dplyr::glimpse(county_pop)
-
-
 dplyr::distinct(county_pop,year)
-
 ```
 
-It looks like we have data from 2006-2014.
+It looks like we have the full data from 2006-2014.
 
 
 ```{r, eval = FALSE, echo = FALSE}
@@ -439,15 +578,56 @@ load(here::here("data", "county_pop_arcos.rda"))
 
 We are also interested in opioid pill shipment data at the county level. 
 
-## Monthly Shipment Data
 
-Here is the result of the same steps using the API for this data:
 
-`curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I" -H  "accept: application/json"`
+## Annual Shipment Data
 
-Again, we can copy the URL section `"https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package (note that this may take a minute as this is larger data):
+Here is the result of the same steps using the API for the combined_county_annual data:
+
+`curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I" -H  "accept: application/json"`
+
+
+#### {.recall_code_question_block}
+<b><u> Question Opportunity </u></b>
+
+See if you can fix import the data without looking at the code for the population data.
+
+####
+
+
+<details> <summary> Click here to reveal the code. </summary>
 
 ```{r, eval = FALSE}
+county_annual_json<-httr::GET(url =  "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I")
+county_annual_json_text <-httr::content(county_annual_json, "text")
+county_annual <- jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
+annualDosage <- tibble::as_tibble(county_annual)
+```
+
+</details>
+
+```{r, echo = FALSE, eval = FALSE}
+write.csv(annualDosage, file = here::here("data", "county_annual.csv"))
+save(annualDosage, file =  here::here("data", "county_annual.rda"))
+```
+
+```{r, echo=FALSE}
+load(here::here("data", "county_annual.rda"))
+```
+
+
+Now let's take a look at the data:
+```{r}
+glimpse(annualDosage)
+distinct(annualDosage, year)
+
+```
+
+Looks like we have the same years of data.
+
+
+```{r, eval = FALSE, echo = FALSE}
+# We also retrieved the monthly data for instructors who wish to use this data
 countyjson <- httr::GET(url = "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I")
 countyjson_text <-httr::content(countyjson, "text")
 county <- jsonlite::fromJSON(countyjson_text, flatten = TRUE)
@@ -462,41 +642,6 @@ save(monthlyDosage, file =  here::here("data", "county_monthly.rda"))
 ```{r, echo = FALSE}
 load(here::here("data", "county_monthly.rda"))
 ```
-
-Now let's ta
-```{r}
-glimpse(monthlyDosage)
-distinct(monthlyDosage, year)
-
-```
-Looks like we have the same years of data.
-
-## Annual Shipment Data
-
-From the API we get the following output for the combined_county_annual data `curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I" -H  "accept: application/json"`
-
-```{r, eval = FALSE}
-county_annual_json<-httr::GET(url =  "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I")
-county_annual_json_text <-httr::content(county_annual_json, "text")
-county_annual <- jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
-annualDosage <- tibble::as_tibble(county_annual)
-```
-
-```{r, echo = FALSE, eval = FALSE}
-write.csv(annualDosage, file = here::here("data", "county_annual.csv"))
-save(annualDosage, file =  here::here("data", "county_annual.rda"))
-```
-
-```{r, echo=FALSE}
-load(here::here("data", "county_annual.rda"))
-```
-
-
-```{r}
-glimpse(annualDosage)
-```
-
-Looks good. 
 
 
 # **Data Exploration**
@@ -517,14 +662,15 @@ How about the population data:
 ```{r}
 vis_miss(county_pop)
 ```
-We are missing some values for the `Name` and `variable` data, but we don`t intend to use these, so this should be ok. It is however a good idea to check these rows to see if anything strange is happening.
+
+We appear to be missing some values for the `Name` and `variable` data, but we don`t intend to use these, so this should be ok. It is however a good idea to check these rows to see if anything strange is happening.
 
 Let's use the `filter()` function of the `dplyr` package and the `is.na()` base function to see more about the data that does not have countyfips codes.
 
 We will also start using the `%>%` pipe of the `magrittr` package for our assignments.
 
 
-<details> <summary>Click here if you are unfamiliar with piping in R, which uses this `%>%` operator</summary>  
+<details> <summary> Click here if you are unfamiliar with piping in R, which uses this `%>%` operator</summary>  
 
 
 By [piping](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"} we mean using the `%>%` pipe operator which is accessible after loading the `tidyverse` or several of the packages within the tidyverse like `dplyr` because they load the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}. 
@@ -537,25 +683,25 @@ This allows us to perform multiple sequential steps on one data input.
 ```{r}
 county_pop %>% filter(is.na(NAME))
 ```
-This looks ok. So let's now move on to the DEA data. We will need to use the `gg_mis_var()` function to create a simpler plot for the `monthlyDosage` data as it is too large to create the other type of figure. and we will also use the `pct_miss()` function to calculate the percentage missing. 
 
+This looks ok. So let's now move on to the DEA data.
 ```{r}
 vis_miss(annualDosage)
-naniar::pct_miss(monthlyDosage)
-naniar::gg_miss_var(monthlyDosage)
 ```
-Interesting, we appear to be missing `countyfips` codes for a small percentage of our annual data and about 30% of our monthly data.
 
+Interesting, we appear to be missing `countyfips` codes for a small percentage of our annual data.
+
+
+Let's take a look at this data:
 
 ```{r}
 annualDosage %>% filter(is.na(countyfips))
 ```
 
 
-It looks like the missing data is data for Puerto Rico- this makes sense that it doesnt have countyfips codes.
+It looks like the missing data is data for Puerto Rico - it makes sense that it doesn't have countyfips codes.
 
-Let's see if there is any data other than data for Puerto Rico that is also missing `countyfips` values.
-
+Let's see if there is any data other than data for Puerto Rico that is also missing `countyfips` values. We can use the `!=` operator which indicates not equal to.
 
 
 ```{r, eval = FALSE}
@@ -572,8 +718,7 @@ annualDosage %>% filter(is.na(countyfips)) %>%
 ```
 ####
 
-It looks like there is also data for other territories in the data set. As well as some counties with no name.
-
+It looks like there is also data for other territories in the dataset, as well as some counties with no name.
 
 For some reason the rows for the Montgomery county of Arkansa are also missing a `countyfips` value.
 
@@ -589,25 +734,11 @@ According to this [website](https://www.nrcs.usda.gov/wps/portal/nrcs/detail/nat
 We will update these values in the next section.
 
 
-Let's also look through our monthly data as well to make sure that we have a similar situation as the annual data:
-
-```{r, eval = FALSE}
-monthlyDosage %>% 
-  filter(is.na(countyfips))
-```
-
-#### {.scrollable }
-```{r, echo = FALSE}
-monthlyDosage %>% 
-  filter(is.na(countyfips)) %>%
-  # this allows us to show the full output in the rendered rmarkdown
- print(n = 1e7)
-```
-####
 # **Data Wrangling**
 ***
 
 ## Cleaning land data
+
 We want the `LND110210D` column which is the data from the year 2010.
 
 LND = Land Area
@@ -616,18 +747,21 @@ LND = Land Area
 10 = 2010 (based on the century)
 D = Data
 
-Thus we can select the county names, the county numeric codes, and the `LND110210D`column by using the `select()` function of the `dplyr` package.
+Thus we can select just the county names, the county numeric codes, and the `LND110210D`column by using the `select()` function of the `dplyr` package.
 
 ```{r}
 county_area <- land %>% select(Areaname, STCOU, LND110210D)
 county_area
 ```
 
- 
 
 ## Updating `countyfips`
 
 We will use the `case_when()` function of the `dplyr` package recode the `NA` values for the rows for the `MONGOMERY` county of `AR` to be `05097`. First we need to specify for these particular rows. Becuase there Montgomery may be a county name in other states, we need to evaluate when the `BUYER_STATE` is `AR` and when the `BUYER_COUNTY` is `MONTGOMERY`. We will use the `&` opperator to indcate that both conditions must be true. We will then recode the `coutryfips` values for these rows to be `"05097"` using the `~` symbol. All other values need to stay the same. Thus we need to use `TRUE ~` to recode all the other `countyfips` values to what they currently are. Otherwise these would autmatically be `NA`.
+
+We are also going to use a special pipe operator from the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) called the compound assignment pipe-operator or sometimes the double pipe operator. 
+
+This allows us to use the `annualDosage` as our input and reassign it at the end after all the subsequent steps have been performed, although in this case it is only one step.
 
 ```{r}
 
@@ -649,51 +783,19 @@ annualDosage %>%
   filter(BUYER_COUNTY == "MONTGOMERY") %>%
   filter(BUYER_STATE == "AR")
 ```
+
 Great! We fixed it.
 
 
-We will also check if we need to do the same four the `monthlyDosage` data.
 
-
-```{r}
-monthlyDosage %>% 
-  filter(BUYER_COUNTY == "MONTGOMERY") %>%
-  filter(BUYER_STATE == "AR")
-```
-
-Looks like we do. 
-
-#### {.recall_code_question_block}
-<b><u> Question Opportunity </u></b>
-
-See if you can fix these rows for the `monthlyDosage` data without looking at the code for the `annualDosage` data.
-
-####
-
-
-<details> <summary> Click here to reveal the code. </summary>
-
-```{r}
-monthlyDosage %<>% 
-  mutate(countyfips = case_when(BUYER_STATE == "AR" & 
-                               BUYER_COUNTY == "MONTGOMERY" ~ as.character("05097"),
-                               TRUE ~ countyfips))
-
-monthlyDosage %>% 
-  filter(BUYER_COUNTY == "MONTGOMERY") %>%
-  filter(BUYER_STATE == "AR")
-```
-
-</details>
 
 
 OK, we also had some rows that didn't have county names because they were just missing or the data was for US territories. We will remove the values that dont have county names.
 
-First let's take a look at them agian and check the `monthlyDosage` data.
+First let's take a look at them agian.
 
 ```{r}
 annualDosage %>% filter(is.na(BUYER_COUNTY))
-monthlyDosage %>% filter(is.na(BUYER_COUNTY))
 ```
 
 We can filter out these values by using the `!` exclamation mark before the `is.na()` function.
@@ -701,29 +803,16 @@ We can filter out these values by using the `!` exclamation mark before the `is.
 ```{r}
 
 annualDosage %<>%  filter(!is.na(BUYER_COUNTY))
-monthlyDosage %<>%  filter(!is.na(BUYER_COUNTY))
+```
 
+And now let's check that these `NA` values are gone:
+
+```{r}
 annualDosage %>% filter(is.na(BUYER_COUNTY))
-monthlyDosage %>% filter(is.na(BUYER_COUNTY))
 
 ```
 
-Let's check if our land area data has information for US territories. If not, we will remove the data for the territories in our `monthlyDosage` and `annualDosage` data. However, this would be very interesting and imporatant to investigate. We can use the `str_detect()` function of the `stringr` package, which contains lots of functions for looking for patterns in character strings, to look for data from Puerto Rico. 
-
-***
-<details> <summary> Click here for an explanation about character strings </summary>
-
-There are several classes of data in R programming. 
-Character is one of these classes. 
-A character string is an individual data value made up of characters. 
-This can be a paragraph, like the legend for the table, or it can be a single letter or number like the letter `"a"` or the number `"3"`. 
-
-If data are of class character, than the numeric values will not be processed like a numeric value in a mathematical sense. 
-
-</details>
-
-
-***
+Let's check if our land area data has information for US territories. If not, we will remove the data for the territories in our `annualDosage` data. However, this would be very interesting and imporatant to investigate. We can use the `str_detect()` function of the `stringr` package, which contains lots of functions for looking for patterns in character strings, to look for data from Puerto Rico. 
 
 The `str_detect()` function allows us to look for a particular pattern. It does not have to be the full value, there can be a partial match. Thus we can look to see if there are any `PR` strings withing the vlaues of the the `Areaname` variable. 
 
@@ -736,6 +825,7 @@ You can see using a different abbreviation, that this code does as intended:
 ```{r}
 county_area %>% filter(str_detect(string = Areaname, pattern = "AR"))
 ```
+
 OK, so it does mot look like there is any territory land area data in this dataset. Thus we will also remove these from the `annualDosage` and `monthlyDosage` tibbles.
 
 #### {.recall_code_question_block}
@@ -743,24 +833,22 @@ OK, so it does mot look like there is any territory land area data in this datas
 
 Do you recall how to do this?
 
+
 ####
 
 
 <details> <summary> Click here to reveal the code. </summary>
 ```{r}
 annualDosage %<>% filter(!is.na(countyfips))
-monthlyDosage %<>% filter(!is.na(countyfips))
 ```
 </details> 
-
 
 
 ```{r}
 naniar:: vis_miss(annualDosage)
 ```
+
 Great! Now there is no missing data in our annual data.
-
-
 
 
 ## Rural and Urban Counties
@@ -776,7 +864,6 @@ Thus we will define a county as rural or urban based on the population density u
 
 rural  = population densities of less than 500 people per square mile, as well as places with fewer than 2,500 people   
   uban = populations densities of greater than 500 people per square mile
-
 
 
 Ideally we would want land area from each year, as these do fluctuate a bit, however, this should be a decent approximation as 2010 is in the middle of our time span.
@@ -854,13 +941,14 @@ Since the population data came from the API, we probably have information about 
 county_info <-left_join(county_pop, county_area)
 ```
 
-We are now ready to calculate the population density per square mile. We can create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. 
+We are now ready to calculate the population density per square mile. We can create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. Let's also make the `year` variable a factor.
 
 ```{r}
 county_info %<>%
-  mutate(density = population/LND110210D)
+  mutate(density = population/LND110210D,
+         year = as.factor(year))
 
-county_info
+glimpse(county_info)
 ```
 
 
@@ -879,7 +967,7 @@ We can use the `count()` function of the `dplyr` package to see how many of each
 count(county_info, rural_urban)
 ```
 
-We will now combine the `monthlyDosage` and the `annualDosage` data with the `count_info` tibble.
+We will now combine the `annualDosage` data with the `count_info` tibble.
 
 #### {.think_question_block}
 <b><u> Question Opportunity </u></b>
@@ -892,15 +980,9 @@ How might we do this?
 <details> <summary> Click here to reveal the code. </summary>
 
 ```{r}
-monthlyDosage %<>%
-  mutate(countyfips = as.factor(countyfips))
-
-
-Monthly <-left_join(monthlyDosage, county_info)
-
-
 annualDosage %<>%
-  mutate(countyfips = as.factor(countyfips))
+  mutate(countyfips = as.factor(countyfips),
+                  year = as.factor(year))
   
 Annual <-left_join(annualDosage, county_info)
 
@@ -908,39 +990,75 @@ Annual <-left_join(annualDosage, county_info)
 </details>
 
 ```{r}
-glimpse(Monthly)
 glimpse(Annual)
 ```
 
 Great, now we should have the data that we need for the case study. 
+
 ```{r,echo= FALSE, eval = TRUE}
 write.csv(Annual, file = here::here("data","Wrangled", "Annual_opioid_data.csv"))
 save(Annual, file =  here::here("data","Wrangled", "Annual_opioid_data.rda"))
-write.csv(Monthly, file = here::here("data","Wrangled", "Monthly_opioid_data.csv"))
-save(Monthly, file =  here::here("data", "Wrangled","Monthly_opioid_data.rda"))
 ```
 
 Notice how there is a variable called `DOSAGE_UNIT`. This indicates the number of pills shipped to a pharmacy in this county that were either [oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) or [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf).
 
-Let's do a check to see how complete our data is. We can use the `vis_miss()` function `naniar` package to create a plot that shows if we have any missing data.
+Let's do a check to see how complete our data is now that we have combined our `country_info` data with the `monthlyDosage` and `annualDosage` data. We will have NA values for any counties present in the DAE data but not in our land area data. We can use the `vis_miss()` function `naniar` package to create a plot that shows if we have any missing data.
 
 ```{r}
 naniar:: gg_miss_var(Annual)
-
-naniar:: gg_miss_var(Annual)
-
-
-naniar:: gg_miss_var(Monthly)
-
-
 ```
 
-Need to figure this out
+#### {.scrollable }
+
 ```{r}
 Annual %>%
   filter(is.na(STATE))
 ```
+####
 
+There does not appear to be land area and/or population data for these counties.
+```{r}
+county_info %>% filter(countyfips == "01001")
+county_info %>% filter(countyfips == "05097")
+county_info %>% filter(countyfips == "02201")
+county_info %>% filter(countyfips == "02280")
+
+# there is land data for this county but thats all
+land %>% filter(STCOU == "05097")
+land %>% filter(STCOU == "02201")
+land %>% filter(STCOU == "02280")
+
+county_pop %>% filter(countyfips == "05097")
+
+county_pop %>% filter(countyfips == "05097")
+county_pop %>% filter(BUYER_COUNTY == "MONTGOMERY"& BUYER_STATE =="AK")
+```
+
+We will now remove these rows before further analysis:
+
+#### {.recall_code_question_block}
+<b><u> Question Opportunity </u></b>
+
+Do you recall how you would do this?
+
+####
+
+
+<details> <summary> Click here to reveal the code. </summary>
+
+```{r}
+
+Annual %<>% filter(!is.na(STATE))
+
+```
+
+</details>
+
+```{r}
+naniar:: gg_miss_var(Annual)
+```
+
+Nice! Now we have no missing data.
 
 # **Data Analysis and Visualization**
 ***
@@ -951,26 +1069,26 @@ Annual %>%
 ```{r}
 dens_df <- county_info  %>% group_by(BUYER_STATE, year) %>%
      summarise( mean_DENS = mean(density, na.rm = TRUE))
-dens_df %<>%
-rename(STATE = BUYER_STATE) %>%
-  mutate(year = as.factor(year))
 
- ggplot(dens_df, aes(x =STATE, y = mean_DENS, col=year, group = year)) + 
+ ggplot(dens_df, aes(x =BUYER_STATE, y = mean_DENS, col=year, group = year)) + 
   geom_point() + 
   theme_minimal()+
-  theme(axis.title.x=element_blank())
+  theme(axis.title.x = element_blank(),
+          axis.text.x = element_text(angle = 90))
 ```
 
-We can see that the density is fairly similar for most states, however DC, MA, NJ, NY, RI, and VA have much higher densities. 
+We can see that the density is fairly similar for most states, however DC, MA, NJ, NY, RI, and VA have much higher densities. We also see that DC shows the largest change over time.
 
 
 ```{r}
 
  ggplot(dens_df, aes(x =year, y = log(mean_DENS), col=year, group = year)) + 
   geom_boxplot() + 
-  geom_jitter(width = .1)+
-  theme_minimal()+
-  theme(axis.title.x=element_blank())
+  geom_jitter(width = .1) +
+  theme_minimal() +
+  theme(axis.title.x=element_blank(),
+        legend.position = "none") +
+  labs(y = "Log state mean population density")
 
 ```
 
@@ -980,17 +1098,32 @@ We can see that the density is fairly similar for most states, however DC, MA, N
 
 dens_df <- county_info  %>% group_by( year) %>%
      summarise( mean_DENS = mean(density, na.rm = TRUE))
-dens_df %<>%
-  mutate(year = as.factor(year))
 
  ggplot(dens_df, aes(x =year, y = mean_DENS)) + 
   geom_point() +
   geom_smooth() +
   theme_minimal()+
-  theme(axis.title.x=element_blank())
+  theme(axis.title.x=element_blank()) +
+  labs(y = "US mean population density")
 ```
 
 The density doesn't appear to change that much from 2006 to 2014. 
+
+How does this compare with raw population values?
+
+```{r}
+
+dens_df <- county_info  %>% group_by( year) %>%
+     summarise( total_population = sum(population, na.rm = TRUE))
+
+ ggplot(dens_df, aes(x =year, y = total_population)) + 
+  geom_point() +
+  geom_smooth() +
+  theme_minimal()+
+  theme(axis.title.x=element_blank()) +
+  labs(y = "US total population")
+ 
+```
 
 
 ### How have the number of rural and urban areas changed over years?
@@ -1000,44 +1133,261 @@ The density doesn't appear to change that much from 2006 to 2014.
 R_U <- county_info  %>% group_by( year) %>%
      count(rural_urban)
 
- ggplot(R_U, aes(x =year, y =n, col=rural_urban, group =rural_urban)) + 
+ ggplot(R_U, aes(x = year, y = n, col = rural_urban, group = rural_urban)) + 
   geom_point() + 
-   geom_smooth()+
-   facet_wrap(~rural_urban, scales = "free")+
+  geom_smooth() +
+  facet_wrap(~rural_urban, scales = "free") +
+  theme_minimal() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 90),
+        legend.title = element_blank())
+```
+
+It looks as though the number of urban areas has increased, while the number of rural areas has decreased over time.
+
+
+```{r}
+R_U <- county_info  %>% group_by( year) %>%
+     count(rural_urban)
+R_U %<>% pivot_wider( names_from = rural_urban, values_from = n)
+R_U %<>% ungroup() %>% 
+  mutate("Rural Change" = Rural - lag(Rural), 
+        "Urban Change"= Urban - lag(Urban),
+percent_urban = round(Urban/(Urban +Rural),3)*100)
+
+formattable(R_U, list(`percent_urban` = color_bar("#FA614B")))
+
+formattable(R_U, list(`percent_urban` = color_bar("#FA614B"),
+                      `Rural Change` = formatter("span", 
+                                                 style = ~style(
+                                                 color = ifelse(`Rural Change` < 0, "red", "green"))),
+                      `Urban Change` = formatter("span", 
+                                                 style = ~style(
+                                                 color = ifelse(`Urban Change` < 0, "red", "green")))))
+
+```
+
+
+```{r, fig.height=7}
+
+R_U <- county_info  %>% group_by(BUYER_STATE, year) %>%
+     count(rural_urban)
+R_U %<>% pivot_wider( names_from = rural_urban, values_from = n)
+
+  R_U %<>%mutate(Urban = replace_na(Urban , 0))
+
+R_U %<>% mutate(percent_urban = (Urban/(Urban+Rural))*100) 
+ ggplot(R_U, color = "black", aes(x = BUYER_STATE, y = percent_urban, color = year)) + 
+  geom_point() + 
+ theme_minimal() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 90),
+      legend.position = "bottom") +
+   coord_flip() +
+   scale_colour_viridis_d(option = "magma", end = 0, begin = 1, guide = guide_legend(nrow = 1))
+   
+
+```
+
+
+
+## Pill shipments over time
+
+
+```{r}
+ggplot(Annual , aes(x = year, y = DOSAGE_UNIT)) + 
+  geom_boxjitter()+ 
+  labs(title = "DOSAGE_UNIT Change Over Year")+
+  theme_minimal()
+
+```
+
+```{r}
+Annual  %>% group_by(BUYER_STATE,year) %>%
+     summarise( mean_DOSAGE = mean(DOSAGE_UNIT)) %>% ungroup() %>%
+ggplot(aes(x = year, y = mean_DOSAGE)) + 
+  geom_boxjitter()+ 
+  labs(title = "DOSAGE_UNIT Change Over Year")+
+  theme_minimal()
+```
+
+```{r}
+ Annual  %>% group_by(BUYER_STATE,year) %>%
+     summarise( mean_DOSAGE = mean(DOSAGE_UNIT)) %>% ungroup() %>%
+ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, color = BUYER_STATE)) + 
+  geom_line( )
+```
+
+
+```{r}
+  
+g<-Annual  %>% group_by(BUYER_STATE,year) %>%
+     summarise( mean_DOSAGE = mean(DOSAGE_UNIT)) %>% ungroup() %>%
+ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, color = BUYER_STATE)) +
+  geom_line()
+
+
+  g <- g + geom_point_interactive(aes(
+                color = BUYER_STATE, 
+              tooltip = usdata::abbr2state(BUYER_STATE)), 
+                 size = 2,
+                alpha = 3/10) +theme(legend.position = "nune")
+ 
+girafe(code = print(g))
+```
+
+In this plot it appearst that the counties in  California  got the largest number of pills shipped. However, since we did not account for population or population density, this could simply be because it is the most populated state. To account for this we will perform something called normalization to make a more fair comparison.
+
+
+## Normalization of pill count
+
+### Mormalization based on density
+```{r}
+
+Annual%<>%  mutate(dens_DOSAGE =  DOSAGE_UNIT/ density)
+
+glimpse(Annual)
+```
+
+Why Density Normalization?
+
+![](plot/norm_dens.png)
+
+
+Description about how we also need log transformation
+
+```{r, fig.height = 7, fig.width=8}
+p1 <- ggplot(Annual , aes(x = year, y = DOSAGE_UNIT, colour = year)) + 
+  geom_boxplot()+ 
+  labs(title = "Without Normalization")+
+  theme_minimal()
+
+
+p2 <- ggplot(Annual, aes(x = year, y = dens_DOSAGE, colour = year)) + 
+  geom_boxplot()+ 
+  labs(title = "Density Normalization")+
+  theme_minimal()
+
+ggarrange(p1, p2, nrow = 2, ncol=2)
+
+```
+
+
+```{r}
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 dens_DOSAGE)) %>%
+    mutate(type = forcats::fct_inorder(type)) %>%
+  glimpse()
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 dens_DOSAGE)) %>%
+    mutate(type = forcats::fct_inorder(type)) %>%
+
+ggplot( aes(x = year, y = value, colour = year)) + 
+  geom_boxplot()+ 
+  facet_wrap(~type, scale = "free")+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "none")
+
+
+```
+
+
+```{r}
+
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 dens_DOSAGE)) %>%
+  mutate(type = forcats::fct_inorder(type)) %>%
+
+ggplot( aes(x = year, y = log(value), colour = year)) + 
+  geom_boxplot()+ 
+  facet_wrap(~type, scale = "free")+
   theme_minimal()+
-  theme(axis.title.x=element_blank())
-```
+   theme(axis.text.x = element_text(angle = 90),
+        legend.position = "none")
 
-
-```{r, eval = FALSE}
-
-cnt <- bind_cols(dfCSS %>% count(UB10) %>% select( Urban = UB10, count10 = n) ,
-         dfCSS %>% count(UB11) %>% select( count11 = n) ,
-         dfCSS %>% count(UB12) %>% select( count12 = n) ,
-         dfCSS %>% count(UB13) %>% select( count13 = n),
-         dfCSS %>% count(UB14) %>% select( count14 = n) ) %>% 
-        mutate( Urban = as.factor(Urban) )
-
-formattable( cnt,list( 
-`count11` = formatter("span",  style = ~ style(color = 
-   ifelse(`count11`>`count10`, "red", "green")), 
-  ~ icontext(ifelse(`count11`>`count10`,"arrow-up", "arrow-down"), `count11`) ),
-`count12` = formatter("span",  style = ~ style(color = 
-   ifelse(`count12`>`count11`, "red", "green")), 
-  ~ icontext(ifelse(`count12`>`count11`,"arrow-up", "arrow-down"), `count12`) ),
- `count13` = formatter("span",  style = ~ style(color = 
-   ifelse(`count13`>`count12`, "red", "green")), 
-  ~ icontext(ifelse(`count13`>`count12`,"arrow-up", "arrow-down"), `count13`) ),
- `count14` = formatter("span",  style = ~ style(color = 
-   ifelse(`count14`>`count13`, "red", "green")), 
-  ~ icontext(ifelse(`count14`>`count13`,"arrow-up", "arrow-down"), `count14`) )
- ) )
 
 ```
 
+## How rural and urban areas differ for prescription rates. 
+
+
+The goal of normalization is to make every datapoint have the same 
+scale so each feature is equally important. 
+
+```{r}
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 dens_DOSAGE ))%>%
+  mutate(type = forcats::fct_inorder(type)) %>%
+
+ggplot( aes(y = value, x = year, colour = rural_urban, group = rural_urban)) + 
+  stat_summary(fun.y = mean,
+               fun.ymin = function(x) mean(x) - sd(x), 
+               fun.ymax = function(x) mean(x) + sd(x), 
+               geom = "pointrange") +
+  stat_summary(fun.y = mean,
+               geom = "line") +
+  facet_wrap( ~ type, scales = "free") +
+  labs(title = "Dosage Change Without Normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+```{r, fig.width=15, fig.height=8}
+
+p5 <- ggplot(Annual, aes(y = DOSAGE_UNIT, x = year, colour = rural_urban, group = rural_urban)) + 
+  stat_summary(fun.y = mean,
+               fun.ymin = function(x) mean(x) - sd(x), 
+               fun.ymax = function(x) mean(x) + sd(x), 
+               geom = "pointrange") +
+  stat_summary(fun.y = mean,
+               geom = "line") +
+  facet_wrap( ~ rural_urban) +
+  labs(title = "Dosage Change Without Normalization")+
+  theme_minimal()
+
+p6 <- ggplot(Annual , aes(y = dens_DOSAGE, x = year, colour = rural_urban, group = rural_urban)) + 
+  stat_summary(fun.y = mean,
+               fun.ymin = function(x) mean(x) - sd(x), 
+               fun.ymax = function(x) mean(x) + sd(x), 
+               geom = "pointrange") +
+  stat_summary(fun.y = mean,
+               geom = "line") +
+  facet_wrap( ~  rural_urban) +
+  labs(title = "Dosage Change - Density Normalization")+
+  theme_minimal()
 
 
 
+ggarrange(p5, p6, ncol= 2 )
+
+```
+
+
+## t-test
+
+http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
+
+```{r}
+t.test(DOSAGE_UNIT ~ rural_urban, data = Annual, var.equal = TRUE)
+
+t.test(dens_DOSAGE ~ rural_urban, data = Annual, var.equal = TRUE)
+
+```
+
+We can see that the result is different depending on how we normalize the data!
 
 # **Summary**
 *** 
@@ -1158,42 +1508,45 @@ Package   | Use in this case study
 
 #### {.emphasis_block}
 
-**Warning Signs**
 
-From [Sandy Hook Promise](https://www.sandyhookpromise.org/gun-violence/know-the-signs-of-gun-violence/)...
+If you or a loved one is stuggling with opioid addiction, contact the SAMHSA’s National Helpline at [1-800-662-HELP (4357)](tel:1-800-662-HELP (4357)). 
 
-Here is a list of potential warning signs that can signal an individual may be in crisis and/or need help:
+It is a free, confidential, 24/7, 365-day-a-year treatment referral and information service (in English and Spanish) for individuals and families facing mental and/or substance use disorders.
 
-+ Suddenly withdrawing from people and activities
-+ Consistent bullying or intimidating others, or being bullied by others
-+ Extreme mood or personality changes
-+ Victim of constant social rejection
-+ Talking about plans or actively making plans to harm themselves or others
-+ Bringing a weapon to school – or threatening or talking about doing so
-+ Bragging about or warning others about an upcoming act of violence
-+ Recruiting others to join in a planned act of violence
-+ Warning students to stay away from school or events
-+ Expressing fascination with guns and/or school shootings
-+ Expressing hopelessness about the future
-+ Extreme, prolonged sadness or distress
-+ Expressing or showing feelings of isolation
-+ Bragging about access to guns
+You can also contact the [Addiction Center](https://www.addictioncenter.com/drugs/overdose/) at [(877)871-3575](tel:877871-3575) which also has a confidential 24/7 live chat at:
+[https://www.addictioncenter.com/drugs/overdose/](https://www.addictioncenter.com/drugs/overdose/).
 
-**NOTE**
+According to their website:
 
-This list is not a comprehensive list of warning signs nor does exhibiting one of these signs indicate imminent violence.
+>Remember, that being able to treat an overdose at home is not a replacement for a hospital. Even if the moment has passed, and the victim seems fine, there is still a chance that something is going on that cannot be seen by the human eye. Taking the victim to the hospital, can mean the difference between life and death.
 
-When concerned about seeing troubling behaviors, tell a trusted adult or call 911, if there is an immediate threat.
+> Overdose is a scary word. We often associate it with death, but the two are not always connected. Life can go on after an overdose, but only if the person suffering understands and learns from it. Getting on the road to recovery is not easily done but it is always possible, and the only guaranteed way to never suffer an overdose again. If you don’t know where this path begins, or need help getting help for a loved one, please reach out to a dedicated treatment provider. They’re here, 24/7, to answer any questions you may have. Be it for yourself or someone else.
 
-**Respond to Warning Signs**
+According to [harmreduction.org](https://harmreduction.org/issues/overdose-prevention/overview/overdose-basics/recognizing-opioid-overdose/), the following are signs of an overdose:
 
-Call 911 if you feel there is an immediate threat. 
+- Loss of consciousness
+-Unresponsive to outside stimulus
+- Awake, but unable to talk
+- Breathing is very slow and shallow, erratic, or has stopped
+- For lighter skinned people, the skin tone turns bluish purple, for darker skinned people, it turns grayish or ashen.
+- Choking sounds, or a snore-like gurgling noise (sometimes called the “death rattle”)
+- Vomiting
+- Body is very limp
+- Face is very pale or clammy
+- Fingernails and lips turn blue or purplish black
+- Pulse (heartbeat) is slow, erratic, or not there at all
+ 
+If someone is making unfamiliar sounds while “sleeping” it is worth trying to wake him or her up. Many loved ones of users think a person was snoring, when in fact the person was overdosing. These situations are a missed opportunity to intervene and save a life.
 
-Call [+1-844-5-SAYNOW](tel:18445729669) if you would to submit an anonymous safety concern.
+Sometimes it can be difficult to tell if a person is just very high, or experiencing an overdose.  If you’re having a hard time telling the difference, it is best to treat the situation like an overdose – it could save someone’s life.
 
+**The most important thing is to act right away!**
 
-If you or your child or student experienced a shooting please see this [website](https://kidshealth.org/en/parents/ptsd.html) and this [website](https://www.verywellmind.com/shooting-ptsd-from-a-shooting-2797200) for guidance about dealing with the trauma.
+```{r, echo = FALSE}
+knitr::include_graphics("https://miro.medium.com/max/700/1*CdiSAr3OomVFHC6_1E_XKw.png")
+```
 
+##### [[source]](https://medium.com/dr-ming-kao/opioid-adverse-effects-alternatives-3fae66b7d247)
 
 ####
 
