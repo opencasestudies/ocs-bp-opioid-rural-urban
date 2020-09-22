@@ -36,6 +36,7 @@ knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
                       fig.align = "center", out.width = '90%')
 library(here)
 library(knitr)
+library(readr)
 ```
 
 #### {.outline }
@@ -95,7 +96,7 @@ The main takeaways from this article were:
 > Higher opioid prescribing rates put patients **at risk for addiction and overdose**.
 
 
-Indeed,  this was confirmed by another [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed heroin users.
+Indeed,  this was confirmed by another [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html)
 
 #### {.reference_block}
 
@@ -110,6 +111,11 @@ They found that:
 > However, more **recent users** were older (mean age, 22.9 years) men and women **living in less urban areas (75.2%)** who were **introduced to opioids through prescription drugs (75.0%)**.
 
 > Heroin use has changed from an inner-city, minority-centered problem to one that has a more widespread geographical distribution, involving **primarily white men and women in their late 20s living outside of large urban areas**.
+
+
+>A much greater percentage of heroin users completing the sur- vey in the SKIP Program reported currently living in small urban or nonurban areas than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
+
+This survey used self-declared area of current residence (large urban, small urban, suburban, or rural).
 
 
 ```{r, out.width = "50%", echo = FALSE, fig.align ="center"}
@@ -148,19 +154,20 @@ The skills, methods, and concepts that students will be familiar with by the end
 Data science skills:  
   
 1. Importing data from an [API](https://en.wikipedia.org/wiki/API) (`httr` and `jasonlite`)  
-2. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`) 
-3. How to join data with `dplyr`
-4. How to create formatted tables of data with `formattable`
-5. How to create data visualizations with `ggplot2` 
-6. How to look for missing data in a dataset (`naniar`)
+2. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`)  
+3. How to join data with `dplyr`  
+4. How to create formatted tables of data with `formattable`  
+5. How to look for missing data in a dataset (`naniar`)  
+6. How to create data visualizations with `ggplot2` 
+7. How to create interactive plot for plots that are difficult to label because they have so many elements (`ggiraph`)  
 
 
 Statistical concepts and methods:  
   
-1. Understanding of when and why data normalization is useful
-2. Understanding of when and why data transformation is useful
-3. How to implement a t-test in R
-4. How to interpte a t-test in R
+1. Understanding of when and why data normalization is useful  
+2. Understanding of when and why data transformation is useful  
+3. How to implement a t-test in R  
+4. How to interpte a t-test in R  
 
 *** 
 
@@ -174,33 +181,16 @@ library(tibble)
 library(httr)
 library(jsonlite)
 library(stringr)
-
-
-library(here)
-library(readr)
 library(magrittr)
 library(dplyr)
 library(tidyr)
-
 library(naniar)
 library(ggplot2)
-
+library(forcats)
 library(ggpol) #creates geomjitter
 library(ggiraph) # creates interactive plot for plots that are difficult to label because they have so many elements
-library(ggpubr) #ggarange 
-
-# library(devtools)
-# library(usethis)
-# library(tidyverse)
-# library(openintro)
-# #library(arcos)
-# library(ggiraph)
-# library(ggpubr)
-# library(ggfortify)
-# library(ggpol)
-# library(lme4)
+library(ggpubr) #ggarange probably dropping this
 library(formattable)
-
 ```
 
 
@@ -209,26 +199,20 @@ library(formattable)
 
 Package   | Use in this case study                                                                      
 ---------- |-------------
-[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
-[readr](https://readr.tidyverse.org/) |  to import the data  as a csv file  
-[tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
-[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
-[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
-[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, and to see the last few columns of a tibble
-[ggmap](https://cran.r-project.org/web/packages/ggmap/ggmap.pdf) | to geocode the data (which means get the latitude and longitude values)
-[sf](https://r-spatial.github.io/sf/) | to modify the geocoded data so that overlapping points did not overlap
-[lubridate](https://lubridate.tidyverse.org/) | to work with the data-time data    
-[DT](https://rstudio.github.io/DT/) | to create the interactive table  
-[htmltools](https://www.rdocumentation.org/packages/htmltools/versions/0.5.0) | to add a caption to our interactive table 
+[readxl](https://readxl.tidyverse.org/index.html) | to import an excel file   
+[httr](https://httr.r-lib.org/) | to retrieve data from an API   
+[tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)   
+[jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
+[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
+[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
+[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
+[naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots  
-[ggforce](https://cran.r-project.org/web/packages/ggforce/ggforce.pdf)   | to create a plot zoom
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
-[waffle](https://github.com/hrbrmstr/waffle) | to make waffle proportion plots  
-[poliscidata](https://cran.r-project.org/web/packages/poliscidata/poliscidata.pdf) | to get population values for the states
-[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the dashboard  
-[shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive   
-[leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
+[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that are have jitter and half boxplots   
+[ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
+[formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
 
 The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
 
@@ -312,7 +296,7 @@ https://www.hhs.gov/opioids/about-the-epidemic/index.html):
 
 > In 2017 the [HHS](https://www.hhs.gov) declared a public health emergency 
 
-See [here](https://en.wikipedia.org/wiki/Timeline_of_the_opioid_epidemic) for a timeline of the epidemic in the US and [here](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) for more detials about the epidemic.
+See [here](https://en.wikipedia.org/wiki/Timeline_of_the_opioid_epidemic) for a timeline of the epidemic in the US and [here](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) for more details about the epidemic.
 
 
 According to this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w) from the [Morbidity and Mortality Weekly Report (MMWR)](https://www.cdc.gov/mmwr/about.html) of the [Centers for Disease Control and Prevention (CDC)](https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention):
@@ -369,6 +353,7 @@ It is important to identify locations where people are particularly vulernable t
  
 # **Limitations**
 *** 
+
 There are some important considerations regarding this data analysis to keep in mind: 
 
 According to the [Washington Post data](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/ about the DEA data:
@@ -450,6 +435,12 @@ head(land)
 ```
 
 Looks good!
+
+```{r, echo = FALSE, eval = FALSE}
+write.csv(land, file = here::here("data", "county_land_area.csv"))
+save(land, file =  here::here("data", "county_land_area.rda"))
+```
+
 
 ## Accessing APIs
 
@@ -550,7 +541,7 @@ stringr::str_sub(county_pop_text, start = 1, end = 400)
 ```
 
 
-Now to get the data into a more readible format , we can use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()` 
+Now to get the data into a more readible format, we can use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()` 
 
 ```{r}
 county_pop <- jsonlite::fromJSON(county_pop_text, flatten = TRUE)
@@ -572,13 +563,7 @@ write.csv(county_pop, file = here::here("data", "county_pop_arcos.csv"))
 save(county_pop, file =  here::here("data", "county_pop_arcos.rda"))
 ```
 
-```{r, echo = FALSE}
-load(here::here("data", "county_pop_arcos.rda"))
-```
-
 We are also interested in opioid pill shipment data at the county level. 
-
-
 
 ## Annual Shipment Data
 
@@ -611,16 +596,14 @@ write.csv(annualDosage, file = here::here("data", "county_annual.csv"))
 save(annualDosage, file =  here::here("data", "county_annual.rda"))
 ```
 
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 load(here::here("data", "county_annual.rda"))
 ```
-
 
 Now let's take a look at the data:
 ```{r}
 glimpse(annualDosage)
 distinct(annualDosage, year)
-
 ```
 
 Looks like we have the same years of data.
@@ -632,20 +615,22 @@ countyjson <- httr::GET(url = "https://arcos-api.ext.nile.works/v1/combined_coun
 countyjson_text <-httr::content(countyjson, "text")
 county <- jsonlite::fromJSON(countyjson_text, flatten = TRUE)
 monthlyDosage <- tibble::as_tibble(county)
-```
-
-```{r, echo = FALSE, eval = FALSE}
 write.csv(monthlyDosage, file = here::here("data", "county_monthly.csv"))
 save(monthlyDosage, file =  here::here("data", "county_monthly.rda"))
-```
-
-```{r, echo = FALSE}
-load(here::here("data", "county_monthly.rda"))
 ```
 
 
 # **Data Exploration**
 ***
+
+```{r, echo = FALSE}
+# In case an instructor wants to start here we will load the data
+
+load(here::here("data", "county_land_area.rda"))
+load(here::here("data", "county_pop_arcos.rda"))
+load(here::here("data", "county_annual.rda"))
+```
+
 
 Now let's take a deaper look at the data to see if we have any missing data using the `naniar` package.
 
@@ -669,16 +654,15 @@ Let's use the `filter()` function of the `dplyr` package and the `is.na()` base 
 
 We will also start using the `%>%` pipe of the `magrittr` package for our assignments.
 
-
+***
 <details> <summary> Click here if you are unfamiliar with piping in R, which uses this `%>%` operator</summary>  
 
 
 By [piping](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"} we mean using the `%>%` pipe operator which is accessible after loading the `tidyverse` or several of the packages within the tidyverse like `dplyr` because they load the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}. 
 This allows us to perform multiple sequential steps on one data input. 
 
-***
-
 </details> 
+***
 
 ```{r}
 county_pop %>% filter(is.na(NAME))
@@ -737,6 +721,14 @@ We will update these values in the next section.
 # **Data Wrangling**
 ***
 
+```{r, echo = FALSE}
+# In case an instructor wants to start here we will load the data
+
+load(here::here("data", "county_land_area.rda"))
+load(here::here("data", "county_pop_arcos.rda"))
+load(here::here("data", "county_monthly.rda"))
+```
+
 ## Cleaning land data
 
 We want the `LND110210D` column which is the data from the year 2010.
@@ -764,12 +756,10 @@ We are also going to use a special pipe operator from the [`magrittr` package](h
 This allows us to use the `annualDosage` as our input and reassign it at the end after all the subsequent steps have been performed, although in this case it is only one step.
 
 ```{r}
-
 annualDosage %<>% 
   mutate(countyfips = case_when(BUYER_STATE == "AR" & 
                                BUYER_COUNTY == "MONTGOMERY" ~ as.character("05097"),
                                TRUE ~ countyfips))
-
 ```
 
 Now we can check that we indeed fixed our data.
@@ -785,9 +775,6 @@ annualDosage %>%
 ```
 
 Great! We fixed it.
-
-
-
 
 
 OK, we also had some rows that didn't have county names because they were just missing or the data was for US territories. We will remove the values that dont have county names.
@@ -862,9 +849,8 @@ The census estimates rural and urban areas around the US relatively often. Howev
 
 Thus we will define a county as rural or urban based on the population density using the USDA [definition]((https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/)) that we described above:
 
-rural  = population densities of less than 500 people per square mile, as well as places with fewer than 2,500 people   
-  uban = populations densities of greater than 500 people per square mile
-
+1) **rural**  = population densities of less than 500 people per square mile, as well as places with fewer than 2,500 people     
+2) **uban** = populations densities of greater than 500 people per square mile  
 
 Ideally we would want land area from each year, as these do fluctuate a bit, however, this should be a decent approximation as 2010 is in the middle of our time span.
 
@@ -995,10 +981,6 @@ glimpse(Annual)
 
 Great, now we should have the data that we need for the case study. 
 
-```{r,echo= FALSE, eval = TRUE}
-write.csv(Annual, file = here::here("data","Wrangled", "Annual_opioid_data.csv"))
-save(Annual, file =  here::here("data","Wrangled", "Annual_opioid_data.rda"))
-```
 
 Notice how there is a variable called `DOSAGE_UNIT`. This indicates the number of pills shipped to a pharmacy in this county that were either [oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) or [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf).
 
@@ -1018,7 +1000,7 @@ Annual %>%
 
 There does not appear to be land area and/or population data for these counties.
 ```{r}
-county_info %>% filter(countyfips == "01001")
+county_info %>% filter(countyfips == "01001") # example of other data that does have values
 county_info %>% filter(countyfips == "05097")
 county_info %>% filter(countyfips == "02201")
 county_info %>% filter(countyfips == "02280")
@@ -1060,117 +1042,382 @@ naniar:: gg_miss_var(Annual)
 
 Nice! Now we have no missing data.
 
+Let's also check if there were any counties in `county_info` that were not in the DEA `annualDosage` data?
+
+
+```{r}
+checking <-left_join(county_info, annualDosage)
+gg_miss_var(checking)
+checking %>%
+  filter(is.na(DOSAGE_UNIT)) 
+
+checking %>%
+  filter(is.na(DOSAGE_UNIT)) %>% 
+  distinct(countyfips) 
+
+annualDosage %>% filter(BUYER_COUNTY == "BORDEN")
+annualDosage %>% filter(BUYER_COUNTY == "COKE")
+```
+
+There are 174 counties that don't have any data in the DEA data. It is unclear why these counties are not included case.  A google search of the [Borden](https://en.wikipedia.org/wiki/Borden_County,_Texas) and [Coke](https://en.wikipedia.org/wiki/Coke_County,_Texas) counties in Texas does not indicate anything usual about the counties in terms of when it was established or if it became part of another county later in time. It is important to keep in mind as we continue to analyze this data, that the ARCOS data from the DEA released by the Wasington Post does not include pill shipment information for all US counties. 
+
+```{r,echo= FALSE, eval = TRUE}
+write.csv(Annual, file = here::here("data","Wrangled", "Annual_opioid_data.csv"))
+save(Annual, file =  here::here("data","Wrangled", "Annual_opioid_data.rda"))
+write.csv(county_info, file = here::here("data", "Wrangled", "county_info.csv"))
+save(county_info, file = here::here("data", "Wrangled", "county_info.rda"))
+```
+
 # **Data Analysis and Visualization**
 ***
 
-### How has population density changed over the years in different states?
+```{r,echo= FALSE, eval = TRUE}
+# In case instructors wish to start here, we will load the necessary data
+
+load(file =  here::here("data","Wrangled", "Annual_opioid_data.rda"))
+load( file = here::here("data", "Wrangled", "county_info.rda"))
+```
+
+We will begin by taking a deeper look at our data with some visualizations. We will use the `ggplot2` package to create these visualizations.
+
+***
+<details><summary> Click here for an introduction about this package if you are  new to using `ggplot2` </summary>
+
+The [ggplot2 package](http://ggplot2.tidyverse.org) is generally intuitive for beginners because it is based on a  [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html) or the `gg` in `ggplot2`. 
+The idea is that you can construct many sentences by learning just a few nouns, adjectives, and verbs. There are specific “words” that we will need to learn and once we do, you will be able to create (or “write”) hundreds of different plots.
+
+The critical part to making graphics using `ggplot2` is the data needs to be in a _tidy_ format. 
+Given that we have just spent time putting our data in _tidy_ format, we are primed to take advantage of all that `ggplot2` has to offer! 
+
+We will show how it is easy to pipe _tidy_ data (output) as input to other functions that create plots. 
+This all works because we are working 
+within the _tidyverse_. 
+
+**What is the `ggplot()` function?** 
+As explained by Hadley Wickham:
+
+> The grammar tells us that a statistical graphic is a mapping from data to aesthetic attributes (colour, shape, size) of geometric objects (points, lines, bars). The plot may also contain statistical transformations of the data and is drawn on a specific coordinates system.
+
+`ggplot2` Terminology: 
+
+- **ggplot** - the main function where you specify the dataset and variables to plot (this is where we define the `x` and
+`y` variable names)
+- **geoms** - geometric objects
+    - e.g. `geom_point()`, `geom_bar()`, `geom_line()`, `geom_histogram()`
+- **aes** - aesthetics
+    - shape, transparency, color, fill, line types
+- **scales** - define how your data will be plotted
+    - continuous, discrete, log, etc
+
+The function `aes()` is an aesthetic mapping function inside the `ggplot()` object. 
+We use this function to specify plot attributes (e.g. `x` and `y` variable names) that will not change as we add more layers.  
+
+Anything that goes in the `ggplot()` object becomes a global setting. 
+From there, we use the `geom` objects to add more layers to the base `ggplot()` object. 
+These will define what we are interested in illustrating using the data.
+
+</details>
+
+***
+
+## Population density
+
+Let's make a plot to see how population density has changed over time in each state.
+
+To do so we want to calculate a mean population density (across all the counties) for each state for each year. 
+
+We can do this using the `group_by()`  and `summarize()` functions of the `dplyr` package. The `group_by` functions allows for the data to be arranged into groups for subsequent functions. 
+
+Thus, if we group only by state using the following code, you will see that this results in 51 groups (one for each state including Washington DC). This doesn't change anything about the data itself (or even how it is printed asside from the groups written above the table), just how it will be handled in subsequent steps.
+
+```{r}
+Annual  %>% group_by(BUYER_STATE)
+```
+
+Alternatively, if we group by year this results in 9 groups of data, one for each year.
+
+```{r}
+Annual  %>% group_by(year)
+```
+
+We want to group by both `BUYER_STATE` and `year`, so that we get the mean of all the counties for each state for each year. If we only did by state, we would only get 51 summarized results, one for each state representing a mean across the years. 
+
+```{r}
+Annual  %>% group_by(BUYER_STATE, year)
+```
+We can see that this results in 459 groups. This makes sense because 51 groups over 9 years is 51 multiplied by 9, which equals 459. 
+
+We can then use the `summarize` function to create a new variable called `sum_DENS` which will be equal to the mean of the `density` variable for all the counties within each of the 449 groups. If we had missing values we would need to use the `na.rm = TRUE` argument to remove any missing values in our calculation.
+
+```{r}
+Annual %>% group_by(BUYER_STATE, year) %>%
+     summarize(mean_DENS = mean(density, na.rm = TRUE))
+```
+
+OK! Now we are ready to make our first plot. 
+
+We will start with the `ggplot()`function to specify what variables will be used for the x-axis and y-axis, as well as if any variable should be used to specify different colors on the plot. This will result in a blank plot.  Then we need to use a `geom_*` function to specify what type of plot we would like to make. 
+
+If you type `geom_` into the console of RStudio, you will see a list of options. 
+```{r, echo = FALSE, out.width = "60%"}
+knitr::include_graphics(here::here("img", "geom.png"))
+```
+
+We will create a scatter plot using the `geom_point()` function. We will also use the `theme_minimal()` function to change the overall aesthetics of the plot. See [here](https://ggplot2.tidyverse.org/reference/ggtheme.html) for a list of options.
+
+We will also use the `theme()` function to further specify how we want the plot to be displayed. We would like the x axis text to be anlged by 90 degrees. We can use the `element_text()` function to change aspects about the text. and we can use the `axis.text.x` argument to specify that we want to specifically change the text of the x axis. You can type `theme(` in the RStudio console and press tab to see a list of argument options for things that you can change in your plot. 
+
+```{r, echo = FALSE, out.width = "60%"}
+knitr::include_graphics(here::here("img", "theme.png"))
+```
+Finally, we can use the `labs()` function of the `ggplot2` package to specify the labels of the plot. 
+
+```{r}
+Annual %>% group_by(BUYER_STATE, year) %>%
+  summarize(mean_DENS = mean(density, na.rm = TRUE)) %>%
+  ggplot(aes(x = BUYER_STATE, y = mean_DENS, col = year)) + 
+    geom_point() + 
+    theme_minimal()+
+    theme(axis.title.x = element_blank(),
+           axis.text.x = element_text(angle = 90)) +
+    labs(x = "State",
+     title =  "Mean County Population Density of each State",
+         y = "Mean Population Density (People per square mile)")
+```
+
+We can see that the average state population density is fairly similar for most states. However DC, MA, NJ, NY, RI, and VA have much higher average county densities. We also see that DC shows the largest change over time, as we can see the other individual points for each year. For other states the change was so small that they are overlapping.
+
+What about overall population density, how did the national average of all US counties change?
+
+We will ignore the different states in this case and we will calculate the mean of all US counties for each year.
+
+
+#### {.think_question_block}
+<b><u> Question Opportunity </u></b>
+
+How might you create this plot?
+
+####
+
+***
+
+<details> <summary> Click here to reveal the code. </summary>
+
+```{r}
+USavg_dens <-Annual %>% group_by( year) %>%
+     summarize(mean_DENS = mean(density)) %>%
+     ggplot(aes(x = year, y = mean_DENS)) + 
+        geom_point() +
+        theme_minimal() +
+        theme(axis.title.x=element_blank()) +
+        labs(title = "US mean population density",
+                 x = "year",
+                 y = "population density (people per square mile)")
+```
+
+In this case we saved the plot to an object called `USavg_dens`.
+
+</details>
+***
 
 
 ```{r}
-dens_df <- county_info  %>% group_by(BUYER_STATE, year) %>%
-     summarise( mean_DENS = mean(density, na.rm = TRUE))
-
- ggplot(dens_df, aes(x =BUYER_STATE, y = mean_DENS, col=year, group = year)) + 
-  geom_point() + 
-  theme_minimal()+
-  theme(axis.title.x = element_blank(),
-          axis.text.x = element_text(angle = 90))
-```
-
-We can see that the density is fairly similar for most states, however DC, MA, NJ, NY, RI, and VA have much higher densities. We also see that DC shows the largest change over time.
-
-
-```{r}
-
- ggplot(dens_df, aes(x =year, y = log(mean_DENS), col=year, group = year)) + 
-  geom_boxplot() + 
-  geom_jitter(width = .1) +
-  theme_minimal() +
-  theme(axis.title.x=element_blank(),
-        legend.position = "none") +
-  labs(y = "Log state mean population density")
-
+USavg_dens
 ```
 
 
-
-```{r}
-
-dens_df <- county_info  %>% group_by( year) %>%
-     summarise( mean_DENS = mean(density, na.rm = TRUE))
-
- ggplot(dens_df, aes(x =year, y = mean_DENS)) + 
-  geom_point() +
-  geom_smooth() +
-  theme_minimal()+
-  theme(axis.title.x=element_blank()) +
-  labs(y = "US mean population density")
-```
-
-The density doesn't appear to change that much from 2006 to 2014. 
+Overall the density has increased, if you take a look at the y-axis you can see that the density has changed by about 13 people per square mile from 2006 to 2014. 
 
 How does this compare with raw population values?
 
 ```{r}
 
-dens_df <- county_info  %>% group_by( year) %>%
-     summarise( total_population = sum(population, na.rm = TRUE))
-
- ggplot(dens_df, aes(x =year, y = total_population)) + 
-  geom_point() +
-  geom_smooth() +
-  theme_minimal()+
-  theme(axis.title.x=element_blank()) +
-  labs(y = "US total population")
+Annual %>% 
+  group_by(year) %>%
+  summarise(total_population = sum(population)) %>%
+     ggplot(aes(x =year, y = total_population)) + 
+        geom_point() +
+        geom_smooth() +
+        theme_minimal() +
+        theme(axis.title.x = element_blank()) +
+        labs(title = "US Population from 2006-2014",
+                 x = "year",
+                 y = "US total population")
  
 ```
 
+## Rural and Urban areas
 
-### How have the number of rural and urban areas changed over years?
+How have the number of rural and urban areas changed over years?
+
+To determine how the number of each type of county has changed over time, we will use the `count()` function of the `dlyr` package after grouping by the `year` variable to count the number of occurances of the unique values (which are `Rural` and `Urban`) in the `rural_ubran` varaible.
+
 
 ```{r}
+Annual %>% 
+  group_by(year) %>%
+  count(rural_urban)
+```
 
-R_U <- county_info  %>% group_by( year) %>%
-     count(rural_urban)
+In this case we can make a plot using two different `geom_*` layers together. Whatever `geom_*` layer is added last will be displayed on top. In this case we will use `geom_point()` and `geom_smooth()` to add a line connecting the points of the scatter plot of the `geom_point()` function.
 
- ggplot(R_U, aes(x = year, y = n, col = rural_urban, group = rural_urban)) + 
+avocado why does this look sooooo different for `county_info` and `Annual` - it appears that many of the US counties that are not represented in the DEA data .were rural
+```{r}
+checking %>% filter(is.na(DOSAGE_UNIT)) %>%  group_by(countyfips) %>%count(rural_urban)
+```
+
+```{r}
+ Annual  %>% group_by( year) %>%
+      count(rural_urban) %>%
+ ggplot(aes(x = year, y = n, col = rural_urban, group = rural_urban)) + 
   geom_point() + 
   geom_smooth() +
-  facet_wrap(~rural_urban, scales = "free") +
+  facet_wrap(~ rural_urban, scales = "free") +
   theme_minimal() +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 90),
-        legend.title = element_blank())
+        legend.title = element_blank()) +
+  labs(y = "Number of Counties", 
+       x = "Year",
+   title = "Change in the number of the type of county in the US over time")
 ```
 
-It looks as though the number of urban areas has increased, while the number of rural areas has decreased over time.
+As one might expect, it looks like the number of urban areas has increased, while the number of rural areas has decreased over time.
+
+
+Let's also create a table to look at the number of rural and urban counties over time. To do this we can use the package `formattable`. First we need to get the data into the format that we would like. We previously counted the numnber of `Rural` and `Urban` counties for each year. However, the data was presented in a format that is called [long format](https://en.wikipedia.org/wiki/Wide_and_narrow_data). In this format, variables that could possibly be presented as seperate columns are condensed into fewer columns, while still maintaining only a single value per cell. The opposite of this format is called [wide format](https://en.wikipedia.org/wiki/Wide_and_narrow_data) data, which therefore has more columns and fewer rows. This is best illustrated with an example.
+
+Here you can see wide data on the left in the following image with more columns and fewer rows and long data on the right where the month columns have been collapsed into two longer columns (one with the name of the month and one with the numeric value) resulting in fewer columns and more rows. While long format is very useful for creating plots with `ggplot2` it is helpful to have the data in wide format for tables that someone would quickly read, which is our current goal.
+
+
+```{r, echo = FALSE}
+knitr::include_graphics("https://flourish.studio/images/blog/wide-to-long.png")
+```
+
+#### [[source]](https://flourish.studio/images/blog/wide-to-long.png)
+***
+<details> <summary> Click here to see another example. </summary>
+
+Here is an example of wide data about different measurements of a variety species of Iris flowers. 
+```{r, echo = FALSE}
+set.seed(123)
+wide1 <-slice_sample(iris, n = 10)
+wide1
+```
+
+OK, so currently we have 4 different columns about measurments of different flowers. Since all of these measurments are similar, one might produce a new variable that is made up of the names of the first four variables and another that is the numeric value like so:
+
+```{r, echo = FALSE}
+long <-pivot_longer(wide1, cols = -Species, names_to = "Measurement", values_to = "Value")
+long
+```
+
+</details>
+***
+
+Now we will demonstrate how to make the counts of `Rural` and `Urban` data into wide format from long format. Here is our original data:
+
+```{r}
+Annual  %>% 
+  group_by(year) %>%
+  count(rural_urban)
+```
+
+We would like the `rural_urban` data to be shown in two different columns; one that shows `Rural` counts and one that shows `Urban` counts, as this would be easier for people to read. We can use the `pivot_wider()` function of the `tidyr` package to do this. This takes two important arguments:
+
+1) `names_from`  - this argument indicates what variable to use to create the names of the new variables
+2) `values_from` - this argument indicates what variable to use to fill in the values of the new variables
+
+In our case we will obtain the names from the `rural_urban` variable and the values from the `n` variable.
+
+```{r}
+Annual  %>% 
+  group_by( year) %>%
+  count(rural_urban) %>%
+  tidyr::pivot_wider(names_from = rural_urban, 
+                    values_from = n)
+```
+
+Nice!
+
+Now, let's also create two new variables that show the change in count of rural and urban counties from one year to the next. We can do so using the `lag()` function of the `dplyr` package. This function will find the previous value thus `Rural- lag(Rural)` will take the current row and subtract the previous row's value. Note that is necessary to inlude the `ungroup()` function to stop grouping by year.
+
+```{r}
+
+Annual%>% 
+  group_by(year) %>%
+  count(rural_urban) %>%
+  tidyr::pivot_wider(names_from = rural_urban,
+                     values_from = n) %>%
+  ungroup() %>% 
+  mutate("Rural Change" = Rural - lag(Rural), 
+         "Urban Change" = Urban - lag(Urban))
+```
+
+Let's also add a column about the percent urban for each year. We will use the base `round()` function to round the percentages to 2 ditis after the decimal using the `digits = 2` argument. Finally, we also rename the `year` variable to be `Year` using the `rename()` function of the `dplyr` package, which requires that the new name be listed before the `=` sign followed by the old name. 
+
+```{r}
+
+R_U <-Annual%>% 
+  group_by(year) %>%
+  count(rural_urban) %>%
+  tidyr::pivot_wider(names_from = rural_urban,
+                     values_from = n) %>%
+  ungroup() %>% 
+  mutate("Rural Change" = Rural - lag(Rural), 
+         "Urban Change" = Urban - lag(Urban),
+        "Percent Urban" = round((Urban/(Urban + Rural))*100, digits = 2)) %>%
+  rename("Year" = "year")
+
+R_U
+```
+Nice, now we have a pretty easy to interpret table, but we can make it even easier to quickly assess trends in the data using the `formattable` package. The `formmattable()` funtion creates a formatted table, and takes a list of variables and thier an styalized version of each variable in which to add special formmatting.  As a simple example, we will use the `color_bar()` function of this package to add color bars to the `percent_urban` column which shows changes in values by the width of a color bar.
+
+```{r}
+
+
+formattable::formattable(R_U, list(`Percent Urban` = formattable::color_bar("#FA614B")))
+```
+
+Nice, now we can see how much the percentage has changed over time. 
+
+We also use the `formatter()` function to change the color of the `Rural Change` and `Urban Change` variables so that if the value is negative it will be red and if it is positive it will be green. 
+
+The `formatter()` function takes an HTML style [tag](https://developer.mozilla.org/en-US/docs/Glossary/Tag) name which can be any character string (altough generally one would use ["span"](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span#:~:text=The%20HTML%20element%20is,attribute%20values%2C%20such%20as%20lang%20.) using the `.tag` argument  and a `style` argument where style aspects such as color can be specified using a `color` argument.
+
+We will create a function called `redgreen` that will specify that if a value is less than zero it should be red and if it is greater than zero it should be green. To do this we will use the `case_when()` funcition like we did previously when creating our `rural_urban` variable of the `county_info` object in the [**Data Wrangling**] section.
+
+To create a function we will use the base `function()` function. The inputs of the function are contained within the parantheses `()`, while the steps that should be performed on the input are contained within the curly brackets `{}`. In this case, our input will be called `number`.  Now when `redgreen` is used this will perform the `case_when` evaluation on the input provided.
 
 
 ```{r}
-R_U <- county_info  %>% group_by( year) %>%
-     count(rural_urban)
-R_U %<>% pivot_wider( names_from = rural_urban, values_from = n)
-R_U %<>% ungroup() %>% 
-  mutate("Rural Change" = Rural - lag(Rural), 
-        "Urban Change"= Urban - lag(Urban),
-percent_urban = round(Urban/(Urban +Rural),3)*100)
+redgreen <- function(number){case_when(number < 0 ~"red", number > 0 ~ "green")}
+```
 
-formattable(R_U, list(`percent_urban` = color_bar("#FA614B")))
+We can see that this function does indeed change numeric values to be the color names `red` and `green`.
+```{r}
+redgreen(number = c(1,0,-1))
+```
 
-formattable(R_U, list(`percent_urban` = color_bar("#FA614B"),
-                      `Rural Change` = formatter("span", 
-                                                 style = ~style(
-                                                 color = ifelse(`Rural Change` < 0, "red", "green"))),
-                      `Urban Change` = formatter("span", 
-                                                 style = ~style(
-                                                 color = ifelse(`Urban Change` < 0, "red", "green")))))
+Now this function can be used to replace the `color` values for the `Rural Change` and `Urban Change` variables. 
+
+```{r}
+formattable(R_U, list(`Percent Urban` = color_bar("#FA614B"),
+                      `Rural Change` = formatter(.tag ="span", 
+                                                style = ~style(
+                                                color = redgreen(number = `Rural Change`))),
+                      `Urban Change` = formatter(.tag = "span", 
+                                                style = ~style(
+                                                color = redgreen(number = `Urban Change`)))))
 
 ```
+
+
 
 
 ```{r, fig.height=7}
 
-R_U <- county_info  %>% group_by(BUYER_STATE, year) %>%
+R_U <- Annual  %>% group_by(BUYER_STATE, year) %>%
      count(rural_urban)
 R_U %<>% pivot_wider( names_from = rural_urban, values_from = n)
 
@@ -1184,40 +1431,74 @@ R_U %<>% mutate(percent_urban = (Urban/(Urban+Rural))*100)
         axis.text.x = element_text(angle = 90),
       legend.position = "bottom") +
    coord_flip() +
-   scale_colour_viridis_d(option = "magma", end = 0, begin = 1, guide = guide_legend(nrow = 1))
+   scale_colour_viridis_d(option = "magma", end = 0, begin = 1, guide = guide_legend(nrow = 1)) +
+   labs(x =  "Percent Urban",
+        title = "State differnces in percentage of counties that are urban over time")
    
 
 ```
 
 
 
-## Pill shipments over time
+## US shipments over time
+
+Now let's get a sense of how the shipments of [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) changed over time in general across all counties in the US.
+
+```{r}
+Annual %>% group_by(year)  %>%
+ggplot( aes(x = year, y = (DOSAGE_UNIT/1000000))) + 
+  geom_boxplot() + 
+  labs(title = "Average Number of Opioid Pills Shipped to a US County",
+       y = "Number of pills in millions") +
+  theme_minimal()
+```
 
 
 ```{r}
-ggplot(Annual , aes(x = year, y = DOSAGE_UNIT)) + 
-  geom_boxjitter()+ 
-  labs(title = "DOSAGE_UNIT Change Over Year")+
+Annual %>% group_by(year) %>%summarize(mean = mean(DOSAGE_UNIT)) %>%
+ggplot( aes(x = year, y = (mean/1000000))) + 
+  geom_point() + 
+  labs(title = "Average Number of Opioid Pills Shipped to a US County",
+       y = "Number of pills in millions") +
   theme_minimal()
 
 ```
 
-```{r}
-Annual  %>% group_by(BUYER_STATE,year) %>%
-     summarise( mean_DOSAGE = mean(DOSAGE_UNIT)) %>% ungroup() %>%
-ggplot(aes(x = year, y = mean_DOSAGE)) + 
-  geom_boxjitter()+ 
-  labs(title = "DOSAGE_UNIT Change Over Year")+
-  theme_minimal()
-```
+It looks like the averge number of opioied pills shipped to a county peaked in 2011 and has slowly declined. 
+
+
+We can look a bit deaper if we only calculate a mean for each state
 
 ```{r}
- Annual  %>% group_by(BUYER_STATE,year) %>%
+Annual  %>% group_by(BUYER_STATE, year) %>%
      summarise( mean_DOSAGE = mean(DOSAGE_UNIT)) %>% ungroup() %>%
-ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, color = BUYER_STATE)) + 
+     ggplot(aes(x = year, y = (mean_DOSAGE/1000000))) + 
+     geom_boxjitter()+ 
+     labs(title = "Average number of opioid pills shipped to a given county for each state",
+              y = "Number of pills in millions")+
+     theme_minimal()
+```
+
+Again we see the same general overall trend, we also see that the spread was quite large with some states recieving many more pills. 
+
+
+## State Shipments over time
+To get a better sense of how each state changed over time we can create a line plot instead.
+
+
+```{r}
+ Annual  %>% 
+  group_by(BUYER_STATE,year) %>%
+  summarise( mean_DOSAGE = mean(DOSAGE_UNIT)) %>% 
+  ungroup() %>%
+ggplot(aes(x = year, 
+           y = mean_DOSAGE, 
+           group = BUYER_STATE, 
+           color = BUYER_STATE)) + 
   geom_line( )
 ```
 
+Since we have so many states, the legend is not very useful. Instead we can use the `girafe` package to create an interactive plot that will tell people what state each line represents when they hover over different data points.
 
 ```{r}
   
@@ -1236,25 +1517,71 @@ ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, color = BUYER_STATE))
 girafe(code = print(g))
 ```
 
-In this plot it appearst that the counties in  California  got the largest number of pills shipped. However, since we did not account for population or population density, this could simply be because it is the most populated state. To account for this we will perform something called normalization to make a more fair comparison.
+In this plot it appearst that the largest number of pills were shipped to counties in California However, since we did not account for population or population density, this could simply be because it is the most populated state. To account for this we will perform something called normalization to make a more fair comparison.
 
 
 ## Normalization of pill count
 
-### Mormalization based on density
+
 ```{r}
 
-Annual%<>%  mutate(dens_DOSAGE =  DOSAGE_UNIT/ density)
+Annual%<>%  mutate(pop_DOSAGE =  DOSAGE_UNIT/ population)
 
 glimpse(Annual)
 ```
 
-Why Density Normalization?
 
-![](plot/norm_dens.png)
+```{r}
+example_data <-tibble(population = c(10, 50, 100),
+                           pills = c(100, 100, 100))
+
+example_data %<>% mutate(norm_pills = pills/population)
+
+example_data
+```
 
 
-Description about how we also need log transformation
+You can see that on average 10 pills were shiped for each person in the first row.
+In the second row, the population is much larger, thus despite the same number of pills being shipped to this example county, there were only enough pills shipped for on average 2 per person. In the final row the population is very large, thus only enough pills were shipped to give on average 1 per person. Note that however, it is likely that only a small portion of of the county populations actually received the pills that were shipped to a given county, but this helps us get a sense of the relative amount shipped to each county and likely used by people in the county where the pills were shipped (although this also not certain).
+
+
+
+
+```{r}
+Annual %>% group_by(year) %>%summarize(mean = mean(DOSAGE_UNIT/population)) %>%
+ggplot( aes(x = year, y = (mean))) + 
+  geom_col() + 
+  labs(title = "Average Number of pills shipped per person for a given county",
+       y = "Normalized Number of pills") +
+  theme_minimal()
+```
+
+
+
+Let's see how this changes the state specific data.
+
+```{r}
+  
+g<-Annual  %>% group_by(BUYER_STATE,year) %>%
+     summarise( mean_DOSAGE = mean(DOSAGE_UNIT/population)) %>% ungroup() %>%
+ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, color = BUYER_STATE)) +
+  geom_line()
+
+
+  g <- g + geom_point_interactive(aes(
+                color = BUYER_STATE, 
+              tooltip = usdata::abbr2state(BUYER_STATE)), 
+                 size = 2,
+                alpha = 3/10) +theme(legend.position = "nune")
+ 
+girafe(code = print(g))
+```
+
+This dramatically changed the resulting plot!
+
+We can see that now Tennesee, Kentucky, and West Virginia were among the top to recieve pills relative to their populations.
+
+
 
 ```{r, fig.height = 7, fig.width=8}
 p1 <- ggplot(Annual , aes(x = year, y = DOSAGE_UNIT, colour = year)) + 
@@ -1263,30 +1590,33 @@ p1 <- ggplot(Annual , aes(x = year, y = DOSAGE_UNIT, colour = year)) +
   theme_minimal()
 
 
-p2 <- ggplot(Annual, aes(x = year, y = dens_DOSAGE, colour = year)) + 
+p2 <- ggplot(Annual, aes(x = year, y = DOSAGE_UNIT/population, colour = year)) + 
   geom_boxplot()+ 
-  labs(title = "Density Normalization")+
+  labs(title = "Population Normalization")+
   theme_minimal()
 
-ggarrange(p1, p2, nrow = 2, ncol=2)
+
+ggarrange(p1, p2, nrow = 1, ncol=2)
 
 ```
 
 
 ```{r}
+Annual %<>% mutate(pop_DOSAGE = DOSAGE_UNIT/population)
+Annual %<>% mutate(in_millions_DOSAGE = DOSAGE_UNIT/1000000)
 
-Annual %>% pivot_longer(names_to = "type", 
+Annual %>% tidyr::pivot_longer(names_to = "type", 
                         values_to  = "value", 
-                        cols = c(DOSAGE_UNIT, 
-                                 dens_DOSAGE)) %>%
+                        cols = c(in_millions_DOSAGE, 
+                                 pop_DOSAGE)) %>%
     mutate(type = forcats::fct_inorder(type)) %>%
   glimpse()
 
 Annual %>% pivot_longer(names_to = "type", 
                         values_to  = "value", 
-                        cols = c(DOSAGE_UNIT, 
-                                 dens_DOSAGE)) %>%
-    mutate(type = forcats::fct_inorder(type)) %>%
+                        cols = c(in_millions_DOSAGE, 
+                                 pop_DOSAGE)) %>%
+                          mutate(type = forcats::fct_inorder(type)) %>%
 
 ggplot( aes(x = year, y = value, colour = year)) + 
   geom_boxplot()+ 
@@ -1299,12 +1629,12 @@ ggplot( aes(x = year, y = value, colour = year)) +
 ```
 
 
-```{r}
-
+```{r, eval = FALSE}
 
 Annual %>% pivot_longer(names_to = "type", 
                         values_to  = "value", 
                         cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE,
                                  dens_DOSAGE)) %>%
   mutate(type = forcats::fct_inorder(type)) %>%
 
@@ -1318,6 +1648,8 @@ ggplot( aes(x = year, y = log(value), colour = year)) +
 
 ```
 
+
+
 ## How rural and urban areas differ for prescription rates. 
 
 
@@ -1328,7 +1660,7 @@ scale so each feature is equally important.
 Annual %>% pivot_longer(names_to = "type", 
                         values_to  = "value", 
                         cols = c(DOSAGE_UNIT, 
-                                 dens_DOSAGE ))%>%
+                                 pop_DOSAGE))%>%
   mutate(type = forcats::fct_inorder(type)) %>%
 
 ggplot( aes(y = value, x = year, colour = rural_urban, group = rural_urban)) + 
@@ -1345,35 +1677,70 @@ ggplot( aes(y = value, x = year, colour = rural_urban, group = rural_urban)) +
 
 ```
 
-```{r, fig.width=15, fig.height=8}
 
-p5 <- ggplot(Annual, aes(y = DOSAGE_UNIT, x = year, colour = rural_urban, group = rural_urban)) + 
-  stat_summary(fun.y = mean,
-               fun.ymin = function(x) mean(x) - sd(x), 
-               fun.ymax = function(x) mean(x) + sd(x), 
-               geom = "pointrange") +
-  stat_summary(fun.y = mean,
-               geom = "line") +
-  facet_wrap( ~ rural_urban) +
-  labs(title = "Dosage Change Without Normalization")+
-  theme_minimal()
+## Greater granularity of density
 
-p6 <- ggplot(Annual , aes(y = dens_DOSAGE, x = year, colour = rural_urban, group = rural_urban)) + 
-  stat_summary(fun.y = mean,
-               fun.ymin = function(x) mean(x) - sd(x), 
-               fun.ymax = function(x) mean(x) + sd(x), 
-               geom = "pointrange") +
-  stat_summary(fun.y = mean,
-               geom = "line") +
-  facet_wrap( ~  rural_urban) +
-  labs(title = "Dosage Change - Density Normalization")+
-  theme_minimal()
+Recall that the [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) that surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html) found that
 
+>A much greater percentage of heroin users completing the survey in the SKIP Program reported currently living in small urban or nonurban areas than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
 
+This survey used self-declared area of current residence (large urban, small urban, suburban, or rural).
 
-ggarrange(p5, p6, ncol= 2 )
+According to the [Organization for Economic Co-operation and Development(OECD)](https://data.oecd.org/popregion/urban-population-by-city-size.htm#:~:text=their%20administrative%20boundaries.-,Urban%20areas%20in%20OECD%20countries%20are%20classified%20as%3A%20large%20metropolitan,areas%20if%20their%20population%20is):
+
+> Urban population by city size is determined by population density and commuting patterns; this better reflects the economic function of cities in addition to their administrative boundaries. Urban areas in OECD countries are classified as: large metropolitan areas if they have a population of 1.5 million or more; metropolitan areas if their population is between 500 000 and 1.5 million; medium-size urban areas if their population is between 200 000 and 500 000; and, small urban areas if their population is between 50 000 and 200 000. This indicator is measured as a percentage of the national population.
+
+Thus the small urban cutoff is populations less than 200,000.
+
+We will now use this to see how this changes our results.
+
+```{r}
+
+Annual %<>% 
+  mutate(large_urban = case_when(population >= 200000 ~ "Large Urban",
+                                 population >= 50000 & 
+                                 population < 200000 ~ "Small Urban or Rural",
+                                 population < 50000 ~ "Small Urban or Rural"))
 
 ```
+
+
+```{r}
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+  mutate(type = forcats::fct_inorder(type)) %>%
+
+ggplot( aes(y = value, x = year, colour = large_urban, group = large_urban)) + 
+  stat_summary(fun.y = mean,
+               fun.ymin = function(x) mean(x) - sd(x),
+               fun.ymax = function(x) mean(x) + sd(x),
+               geom = "pointrange") +
+  stat_summary(fun.y = mean,
+               geom = "line") +
+  facet_wrap( ~ type, scales = "free") +
+  labs(title = "Dosage Change Without Normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90))
+
+
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+  mutate(type = forcats::fct_inorder(type)) %>%
+
+ggplot( aes(y = value, x = year, colour = large_urban)) + 
+    geom_boxplot() +
+  facet_wrap( ~ type, scales = "free") +
+  labs(title = "Dosage Change Without Normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90))
+```
+
 
 
 ## t-test
@@ -1381,13 +1748,16 @@ ggarrange(p5, p6, ncol= 2 )
 http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
 
 ```{r}
-t.test(DOSAGE_UNIT ~ rural_urban, data = Annual, var.equal = TRUE)
+t.test(DOSAGE_UNIT ~ rural_urban, data = Annual, var.equal = FALSE)
+t.test(DOSAGE_UNIT ~ large_urban, data = Annual, var.equal = FALSE)
 
-t.test(dens_DOSAGE ~ rural_urban, data = Annual, var.equal = TRUE)
+t.test(pop_DOSAGE ~ rural_urban, data = Annual, var.equal = FALSE)
+t.test(pop_DOSAGE ~ large_urban, data = Annual, var.equal = FALSE)
+
 
 ```
 
-We can see that the result is different depending on how we normalize the data!
+We can see that the result is different depending on how we define the data and how we normalize the data!
 
 # **Summary**
 *** 
@@ -1396,16 +1766,12 @@ We can see that the result is different depending on how we normalize the data!
 
 ## Synopsis
 
-In this case study we have demonstrated the basics of R Markdown and how to create a dashboard with using the `flexdashboard` package. We also demonstrated how to include an interactive table with the `DT` package, how to include interactive plots using functions of the `shiny` package such as `renderPlot()`. We also included interactive value boxes using the `renderValueBox()` function of the `flexdashboard` package which works with the `shiny` package. Finally we also showed how to include interactive maps using the `leaflet` package. 
 
-This case study also explored how to properly calculate and interpret percentages when the data has missing values. We also discussed the benefits and limiting aspects of pie charts (using `ggplot2`) and waffle plots (using `waffle`).
-
-Overall the dashboard that we created shows that the number of shootings per year has increased overtime. Further investigation is necessary to determine if this is simply due to increases in population alone or if the rate has increased due to other factors and if so, what those factors might be. It is also clear that the number of shootings and the number of deaths per capita varies by state. Thus there appears to be other aspects accounting for state differences. 
 
 # **Suggested Homework**
 *** 
 
-Create another dashboard with graphs and statistics featuring other elements within this dataset. For example, students may create graphs that explore what school events are reported to have more shootings.
+
 
 
 # **Additional Information**
@@ -1446,64 +1812,33 @@ Please see [this case study](https://opencasestudies.github.io/ocs-bp-co2-emissi
 Also see this [article](https://siepr.stanford.edu/sites/default/files/publications/19-036.pdf) to learn more about the impacts of school shootings.
 
 
-[Lightweight markup languages(LML)](https://en.wikipedia.org/wiki/Lightweight_markup_language)  
-[Markdown](https://en.wikipedia.org/wiki/Markdown)  
-[R markdown](http://rmarkdown.rstudio.com/)   
-[`knitr`](https://yihui.org/knitr/)  
-[`rmarkdown` (package)](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf)
 
-See this [book](https://bookdown.org/yihui/rmarkdown/) for more information on working with R Markdown files. 
 
 The RStudio [cheatsheet for R Markdown](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) and this [tutorial](https://ourcodingclub.github.io/tutorials/rmarkdown/) are great for getting started. 
 
-[Pandoc](https://en.wikipedia.org/wiki/Pandoc)  
-
-[YAML](https://en.wikipedia.org/wiki/YAML)  
-[Configuration](https://en.wikipedia.org/wiki/Configuration_file)  
-
-[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)  
-
-See [here](https://rstudio.com/resources/webinars/introducing-flexdashboards/) for a video about flexdashboard and [here](https://rmarkdown.rstudio.com/flexdashboard/) for a more information on how to use this package.   
-See [here](https://rmarkdown.rstudio.com/flexdashboard/using.html#components) for a list of other packages that are useful for adding elements to dashboards created with the `flexdashboard` package.   
-See [here](https://www.datadreaming.org/post/r-markdown-theme-gallery/) for a list of R Markdown themes which can be used with `flexdashbard`.   
-See [Font Awesome](https://fontawesome.com/icons?d=gallery) for icons.  
-
-To learn more about using `shiny` with the `flexdashboard` package to create interactive dashboards, see this [tutorial](https://rmarkdown.rstudio.com/flexdashboard/shiny.html).   
-
-[leaflet (R package)](https://rstudio.github.io/leaflet/)   
-[Leaflet (JavaScript Library)](https://leafletjs.com/)   
-
-[shiny](https://shiny.rstudio.com/)  
-See [here](https://shiny.rstudio.com/gallery/) for a gallery of `shiny` examples.
-
-See this [website](https://rstudio.github.io/shinydashboard/) to learn about a more flexible and slightly more challenging option for creating dashboards in R using a package called `shinydashboard`.
 
 
-<u>**Packages used in this case study:** </u>
+
+
+
+ <u>**Packages used in this case study:** </u>
 
 Package   | Use in this case study                                                                      
 ---------- |-------------
-[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
-[readr](https://readr.tidyverse.org/) |  to import the data  as a csv file  
-[googlesheets4](https://googlesheets4.tidyverse.org/) | to import directly from Google Sheets
-[tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
-[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
-[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
-[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, and to see the last few columns of a tibble
-[ggmap](https://cran.r-project.org/web/packages/ggmap/ggmap.pdf) | to geocode the data (which means get the latitude and longitude values)
-[sf](https://r-spatial.github.io/sf/) | to modify the geocoded data so that overlapping points did not overlap
-[lubridate](https://lubridate.tidyverse.org/) | to work with the data-time data    
-[DT](https://rstudio.github.io/DT/) | to create the interactive table  
-[htmltools](https://www.rdocumentation.org/packages/htmltools/versions/0.5.0) | to add a caption to our interactive table 
+[readxl](https://readxl.tidyverse.org/index.html) | to import an excel file   
+[httr](https://httr.r-lib.org/) | to retrieve data from an API   
+[tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)   
+[jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
+[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, modify, and summarize the data   
+[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
+[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
+[naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots  
-[ggforce](https://cran.r-project.org/web/packages/ggforce/ggforce.pdf)   | to create a plot zoom
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
-[waffle](https://github.com/hrbrmstr/waffle) | to make waffle proportion plots  
-[poliscidata](https://cran.r-project.org/web/packages/poliscidata/poliscidata.pdf) | to get population values for the states
-[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the dashboard  
-[shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive   
-[leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
+[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that are have jitter and half boxplots   
+[ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
+[formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
 
 
 #### {.emphasis_block}
