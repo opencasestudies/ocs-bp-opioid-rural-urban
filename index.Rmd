@@ -110,10 +110,18 @@ They found that:
 
 > However, more **recent users** were older (mean age, 22.9 years) men and women **living in less urban areas (75.2%)** who were **introduced to opioids through prescription drugs (75.0%)**.
 
+```{r, out.width = "50%", echo = FALSE, fig.align ="center"}
+include_graphics(here::here("img", "introducedbyprescription.png"))
+```
+
 > Heroin use has changed from an inner-city, minority-centered problem to one that has a more widespread geographical distribution, involving **primarily white men and women in their late 20s living outside of large urban areas**.
 
+```{r, out.width = "50%", echo = FALSE, fig.align ="center"}
+include_graphics(here::here("img", "mostlywhite.png"))
+```
 
->A much greater percentage of heroin users completing the sur- vey in the SKIP Program reported currently living in small urban or nonurban areas than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
+
+> A much greater percentage of heroin users completing the survey in the SKIP Program reported currently living in **small urban or nonurban areas** than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
 
 This survey used self-declared area of current residence (large urban, small urban, suburban, or rural).
 
@@ -1522,14 +1530,25 @@ In this plot it appearst that the largest number of pills were shipped to counti
 
 ## Normalization of pill count
 
+The term data [normalization](https://en.wikipedia.org/wiki/Normalization_(statistics)) actually has a variety of meanings. 
 
-```{r}
+In some cases it indicates the process of making data "more normally distributed", which means that the data is transformed in a such way that when the frequencies of the various data points are plotted, it resemebles that of the [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution), which looks like a "bell curve". This may be helpful for performing certian statistical tests that assume that the data is normally distributed.
 
-Annual%<>%  mutate(pop_DOSAGE =  DOSAGE_UNIT/ population)
+In other cases, it may mean the process of transforming the data to a common scale so that comparisons can be made fairly. 
 
-glimpse(Annual)
-```
+In our case we want to compare the number of pills shipped to each county. However, using the raw data resulsts in an unfair comparison as the counties themselves have very different populations. Therefore, if a county has a very large population, we may assume that the large number of pills shipped to that county may indicate that this county recieved a particuarlly high amount of opioids, however, it may actually be that this county recieved far fewer pills per person than a smaller county.
 
+Thus if we divide or scale the number of pills shipped to be relative to the number of people in a given county, then we have the number of pills shipped per person. Thus the data is now on the same scale for each county. 
+
+This can be extended to evaluating differences between states and rural or urban counties by taking the mean of the normalized pill counts per person for each county within each group.
+
+See [here](http://www.pbcgis.com/normalize/#:~:text=To%20normalize%2C%20in%20a%20statistical,over%20unequal%20areas%20or%20populations.) for more information about how this type of normalization is used in [Geographic information system (GIS)](https://en.wikipedia.org/wiki/Geographic_information_system) analyses.
+
+This may be best illustrated with some example data. 
+
+Here we will create a tibble for three imaginary counties. Each has a different population but recieved the same number of pills. 
+
+Then we will calculate the number of pills per person by dividing the number of pills shipped to that county by the population of that county.
 
 ```{r}
 example_data <-tibble(population = c(10, 50, 100),
@@ -1541,10 +1560,24 @@ example_data
 ```
 
 
-You can see that on average 10 pills were shiped for each person in the first row.
-In the second row, the population is much larger, thus despite the same number of pills being shipped to this example county, there were only enough pills shipped for on average 2 per person. In the final row the population is very large, thus only enough pills were shipped to give on average 1 per person. Note that however, it is likely that only a small portion of of the county populations actually received the pills that were shipped to a given county, but this helps us get a sense of the relative amount shipped to each county and likely used by people in the county where the pills were shipped (although this also not certain).
+You can see that on average 10 pills were shiped for each person for the first county.
+
+In the second row, the population is much larger, thus despite the same number of pills being shipped to this example county, there were only enough pills shipped for on average 2 per person. In the final row the population is very large, thus only enough pills were shipped to give on average 1 per person.
+
+Note that however, it is likely that only a small portion of the county populations actually received the pills that were shipped to a given county, but this helps us get a sense of the relative amount shipped to each county and likely used by people in the county where the pills were shipped (although this also not certain).
 
 
+Now we will create a new variable called `pop_DOSAGE` that is the number of pills shipped per county divided by the population of that county:
+
+```{r}
+
+Annual%<>%  mutate(pop_DOSAGE =  DOSAGE_UNIT/ population)
+
+glimpse(Annual)
+```
+
+
+Now we will create a plot of the national county average for this normalized pill count over time.
 
 
 ```{r}
@@ -1555,10 +1588,10 @@ ggplot( aes(x = year, y = (mean))) +
        y = "Normalized Number of pills") +
   theme_minimal()
 ```
+This is now also a bit easier to interpret. It is easier to think about 30 vs 50 pills per person as opposed to 10 million pills vs 20 million pills for a given county.
 
 
-
-Let's see how this changes the state specific data.
+Now, let's see how this changes the state specific data.
 
 ```{r}
   
@@ -1579,26 +1612,7 @@ girafe(code = print(g))
 
 This dramatically changed the resulting plot!
 
-We can see that now Tennesee, Kentucky, and West Virginia were among the top to recieve pills relative to their populations.
-
-
-
-```{r, fig.height = 7, fig.width=8}
-p1 <- ggplot(Annual , aes(x = year, y = DOSAGE_UNIT, colour = year)) + 
-  geom_boxplot()+ 
-  labs(title = "Without Normalization")+
-  theme_minimal()
-
-
-p2 <- ggplot(Annual, aes(x = year, y = DOSAGE_UNIT/population, colour = year)) + 
-  geom_boxplot()+ 
-  labs(title = "Population Normalization")+
-  theme_minimal()
-
-
-ggarrange(p1, p2, nrow = 1, ncol=2)
-
-```
+We can see that now Tennesee, Kentucky, and West Virginia were among the top to recieve pills relative to their populations. California is no longer at the top of the plot.
 
 
 ```{r}
@@ -1629,32 +1643,28 @@ ggplot( aes(x = year, y = value, colour = year)) +
 ```
 
 
-```{r, eval = FALSE}
-
-Annual %>% pivot_longer(names_to = "type", 
-                        values_to  = "value", 
-                        cols = c(DOSAGE_UNIT, 
-                                 pop_DOSAGE,
-                                 dens_DOSAGE)) %>%
-  mutate(type = forcats::fct_inorder(type)) %>%
-
-ggplot( aes(x = year, y = log(value), colour = year)) + 
-  geom_boxplot()+ 
-  facet_wrap(~type, scale = "free")+
-  theme_minimal()+
-   theme(axis.text.x = element_text(angle = 90),
-        legend.position = "none")
 
 
-```
+## Rural and Urban Differences
+
+Ok, now that we can make fair comparisons between counties, we can now take a look at the differences between rural and urban counties.
+
+To make this plot we will use the `stat_summary()` function of the `ggplot2` package. This alllows us to cacluate diffrent features about the data to plot. Custom functions can be used or funtions that are wrappers for the `smean.*` functions the `Hmisc` package. 
+
+See the [documination](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) for the `Hmisc` package to learn more about these functions.
+
+ggplot2 wrapper   | Hmisc function | Details                                                                      
+---------- |------------- | -------------------------------------
+mean_cl_normal | smean.cl.normal | computes 3 summary variables: the
+sample mean and lower and upper Gaussian confidence limits based on the t-distribution  
+mean_sd | smean.sd | computes the mean plus or mindus the standard deviation   
+mean_sdl  | smean.sdl | computes the mean plus or minus a constant
+times the standard deviation  
+mean_cl_boot | smean.cl.boot | fast implementation of the basic nonparametric bootstrap for obtaining confidence limits for the population mean without assuming normality
+meadian_hilow | smedian.hilow | computes the sample median and a selected pair of outer quantiles having equal tail areas  
 
 
-
-## How rural and urban areas differ for prescription rates. 
-
-
-The goal of normalization is to make every datapoint have the same 
-scale so each feature is equally important. 
+For example we can calculate
 
 ```{r}
 Annual %>% pivot_longer(names_to = "type", 
@@ -1664,19 +1674,20 @@ Annual %>% pivot_longer(names_to = "type",
   mutate(type = forcats::fct_inorder(type)) %>%
 
 ggplot( aes(y = value, x = year, colour = rural_urban, group = rural_urban)) + 
-  stat_summary(fun.y = mean,
-               fun.ymin = function(x) mean(x) - sd(x), 
-               fun.ymax = function(x) mean(x) + sd(x), 
+  
+  stat_summary(fun.data = mean_sd,
+               position = position_dodge(width = 0.5),
                geom = "pointrange") +
   stat_summary(fun.y = mean,
-               geom = "line") +
+                geom = "line") +
   facet_wrap( ~ type, scales = "free") +
-  labs(title = "Dosage Change Without Normalization")+
+  labs(title = "Difference in Opioid Shipments With and Without Normalization")+
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90))
 
-```
 
+```
+We can see that without accounting for population the urban counties revied many more pills than the urban counties. In contrast, when population is taken into acount, the rates appear to be very similar.
 
 ## Greater granularity of density
 
@@ -1692,7 +1703,7 @@ According to the [Organization for Economic Co-operation and Development(OECD)](
 
 Thus the small urban cutoff is populations less than 200,000.
 
-We will now use this to see how this changes our results.
+We will now use this to see if examining counties that were either large urban or smaller (included small urban and rural) shows us a different result.
 
 ```{r}
 
@@ -1714,12 +1725,10 @@ Annual %>% pivot_longer(names_to = "type",
   mutate(type = forcats::fct_inorder(type)) %>%
 
 ggplot( aes(y = value, x = year, colour = large_urban, group = large_urban)) + 
-  stat_summary(fun.y = mean,
-               fun.ymin = function(x) mean(x) - sd(x),
-               fun.ymax = function(x) mean(x) + sd(x),
-               geom = "pointrange") +
-  stat_summary(fun.y = mean,
-               geom = "line") +
+#stat_summary(fun.data=mean_cl_normal,position=position_dodge(width=0.5)) +
+  stat_summary(fun.data=mean_cl_boot,position=position_dodge(width=0.5)) +
+   stat_summary(fun.y = mean,
+                geom = "line") +
   facet_wrap( ~ type, scales = "free") +
   labs(title = "Dosage Change Without Normalization")+
   theme_minimal()+
@@ -1733,31 +1742,474 @@ Annual %>% pivot_longer(names_to = "type",
                                  pop_DOSAGE))%>%
   mutate(type = forcats::fct_inorder(type)) %>%
 
-ggplot( aes(y = value, x = year, colour = large_urban)) + 
-    geom_boxplot() +
+ggplot( aes(y = value, x = year, fill = large_urban)) + 
+   stat_summary(fun.data=mean_cl_boot,position=position_dodge(0.95),geom="errorbar") + 
+  stat_summary(fun.y=mean,position=position_dodge(width=0.95),geom="bar")+
   facet_wrap( ~ type, scales = "free") +
   labs(title = "Dosage Change Without Normalization")+
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90))
 ```
 
+Indeed when we evaluate the data in this way, we see that small urban and rural counties recieved higher numbers of pills per person than large urban counties.
+
+## Student t-test
+
+OK we can tell that there appears to be a difference between small urban and rural counties compared to large urban counties by looking at this plot, however is the difference between these two categories of counties meaninful? To evaluate this we ccould possibly use a statistical test called the [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test), which can be used to determine if [two group means are different](http://onlinestatbook.com/2/estimation/difference_means.html){target="_blank"}.
+
+Let's remind ourselves of one of our original questions, 
+
+> Has there been a difference between opioid pill shipments to rural and urban counties in the US?
+
+In hypothesis testing, we are interested in comparing two different hypotheses: a "null" hypothesis (can be thought of like a baseline e.g. the means between two groups are the same) compared to an "alternative" hypothesis (e.g. the means between two groups are different). We are going to ask if there is enough evidence in our data to reject the null hypothesis.  
+
+Let's try to formalize this a bit. 
+
+Using the student-test,  we can test whether the mean pill number fo pills shipped to the rural counties is the same as the mean  number of pill shipped to the urban areas. If we call the true unknown means of the two groups $\mu_U$ and $\mu_R$, for the urban and rural areas, respectively, then we can define the <b>null hypothesis</b> that there is no difference in the two means:
+
+$$ H_0: \mu_U = \mu_R $$  
+
+In contrast, we also define an <b>alternative hypothesis</b> that there is a difference between the mean number of pills shipped to each type of county: 
+
+$$ H_a: \mu_U \neq \mu_R $$
+
+The idea behind a hypothesis test is that we assume the null hypothesis is true and we use our data to help us identify if there is enough evidence to _reject the null hypothesis_. 
+
+This is similar to the idea of assuming that individuals are not guilty until proven otherwise.
+If there is not enough evidence in the data, then we say we "fail to reject the null hypothesis".
 
 
-## t-test
+However, performing this test depends on certain assumptions about our data:
 
-http://www.sthda.com/english/wiki/unpaired-two-samples-t-test-in-r
+1) The data for each group is [normally distributed](http://onlinestatbook.com/2/introduction/distributions.html){target="_blank"}.
+2) The [variance](https://stattrek.com/statistics/dictionary.aspx?definition=variance){target="_blank"} of both groups is similar.
+3) The observations from the two groups are [independent](https://www.stat.cmu.edu/~cshalizi/36-220/lecture-5.pdf){target="_blank"} (meaning that observations do not influence each other).
+4) The observations within each group are [independent](https://www.stat.cmu.edu/~cshalizi/36-220/lecture-5.pdf){target="_blank"} (meaning that observations do not influence each other).
+
+
+OK, for the first assumption, we can test if each group to be tested in normally distrubuted by making what is called a alled a "quantile-quantile" plot (or <b>Q-Q plot</b> for short). When we talk about a <b>quantile</b>, we are talking about dividing up the distribution of the data into roughly equal portions where roughly the same number of observations fall into each portion. For example, if you divide your data into 100 quantiles, you can think about this as percentiles, but you could also divide your data into 10 quantiles and these would be called deciles. 
+
+<b>Why Q-Q plots?</b> This plot allows us to compare the quantiles of two distributions together: (1) quantiles of a known theoretical distribution (like the normal distribution) compared to (2) quantiles of the distribution of our data.  If the quantiles from these two distributions line up in the plot, then that is a visual piece of evidence that our data follow that theoretical distribution (like the normal distribution).  
+
+<b>How does this work?</b> To do this we will plot the quantiles of our data on the y-axis and the quantiles of the theoretical normal distribution on the x-axis. If the quantiles line up then we can say that our data is fairly normal. See [here](http://onlinestatbook.com/2/advanced_graphs/q-q_plots.html) for more information about Q-Q plots.
+
+Using the `stat_qq()` function of the `ggplot2` package, we can easily create a Q-Q plot for our data randomly sampled from a normal distribution ("sample") and compare it to the quantiles from a normal distribution ("theoretical").  The default comparison distribution for these functions is the normal distribution, so we don't need to specify it in our code.
 
 ```{r}
-t.test(DOSAGE_UNIT ~ rural_urban, data = Annual, var.equal = FALSE)
-t.test(DOSAGE_UNIT ~ large_urban, data = Annual, var.equal = FALSE)
+Annual %>% 
+  ggplot(aes(sample = pop_DOSAGE)) +
+  stat_qq() + 
+  stat_qq_line() +
+  facet_grid(~large_urban)
 
-t.test(pop_DOSAGE ~ rural_urban, data = Annual, var.equal = FALSE)
-t.test(pop_DOSAGE ~ large_urban, data = Annual, var.equal = FALSE)
+Annual %>% 
+  ggplot(aes(sample = pop_DOSAGE)) +
+  stat_qq() + 
+  stat_qq_line() +
+  facet_grid(~rural_urban)
+
+Annual %>% 
+  ggplot(aes(sample = DOSAGE_UNIT)) +
+  stat_qq() + 
+  stat_qq_line() +
+  facet_grid(~large_urban)
+
+Annual %>% 
+  ggplot(aes(sample = DOSAGE_UNIT)) +
+  stat_qq() + 
+  stat_qq_line() +
+  facet_grid(~rural_urban)
+```
+
+The `stat_qq_line()` function is used to add a line (computes the slope an intercept) on the plot. If the points lie on this straight line, this is evidence that the data have a normal distribution, not that the data have a particular normal distribution.
+
+OK, we can see that in all cases the points appear too deviate from the line for at least one group, indicating that the quantiles are fairly disimilar between the observed and theoretical data.
+
+We can see if we can overcome this by transforming the data by log scaling the number of pills or the normalized number of pills. 
+
+```{r}
+Annual %>% 
+  ggplot(aes(sample = log(pop_DOSAGE))) +
+  stat_qq() + 
+  stat_qq_line() +
+  facet_grid(~large_urban)
+
+Annual %>% 
+  ggplot(aes(sample = log(pop_DOSAGE))) +
+  stat_qq() + 
+  stat_qq_line() +
+  facet_grid(~rural_urban)
+
+Annual %>% 
+  ggplot(aes(sample = log(DOSAGE_UNIT))) +
+  stat_qq() + 
+  stat_qq_line() +
+  facet_grid(~large_urban)
+
+Annual %>% 
+  ggplot(aes(sample = log(DOSAGE_UNIT))) +
+  stat_qq() + 
+  stat_qq_line() +
+  facet_grid(~rural_urban)
+```
+
+ OK, this did not help very much. So now we have two options, we can continue with the [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test) because this test is fairly **robust** to violations of the normality assumption if the sample size is relatively large, due to what is called the [central limit theorem](https://www.analyticsvidhya.com/blog/2019/05/statistics-101-introduction-central-limit-theorem/){target="_blank"}, which states that as samples get larger, the sample mean has an approximate normal distribution.  
+ 
+```{r}
+Annual %>%
+  count(large_urban)
+
+Annual %>%
+   count(rural_urban)
+```
+
+Our samples are inded quite large, thus it would probably be reasonable to continue with the $t$-test. However, we can also perform a test called the 
+[Mann Whitney U test](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test) also known as the Wilcoxon rank sum test or the two-sample Wilcox test or the Mann–Whitney–Wilcoxon (MWW) test. Importantly, this test does not rely on the assumption that the data is normally distriubuted and it is more robust than the t-test to [outliers](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm) (extreme values compared to the others). Given that the data appears to be quite different from the normal distribution, we will proceed using this test. 
+
+In this test, the hypothesis is slightly different. Instead of comparing means,  this test evaluates the following null hypothesis according to Wikipedia:
+
+> that the probability that randomly selected values of X (1st group) are greater than randomly selected values of Y (2nd group) is equal to the probability that randomly selected values of Y (2nd group) are greater than randomly selected values of X (1st group).
+
+The alternative hypothesis would then be that this probability is not equal. 
+
+We can also use a one-sided alternative to test that random values of X are greater than random values of Y or that  random values of X are less than random values Y. 
+
+Another way of describing this is that the distributions of the probablities of the occurances of the range of possible values of X and Y are equal or have a shift of mu = zero. Where as, the alternative would be that the shift bwetween the probability distributions is not zero. and that the one-sided alterantives are either the shift being greater than zero or less than zero. 
+
+Here you can see an illustration of the null hypothesis on the left and a one-sided hypothesis on the right:
+
+```{r}
+include_graphics(here::here("img", "null.png"))
+```
+
+##### [[source]](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pdf)
+
+
+
+
+So in our case using the Wilcox test,  we can test whether the null hypothesis that there is an equal probability that random subsets of counties categorized as rural counties is larger than the number of pills shipped to a random susbet of counties categorized as urban (or to compare small urban and rural counties vs large urban counties). 
+
+If we call the random subsets of counties $U$ and $R$, for the urban and rural areas, respectively, then we can define the <b>null hypothesis</b> that there is no difference in the porobabilities $P$:
+
+$$ H_0: P(U > R) = P(R>U) $$  
+
+In contrast, we also define an <b>alternative hypothesis</b> that there is a difference (two-sided): 
+
+$$ H_a: P(U > R) \neq P(R>U)$$
+
+With a one-sided althernative that a larger number of pills are shipped per person to Rural counties as:
+
+$$ H_a: P(R>U) > P(U > R) $$
+Here the probability that a random subset of rural counties had a larger number of pills shipped than that of urban counties is greater than the probabilities of a random subset of urban counties having a larger numner of pills than a subset of rural counties. 
+
+We can extend this to the small urban/rural vs the larg rural county comparison.
+
+
+To implement this test in R we will use the `wilcox.test()` in  the `stats` package. X is automatically the group that comes first alphabetically, while Y is the group that comes second alaphabetically. 
+
+Thus for the `rural_urban` variable, the `**R**ural` values would be th X group, while the `**U**rban` would be the Y group, as R comes before U in the alphabet.
+
+For the `large_urban` variable, the `**L**arge Urban` group values would be the X group, while the `**S**mall Urban or Rural` values would be the Y group.
+
+
+This test statistic $W$ is actually quite simple to perform manually with small sample sizes. 
+
+***
+
+<details> <summary> Click here to see how $W$ is calculated manually </summary>
+
+Let's say that the US only had 3 counties that were Rural and 3 counties that were Urban and we wanted to compare the distributions using this test.
+
+
+The number of pills shipped to each of the 3 Rural counties was:   
+1) 10   
+2) 50  
+3) 30  
+
+The number of pills shipped to each of the 3 urban counties was:  
+1) 20  
+2) 25  
+3) 12  
+
+
+The first step would be to list out the counties by order of the number of pills shipped. We will use  "R" or "C" if the number came from a rural or urban county:   
+
+County: R   U   U    U   R    R   
+ pills: 10  12  20   25  30   40   
+  rank: 1   2   3    4   5    6  
+  
+  
+sum of ranks $(R_1)$ for R: $1+ 5 +6 = 12$  
+sum of ranks $(R_2)$ for U: $2+3+4 = 9$  
+  
+
+Now two $W$ statastistics are calculated, one for each group like so (where $n$ is the sample size for that group):  
+
+  $$W_1 = R_1-\frac{n_1(n_1+1)}{2}$$  
+
+  $$W_2 = R_2-\frac{n_2(n_2+1)}{2}$$  
+  
+   
+Using our example data:  
+
+  $W_1$ is for rural counties  
+  $W_1 = R_1-\frac{n_1(n_1+1)}{2}$  
+  $W_1 = 12 -(3(4)/2) = 12-6 = 6$  
+  
+  $W_2$ = U for urban counties  
+  $W_2 = R_2-\frac{n_2(n_2+1)}{2}$  
+  $W_2 = 9-(3(4)/2) = 9-6 = 3$  
+  
+  Many definitions of $W$ are as follows:  
+
+  $W = min(W_1, W_2) = 3$. However, R calculates $W$  based on what sample is listed first (or X in or description of the hypothesis test). Thus the output will give the $W_x$ for the first group. 
+  
+  In our case the first group (rural counties) had a $W$ of 6.  
+
+From the documentation for the `stats` package for the `wilcox.text()` function:  
+  
+> R's value can also be computed as the number of all pairs (x[i], y[j]) for which y[j] is not greater than x[i], the most common definition of the Mann-Whitney test.  
+
+If you are familiar with linear alegbra, this can also be calculated by getting all the pairs of values between the two groups using the `outer()` base function and using the `>` (instead of the product or `*` function as this is typically used by default to get the [outer product](https://en.wikipedia.org/wiki/Outer_product)) to determine how often the rural counties have a greater value than the urban counties.
+
+```{r}
+example <-tibble(pills = c(10,12, 20, 25,30, 40), county = c("R", "U", "U", "U", "R", "R"))
+example
+
+R = c(10,30, 40)
+U = c(12, 20, 25)
+
+outer(R,U, ">")
+
+# 10 is less than 12, 20, or 25 (R is always less than U for all 3 comparisons)
+# 30 is greater than 12, 20, or 25 (3 times that R is greater than U)
+# 40 is greather than 12, 20, or 25 ( 3 tiems that R is greater than U)
+
+# 3+3 = 6 pairs out of 9 where R was greater than U thus W is equal to 6
+
+sum(outer(R,U, ">"))
+wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
+
+```
+
+
+We can see that if we switched the order of our counties, (thus we make the values that were for urban now the values for rural) we then get the $W$ for what was previously our second group in the result. (Remember what ever is alphabetically first will be the first group - so again the results are for "R")
+
+```{r }
+
+example <-tibble(pills = c(10,12, 20, 25,30, 40), county = c("U", "R", "R", "R", "U", "U"))
+example
+
+wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
+
+```
+
+
+Here is also a [link](https://youtu.be/BT1FKd1Qzjw) to a video for a more detailed explanation about calculating this by hand.
+
+</details>
+
+```{r}
+
+wilcox.test(pop_DOSAGE ~ rural_urban, data = Annual,
+                                    paired = FALSE, 
+                               alternative = "greater", 
+                                  conf.int = TRUE,
+                                  estimate = TRUE)
+
+
+wilcox.test(pop_DOSAGE ~ large_urban, data = Annual, 
+                                    paired = FALSE, 
+                               alternative = "greater", 
+                                  conf.int = TRUE,
+                                  estimate = TRUE)
+```
+
+Both results have p values that are less than 0.05, which is the threshold commonly used in hypothesis testing to determine if there is enough evidence to reject the null. In both cases this indicates that indeed there is enough evidence, and we reject the null hypothesis. However the p value is very small for the second test and the abosolute value of the difference estimate is larger suggesting that there is a larger difference. avocado consider rewording
+
+[Confidence intervals](https://www.graphpad.com/guides/prism/7/statistics/stat_more_about_confidence_interval.htm)
+
+
+
+What about if we had not normalized the data, what would our results be like?
+
+```{r}
+
+wilcox.test(DOSAGE_UNIT ~ rural_urban, data = Annual,
+                                    paired = FALSE, 
+                               alternative = "greater", 
+                                  conf.int = TRUE,
+                                  estimate = TRUE)
+
+
+wilcox.test(DOSAGE_UNIT ~ large_urban, data = Annual, 
+                                    paired = FALSE, 
+                               alternative = "greater", 
+                                  conf.int = TRUE,
+                                  estimate = TRUE)
 
 
 ```
 
+
+
 We can see that the result is different depending on how we define the data and how we normalize the data!
+
+```{r}
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+  mutate(type = forcats::fct_inorder(type)) %>%
+  
+
+ggplot( aes(y = value, x = year, fill = rural_urban)) + 
+     stat_summary(fun.data=mean_cl_boot,position=position_dodge(0.95),geom="errorbar") + 
+  stat_summary(fun.y=mean,position=position_dodge(width=0.95),geom="bar")+
+  facet_wrap( ~ type, scales = "free") +
+  labs(title = "Difference with and without normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90))
+
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+     mutate(type = forcats::fct_inorder(type)) %>%
+     mutate(large_urban = forcats::fct_relevel(large_urban, "Small Urban or Rural", "Large Urban")) %>%
+
+ggplot( aes(y = value, x = year, fill = large_urban)) + 
+      stat_summary(fun.data=mean_cl_boot,position=position_dodge(0.95),geom="errorbar") + 
+  stat_summary(fun.y=mean,position=position_dodge(width=0.95),geom="bar")+
+  facet_wrap( ~ type, scales = "free", labeller = 
+                as_labeller(c(DOSAGE_UNIT = "Raw Data", 
+                              pop_DOSAGE = "Normalized Data"))) +
+  labs(title = "Difference with and without normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90),
+        legend.title = element_blank())
+```
+
+```{r}
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+  mutate(type = forcats::fct_inorder(type)) %>%
+  
+
+ggplot( aes(y = value, x = rural_urban, fill = rural_urban)) + 
+     stat_summary(fun.data=mean_cl_boot,position=position_dodge(0.95),geom="errorbar") + 
+  stat_summary(fun.y=mean,position=position_dodge(width=0.95),geom="bar")+
+  facet_wrap( ~ type, scales = "free") +
+  labs(title = "Difference with and without normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90))
+
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+     mutate(type = forcats::fct_inorder(type)) %>%
+     mutate(large_urban = forcats::fct_relevel(large_urban, "Small Urban or Rural", "Large Urban")) %>%
+
+ggplot( aes(y = value, x = large_urban, fill = large_urban)) + 
+      stat_summary(fun.data=mean_cl_boot,position=position_dodge(0.95),geom="errorbar") + 
+  stat_summary(fun.y=mean,position=position_dodge(width=0.95),geom="bar")+
+  facet_wrap( ~ type, scales = "free", labeller = 
+                as_labeller(c(DOSAGE_UNIT = "Raw Data", 
+                              pop_DOSAGE = "Normalized Data"))) +
+  labs(title = "Difference with and without normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90),
+        legend.title = element_blank())
+```
+
+
+```{r}
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+  mutate(type = forcats::fct_inorder(type)) %>%
+  
+
+ggplot( aes(y = value, x = rural_urban, colour = rural_urban)) + 
+    geom_jitter() +
+  facet_wrap( ~ type, scales = "free") +
+  labs(title = "Difference with and without normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90))
+
+
+Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+     mutate(type = forcats::fct_inorder(type)) %>%
+     mutate(large_urban = forcats::fct_relevel(large_urban, "Small Urban or Rural", "Large Urban")) %>%
+
+ggplot( aes(y = value, x = large_urban, colour = large_urban)) + 
+    geom_boxjitter() +
+  facet_wrap( ~ type, scales = "free", labeller = 
+                as_labeller(c(DOSAGE_UNIT = "Raw Data", 
+                              pop_DOSAGE = "Normalized Data"))) +
+  labs(title = "Difference with and without normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90),
+        legend.title = element_blank())
+```
+
+
+```{r}
+
+library(Ipaper)
+
+forplot <-Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+  mutate(type = forcats::fct_inorder(type))
+  
+forplot %>%
+ggplot( aes(y = value, x = rural_urban, colour = rural_urban)) + 
+    geom_boxplot2() +
+  
+  facet_wrap( ~ type, scales = "free") +
+  #scale_y_continuous(limits = quantile(pull(forplot, value), c(0.1, 0.9)))+
+  #coord_cartesian(ylim = quantile(pull(forplot, value), c(0.1, 0.9)))+
+
+  labs(title = "Dosage Change Without Normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90)) 
+
+
+forplot <-Annual %>% pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                        cols = c(DOSAGE_UNIT, 
+                                 pop_DOSAGE))%>%
+  mutate(type = forcats::fct_inorder(type))
+  
+forplot %>%
+ggplot( aes(y = value, x = large_urban, colour = large_urban)) + 
+    geom_boxplot2() +
+  
+  facet_wrap( ~ type, scales = "free") +
+  #scale_y_continuous(limits = quantile(pull(forplot, value), c(0.1, 0.9)))+
+  #coord_cartesian(ylim = quantile(pull(forplot, value), c(0.1, 0.9)))+
+
+  labs(title = "Dosage Change Without Normalization")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90)) 
+
+```
+
+
 
 # **Summary**
 *** 
