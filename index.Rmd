@@ -1675,19 +1675,26 @@ Annual %>% pivot_longer(names_to = "type",
 
 ggplot( aes(y = value, x = year, colour = rural_urban, group = rural_urban)) + 
   
-  stat_summary(fun.data = mean_sd,
+  stat_summary(fun.data = mean_cl_boot,
                position = position_dodge(width = 0.5),
                geom = "pointrange") +
   stat_summary(fun.y = mean,
                 geom = "line") +
-  facet_wrap( ~ type, scales = "free") +
-  labs(title = "Difference in Opioid Shipments With and Without Normalization")+
+  facet_wrap( ~ type, scales = "free", labeller = 
+                as_labeller(c(DOSAGE_UNIT = "Raw Data", 
+                              pop_DOSAGE = "Normalized Data (pills per capita)"))) +
+  labs(title = "Difference in Opioid Shipments With and Without Normalization",
+       y = "Number of Pills")+
   theme_minimal()+
-  theme(axis.text.x = element_text(angle = 90))
+  theme(axis.text.x = element_text(angle = 90),
+        legend.title = element_blank())+
+  scale_color_manual(values = c("#20A387FF", "#481567FF"))
 
 
 ```
 We can see that without accounting for population the urban counties revied many more pills than the urban counties. In contrast, when population is taken into acount, the rates appear to be very similar.
+
+We can also see that there appears to be much higher variablility among the urban counties as compared to the rural counties. 
 
 ## Greater granularity of density
 
@@ -1703,7 +1710,56 @@ According to the [Organization for Economic Co-operation and Development(OECD)](
 
 Thus the small urban cutoff is populations less than 200,000.
 
-We will now use this to see if examining counties that were either large urban or smaller (included small urban and rural) shows us a different result.
+Given that we saw a large degree of variability among the urban counties, we will now use parse this group further to see if examining counties that were either large urban or smaller (included small urban and rural) seems reasonable.
+
+```{r}
+
+Annual %<>% 
+  mutate(category = case_when(population >= 200000 ~ "Large Urban",
+                                 population >= 50000 & 
+                                 population < 200000 ~ "Small Urban",
+                                 population < 50000 ~ "Rural"))
+
+```
+
+
+```{r}
+library(directlabels)
+
+plot_cat <-Annual %>% mutate(DOSAGE_UNIT = DOSAGE_UNIT/1000000) %>%
+             pivot_longer(names_to = "type", 
+                        values_to  = "value", 
+                              cols = c(DOSAGE_UNIT, 
+                                       pop_DOSAGE))%>%
+  mutate(type = forcats::fct_inorder(type)) %>%
+ggplot( aes(y = value, x = year, colour = category, group = category)) + 
+  stat_summary(fun.data = mean_cl_boot,
+             position=position_dodge(width=0.5)) +
+  stat_summary(fun.y = mean,
+                geom = "line") +
+  facet_wrap( ~ type, scales = "free", labeller = 
+                as_labeller(c(DOSAGE_UNIT = "Raw Data (pills in millions)", 
+                              pop_DOSAGE = "Normalized Data (pills per capita)"))) +
+  labs(title = "Difference in opioid pill shipments between types of counties",
+       subtitle = "Oxycodone and Hydrocodone pills in the US",
+           y = NULL,
+           x = NULL)+
+  theme_linedraw()+
+  theme(axis.text.x = element_text(angle = 90),
+        strip.text = element_text(size = 14, face = "bold"),
+        title = element_text(size = 14, face = "bold"),
+        axis.text = element_text(size = 10))+
+  scale_color_manual(values = c("#481567FF", "#20A387FF", "#453781FF"))
+
+  directlabels::direct.label(plot_cat, method = list(dl.trans(y = y +0.5),
+                                                     "far.from.others.borders",
+                                                     fontface = 'bold'))
+```
+
+
+Wow, we can see here that the two urban categories actually have larger differneces in normalized pill counts from eachother than either has with the rural counties!
+
+Thus it seems reasonable to lump these two categories together.
 
 ```{r}
 
@@ -1718,37 +1774,35 @@ Annual %<>%
 
 ```{r}
 
-Annual %>% pivot_longer(names_to = "type", 
+plot_2cat <-Annual %>% pivot_longer(names_to = "type", 
                         values_to  = "value", 
                         cols = c(DOSAGE_UNIT, 
                                  pop_DOSAGE))%>%
   mutate(type = forcats::fct_inorder(type)) %>%
 
 ggplot( aes(y = value, x = year, colour = large_urban, group = large_urban)) + 
-#stat_summary(fun.data=mean_cl_normal,position=position_dodge(width=0.5)) +
-  stat_summary(fun.data=mean_cl_boot,position=position_dodge(width=0.5)) +
-   stat_summary(fun.y = mean,
+  stat_summary(fun.data = mean_cl_boot,
+             position=position_dodge(width=0.5)) +
+  stat_summary(fun.y = mean,
                 geom = "line") +
-  facet_wrap( ~ type, scales = "free") +
-  labs(title = "Dosage Change Without Normalization")+
-  theme_minimal()+
-  theme(axis.text.x = element_text(angle = 90))
+  facet_wrap( ~ type, scales = "free", labeller = 
+                as_labeller(c(DOSAGE_UNIT = "Raw Data (pills in millions)", 
+                              pop_DOSAGE = "Normalized Data (pills per capita)"))) +
+  labs(title = "Difference in opioid pill shipments between types of counties",
+       subtitle = "Oxycodone and Hydrocodone pills in the US",
+           y = NULL,
+           x = NULL)+
+  theme_linedraw()+
+  theme(axis.text.x = element_text(angle = 90),
+        strip.text = element_text(size = 14, face = "bold"),
+        title = element_text(size = 14, face = "bold"),
+        axis.text = element_text(size = 10))+
+scale_color_manual(values = c("#481567FF", "#20A387FF"))
 
+directlabels::direct.label(plot_2cat, method = list(dl.trans(y = y +0.5),
+                                                     "far.from.others.borders",
+                                                     fontface = 'bold'))
 
-
-Annual %>% pivot_longer(names_to = "type", 
-                        values_to  = "value", 
-                        cols = c(DOSAGE_UNIT, 
-                                 pop_DOSAGE))%>%
-  mutate(type = forcats::fct_inorder(type)) %>%
-
-ggplot( aes(y = value, x = year, fill = large_urban)) + 
-   stat_summary(fun.data=mean_cl_boot,position=position_dodge(0.95),geom="errorbar") + 
-  stat_summary(fun.y=mean,position=position_dodge(width=0.95),geom="bar")+
-  facet_wrap( ~ type, scales = "free") +
-  labs(title = "Dosage Change Without Normalization")+
-  theme_minimal()+
-  theme(axis.text.x = element_text(angle = 90))
 ```
 
 Indeed when we evaluate the data in this way, we see that small urban and rural counties recieved higher numbers of pills per person than large urban counties.
@@ -2004,10 +2058,25 @@ wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ co
 
 ```
 
+for small samples, this can then be compared to a [critical $W$ table](https://math.usask.ca/~laverty/S245/Tables/wmw.pdf) (note here that $W$ is $U$) for comparison to determine significance. From this table we see that our example has so few values that the null can't be reliably rejected.
+
+For larger samples (like our actual data - generally n>20 per group) the $W$ statistic is then used to calculate a $Z$ statistic like so:
+
+$$Z = \frac{W-\mu_W}{\sigma_W}$$
+
+Where $\mu_W$ is the expected $W$ if the two groups have identical distributions and $\sigma_W$ is the standard deviation. 
+
+They are calculated as follows:
+
+$$\mu_W = \frac{n_1n_2}{2}$$
+
+$$\sigma_W = \sqrt{\frac{n_1n_2(n_1+n_2+1)}{12}}$$
+This can then be used in a [$Z$ table](https://www.simplypsychology.org/z-table.html#:~:text=A%20z%2Dtable%2C%20also%20called,standard%20normal%20distribution%20(SND).)  or using a [calculator](https://www.socscistatistics.com/pvalues/normaldistribution.aspx) to determine a $p$-value.
 
 Here is also a [link](https://youtu.be/BT1FKd1Qzjw) to a video for a more detailed explanation about calculating this by hand.
 
 </details>
+***
 
 ```{r}
 
@@ -2051,9 +2120,10 @@ wilcox.test(DOSAGE_UNIT ~ large_urban, data = Annual,
 
 ```
 
+Using the raw data, we see that there is no difference between the rural and urban categories, and the rural data actually shows lower values than the urban (based on the sign of the estimated difference). In contrast, there was a significant difference between small urban and rural counties vrs. large urban counties, however, in this case the large urban counties (the first group by alphabetically order) had larger values (based on the sign of the estimated difference).
 
+We can see that the result is very different depending on how we define the data and how we normalize the data!
 
-We can see that the result is different depending on how we define the data and how we normalize the data!
 
 ```{r}
 
@@ -2062,12 +2132,12 @@ Annual %>% pivot_longer(names_to = "type",
                         cols = c(DOSAGE_UNIT, 
                                  pop_DOSAGE))%>%
   mutate(type = forcats::fct_inorder(type)) %>%
-  
-
 ggplot( aes(y = value, x = year, fill = rural_urban)) + 
      stat_summary(fun.data=mean_cl_boot,position=position_dodge(0.95),geom="errorbar") + 
   stat_summary(fun.y=mean,position=position_dodge(width=0.95),geom="bar")+
-  facet_wrap( ~ type, scales = "free") +
+  facet_wrap( ~ type, scales = "free", labeller = 
+                as_labeller(c(DOSAGE_UNIT = "Raw Data", 
+                              pop_DOSAGE = "Normalized Data"))) +
   labs(title = "Difference with and without normalization")+
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90))
