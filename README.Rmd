@@ -28,90 +28,92 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 (
 
 To cite this case study:
 
-Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://github.com/opencasestudies/ocs-youth-school-shootings-dashboard-case-study. Fifty Years of School Shootings in the United States (Version v1.0.0).
+Wright, Carrie, and Wang, Kexin (Sheena) and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ocs_pop.html. Opioids in the United States (Version v1.0.0). avocado update url
 
 ### Acknowledgements
 
-We would like to acknowledge [Elizabeth Stuart](https://www.jhsph.edu/faculty/directory/profile/1792/elizabeth-a-stuart) for assisting in framing the major direction of the case study.
+We would like to acknowledge [Brendan Saloner](https://www.jhsph.edu/faculty/directory/profile/2929/brendan-saloner) for assisting in framing the major direction of the case study.
 
 We would also like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
 
 
 ### Title 
 
-Fifty Years of School Shootings in the United States
+Opioids in United States
 
 ### Motivation 
 
-According to this [report](https://siepr.stanford.edu/sites/default/files/publications/19-036.pdf) school shootings can have long lasting impacts on those that witness them. This article states that:
+In this case study we will be examining the number of opioid pills (specifically [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States), as they are the top two abused opioids) shipped to pharmacies and practitioners at the county-level around the United States (US) from 2006 to 2014.
 
-> Over **240,000** American students experienced a school shooting in the last two decades.
+This data comes from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/) after legal action by the owner of the [Charleston Gazette-Mail](https://www.wvgazettemail.com/) in West Virginia and the [Washington Post](https://www.washingtonpost.com/).
 
-Therefore as the number of school shootings apppears to be increasing, it is useful to better understand the characteristics about these shootings to better understand why they happen and how to avoid them in the future.
+We will investigate how the number of shipped pills compares for rural and urban counties. This analysis will demonstrate how different regions of the country may have been more at risk for opioid addiction crises due to differing rates of opioid prescription (using the number of pills as a proxy for prescription rates). This will help inform students about how evidence-based intervention decisions are made in this area.  
+
+This case study is motivated by this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w),that explored rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://landing.athenahealth.com/g/improvecare?cmp=10672941&utm_salesforce=7016f000001yWQMAA2&utm_medium=cpc&utm_campaign=1%20Branded%20Experimental&utm_adgroup=ModBroad&utm_source=google&utm_term=%2Bathena%20%2Bhealth&utm_type=b&gclid=Cj0KCQjwtZH7BRDzARIsAGjbK2bn_oxyd0jNBGQkPMcSSpEuGbzLUqL8m-tuAQWMZ-smUNLLjtztB7EaAgSlEALw_wcB) for 31,422 primary care providers from January 2014 to March 2017.
+
+They found that:
+
+> The percentage of patients prescribed an opioid was higher in **rural** than in urban areas. 
 
 
 ### Motivating questions
 
-<b><u> Our main questions: </u></b>
+<b><u> Our main question: </u></b>
 
-1) What has been the yearly rate of school shootings and where have they occurred in the last 50 years (from January 1970 to June 2020)? 
-
-2) What are the characteristics of these events?
+How did opioid shipment rates differ between rural and urban regions over time around the US from 2006-2014?
 
 ### Data
 
-In this case study we will be using data related to school shootings in the US from 1970 to June 2020 from the [**Center for Homeland Defense and Security (CHDS)**](Center for Homeland Defense and Security (CHDS)) [**K-12 Shool Shooting Database**](https://www.chds.us/ssdb/dataset/). 
+In this case study we will evaluate the number of [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) pills shipped to pharmacies and practitioners at the county-level around the United States (US) from 2006 to 2014. 
 
-Their methods for identifying and authenticating incidents are outlined [here](https://www.chds.us/ssdb/methods/).
+This data comes form the [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) of the [DEA](https://www.dea.gov/) and was released by the [Washington Post](https://www.washingtonpost.com/). 
 
-According to their website: 
+According to the [Washington Post](https://www.washingtonpost.com/):
 
-*"The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. **All of the information is based on open-source information and 3rd party reporting... and may include reporting errors.**"*
+>"It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else."
 
 #### Learning Objectives
 
 The skills, methods, and concepts that students will be familiar with by the end of this case study are:
 
-
 Data science skills:  
-  
-1. Importing text from a Google Sheets document (`googlesheets4`)  
-2. Converting date formats (`lubridate`)  
-3. Geocoding data (`ggmap`)  and creating a jitter for geocoded data on a map (`SF`)
-4. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`)  
-5. How to create data visualizations with `ggplot2` 
-6. An introductory understand of R Markdown  
-7. How to create an interactive table (`DT`)  
-8. How to create a map (`leaflet`)  
-9. How to create an interactive dashboard with `flexdashboard` and `shiny`  
+
+1. Importing data from an [API](https://en.wikipedia.org/wiki/API) (`httr` and `jasonlite`)    
+2. How to join data with `dplyr`  
+3. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`)    
+4. How to create formatted tables of data with `formattable`    
+5. How to look for missing data in a dataset (`naniar`)    
+6. How to create data visualizations with `ggplot2`   
+7. How to create interactive plot for plots that are difficult to label because they have  many elements (`ggiraph`)   
+8. How to combine plots with `patchwork`  
 
 Statistical concepts and methods:  
   
-1. Calculating percentages for data with missing values  
+1. Understanding of when and why data normalization is useful  
+2. Understanding of how group definitions can change results  
+2. Understanding of when to use a Wilcoxon rank sum test (also called Mann Whitney U test)  
+3. How to implement a Wilcoxon rank sum test in R  
+4. How to interpret a Wilcoxon rank sum test    
 
 #### Data import 
 
-In this case study we demonstrate how to import data from Google Sheets, however we have also downloaded the data as a CSV file and we demonstate how to import the data in this format as well. 
+In this case study we demonstrate how to import data from an API, however we have also downloaded the data and saved it as an RDA and a CSV file if instructors choose to use the data for another purpose.
 
 #### Data wrangling 
 
 This case study covers the differences between the various `*_join()` functions of the `dplyr` package, as well as use of the `case_when()` function to recode data based on particular evaluations of existing values.
 
-We also cover removing `NA` values with the `drop_na()` function of the `tidyr` package, and selecting the last few variables of a tibble using the `last_col()` function. We  cover using the `tidyr` functions such as `pivot_wider()` and `pivot_longer()` for reshaping data, as well as arranging levels of factors using the `forcats` package. 
+We also cover how to use the `tidyr` functions such as `pivot_wider()` and `pivot_longer()` for reshaping data, as well as arranging levels of factors using the `forcats` package. 
 
-Finally, this case study also covers a few of the `stringr` functions to manipulate character strings, including `str_c()`, `str_detect()`, and `str_remove()` as well as some of the functions of teh `lubridate` package for working with data related to dates.
-
-We also cover how to geocode data using the `ggmap` package and how to modify duplicated locations using the `SF` pacakge so as to avoid overlapping points on a map.
+Finally, this case study also covers a few of the `stringr` functions to manipulate character strings, including `str_sub()`, and `str_detect()`.
 
 #### Data Visualization
 
-In this case study we show how to make faceted plots where each plot has its own y-axis label (which is actually a bit tricky), we show how to make pie charts with `ggplot2` and we demonstrate how to use the `waffle` package to create a waffle plot. We also discuss why in some cases a pie chart might not be a good choice. 
-
-We also show how to create an interactive table with the `DT` package, as well as how to create an interactive map with the `leaflet` package.
+In this case study we show how to make faceted plots, how to create interactive plots with the `ggiraph` package, how to combine plots with the `patchwork` package, how to create plots that are both box plots and jitter plots with the `ggpol` package, how to add labels directly to plots with the `directlabels` package, and how to create formatted tables with the `formattable` package. We also demonstrate how to look for missing data using the `naniar` package.
 
 ### Analysis 
 
-This case study does not really include an analysis like other case studies, but it does domonstrate how to create simple percentage statistics using a data with missing values, as well as how to properly report such percentages. 
+This case study focuses on when and how to compare groups using the nonparametric Wilcoxon rank sum test. This case study also focuses on the importance of data normalization and the importance of how groups are defined.
 
 
 ### Other notes and resources
@@ -123,108 +125,121 @@ This case study does not really include an analysis like other case studies, but
 
 [Tidyverse](https://www.tidyverse.org/){target="_blank"}   
 
+   
 [Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
 
-[String manipulation cheatsheet](https://rstudio.com/resources/cheatsheets/){target="_blank"}  
+[application prgoramming interface (API)](https://en.wikipedia.org/wiki/API)  
+[JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)  
+[Lightweight programming languagnes](https://en.wikipedia.org/wiki/Lightweight_programming_language)   
+
 [Table formats](https://en.wikipedia.org/wiki/Wide_and_narrow_data){target="_blank"}
-
-[Geocoding](https://en.wikipedia.org/wiki/Geocoding)  
-[Coordinate reference system (CRS)](https://www.w3.org/2015/spatial/wiki/Coordinate_Reference_Systems) [ESPG](https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset)
-[World Geodetic System (WGS) version 84 also called ESPG:4326 ](https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84)   
-[Albers equal-area conic projection](https://en.wikipedia.org/wiki/Albers_projection#:~:text=The%20Albers%20equal%2Darea%20conic,that%20uses%20two%20standard%20parallels.&text=The%20Albers%20projection%20is%20used,the%20United%20States%20Census%20Bureau.)   
-[crs 102008](https://spatialreference.org/ref/esri/102008/html/)  
-
-To learn more about geospatial coordinate systems see [here](https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf) and [here](https://guides.library.duke.edu/r-geospatial/CRS).
-
 
 [`ggplot2` package](http://ggplot2.tidyverse.org){target="_blank"}    
 Please see [this case study](https://opencasestudies.github.io/ocs-bp-co2-emissions/)  for more details on using `ggplot2`    
 [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html){target="_blank"}   
 [`ggplot2` themes](https://ggplot2.tidyverse.org/reference/ggtheme.html){target="_blank"}   
+[Normalization](https://en.wikipedia.org/wiki/Normalization_(statistics))  
+[Mann–Whitney–Wilcoxon (MWW) test](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test) also known as the Wilcoxon rank sum test or the two-sample Wilcox test   
 
-[Motivating article for this case study about school shootings](https://link.springer.com/content/pdf/10.1007/s11920-012-0331-6.pdf)
-
-Also see this [article](https://siepr.stanford.edu/sites/default/files/publications/19-036.pdf) to learn more about the impacts of school shootings.
-
-
-[Lightweight markup languages(LML)](https://en.wikipedia.org/wiki/Lightweight_markup_language)  
-[Markdown](https://en.wikipedia.org/wiki/Markdown)  
-[R markdown](http://rmarkdown.rstudio.com/)   
-[`knitr`](https://yihui.org/knitr/)  
-[`rmarkdown` (package)](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf)
-
-See this [book](https://bookdown.org/yihui/rmarkdown/) for more information on working with R Markdown files. 
-
-The RStudio [cheatsheet for R Markdown](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) and this [tutorial](https://ourcodingclub.github.io/tutorials/rmarkdown/) are great for getting started. 
-
-[Pandoc](https://en.wikipedia.org/wiki/Pandoc)  
-
-[YAML](https://en.wikipedia.org/wiki/YAML)  
-[Configuration](https://en.wikipedia.org/wiki/Configuration_file)  
-
-[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)  
-
-See [here](https://rstudio.com/resources/webinars/introducing-flexdashboards/) for a video about flexdashboard and [here](https://rmarkdown.rstudio.com/flexdashboard/) for a more information on how to use this package.   
-See [here](https://rmarkdown.rstudio.com/flexdashboard/using.html#components) for a list of other packages that are useful for adding elements to dashboards created with the `flexdashboard` package.   
-See [here](https://www.datadreaming.org/post/r-markdown-theme-gallery/) for a list of R Markdown themes which can be used with `flexdashbard`.   
-See [Font Awesome](https://fontawesome.com/icons?d=gallery) for icons.  
-
-To learn more about using `shiny` with the `flexdashboard` package to create interactive dashboards, see this [tutorial](https://rmarkdown.rstudio.com/flexdashboard/shiny.html).   
-
-[leaflet (R package)](https://rstudio.github.io/leaflet/)   
-[Leaflet (JavaScript Library)](https://leafletjs.com/)   
-
-[shiny](https://shiny.rstudio.com/)  
-See [here](https://shiny.rstudio.com/gallery/) for a gallery of `shiny` examples.
-
-See this [website](https://rstudio.github.io/shinydashboard/) to learn about a more flexible and slightly more challenging option for creating dashboards in R using a package called `shinydashboard`.
+Also see [here](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pdf) for more information about this test and [here](https://youtu.be/BT1FKd1Qzjw) for a video for a more detailed explanation about performing this test by hand.
 
 
-<u>**Packages used in this case study:** </u>
+[Outliers](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm)  
+[Normal distribution](http://onlinestatbook.com/2/introduction/distributions.html)
+[Q-Q plots](http://onlinestatbook.com/2/advanced_graphs/q-q_plots.html) 
+[Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test)  
+[Confidence interval](http://onlinestatbook.com/2/estimation/mean.html)   
+[Sampling distribution](https://en.wikipedia.org/wiki/Sampling_distribution)   
+[Bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics))    [Resampling](https://en.wikipedia.org/wiki/Resampling_(statistics))  
+
+[Motivating report for this case study](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs/mm6802a1-H.pdf)  
+
+Also see this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).  
+
+
+The data for this case study is available at this [API](https://arcos-api.ext.nile.works/__swagger__/). 
+
+This data is from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/).   
+
+A wrapper package about this API is available [here](https://github.com/wpinvestigative/arcos).
+
+ <u>**Packages used in this case study:** </u>
 
 Package   | Use in this case study                                                                      
 ---------- |-------------
-[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
-[readr](https://readr.tidyverse.org/) |  to import the data  as a csv file  
-[googlesheets4](https://googlesheets4.tidyverse.org/) | to import directly from Google Sheets
-[tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
-[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
-[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
-[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, and to see the last few columns of a tibble
-[ggmap](https://cran.r-project.org/web/packages/ggmap/ggmap.pdf) | to geocode the data (which means get the latitude and longitude values)
-[sf](https://r-spatial.github.io/sf/) | to modify the geocoded data so that overlapping points did not overlap
-[lubridate](https://lubridate.tidyverse.org/) | to work with the data-time data    
-[DT](https://rstudio.github.io/DT/) | to create the interactive table  
-[htmltools](https://www.rdocumentation.org/packages/htmltools/versions/0.5.0) | to add a caption to our interactive table 
-[ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots  
+[readxl](https://readxl.tidyverse.org/index.html) | to import an excel file   
+[httr](https://httr.r-lib.org/) | to retrieve data from an API   
+[tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)   
+[jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
+[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
+[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
+[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
+[naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
+[ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
+[formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
-[waffle](https://github.com/hrbrmstr/waffle) | to make waffle proportion plots  
-[poliscidata](https://cran.r-project.org/web/packages/poliscidata/poliscidata.pdf) | to get population values for the states
-[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the dashboard  
-[shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive   
-[leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
+[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that are have jitter and half boxplots   
+[ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
+[patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
+[directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
+
+
+If you or a loved one is struggling with opioid addiction, contact the SAMHSA’s National Helpline at [1-800-662-HELP (4357)](tel:1-800-662-HELP (4357)). 
+
+It is a free, confidential, 24/7, 365-day-a-year treatment referral and information service (in English and Spanish) for individuals and families facing mental and/or substance use disorders.
+
+You can also contact the [Addiction Center](https://www.addictioncenter.com/drugs/overdose/) at [(877)871-3575](tel:877871-3575) which also has a confidential 24/7 live chat at:
+[https://www.addictioncenter.com/drugs/overdose/](https://www.addictioncenter.com/drugs/overdose/).
+
+According to their website:
+
+>Remember, that being able to treat an overdose at home is not a replacement for a hospital. Even if the moment has passed, and the victim seems fine, there is still a chance that something is going on that cannot be seen by the human eye. Taking the victim to the hospital, can mean the difference between life and death.
+
+> Overdose is a scary word. We often associate it with death, but the two are not always connected. Life can go on after an overdose, but only if the person suffering understands and learns from it. Getting on the road to recovery is not easily done but it is always possible, and the only guaranteed way to never suffer an overdose again. If you don’t know where this path begins, or need help getting help for a loved one, please reach out to a dedicated treatment provider. They’re here, 24/7, to answer any questions you may have. Be it for yourself or someone else.
+
+According to [harmreduction.org](https://harmreduction.org/issues/overdose-prevention/overview/overdose-basics/recognizing-opioid-overdose/), the following are signs of an overdose:
+
+- Loss of consciousness
+-Unresponsive to outside stimulus
+- Awake, but unable to talk
+- Breathing is very slow and shallow, erratic, or has stopped
+- For lighter skinned people, the skin tone turns bluish purple, for darker skinned people, it turns grayish or ashen.
+- Choking sounds, or a snore-like gurgling noise (sometimes called the “death rattle”)
+- Vomiting
+- Body is very limp
+- Face is very pale or clammy
+- Fingernails and lips turn blue or purplish black
+- Pulse (heartbeat) is slow, erratic, or not there at all
+ 
+If someone is making unfamiliar sounds while “sleeping” it is worth trying to wake him or her up. Many loved ones of users think a person was snoring, when in fact the person was overdosing. These situations are a missed opportunity to intervene and save a life.
+
+Sometimes it can be difficult to tell if a person is just very high, or experiencing an overdose.  If you’re having a hard time telling the difference, it is best to treat the situation like an overdose – it could save someone’s life.
+
+**The most important thing is to act right away!**
 
 
 #### For users 
 
 There is a [`Makefile`](Makefile) in this folder that allows you to type `make` to knit the case study contained in the `index.Rmd` to `index.html` and it will also knit the [`README.Rmd`](README.Rmd) to a markdown file (`README.md`). 
 
-Users can skip the Data Import and Data Wrangling sections to start with the Data Analysis and Visualization section if they wish. 
+Users can skip the Data Import and Data Wrangling sections to start with the Data Visualization or Data Analysis sections if they wish. 
 
 #### For instructors
 
-Instructors who only wish to demonstrate the basics of how to create a dashboard with `flexdashboard` can simply use the `Dashboard Basics` section, this would likely only take one or two class sessions to cover.
+Instructors can skip the Data Import and Data Wrangling sections to start with the Data Analysis section if they wish.
 
-Instructors can skip the Data Import and Data Wrangling sections to start with the Data Analysis section if they wish. 
+If instructors choose to only start with the Data Visualization or Data Analysis sections  then the will want to suppress evaluation of the plots following this section.
 
+Note: Monthly data is also available within the `data` directory. This could be used for time series analysis.
 
 #### Target audience 
 
-This case study is appropriate for those new to R programming. It is also appropriate for more advanced R users who are new to the Tidyverse. This particular case study may require some introductory knowlege of R programming. 
+This case study is appropriate for those new to R programming. It is also appropriate for more advanced R users who are new to the Tidyverse. This particular case study may require some introductory knowledge of statistics. 
 
 #### Suggested homework
 
-Create another dashboard with graphs and statistics featuring other elements within this dataset. For example, students may create graphs that explore what school events are reported to have more shootings. Students could be asked to use one of the pages of the dashboard that we created as an example. 
+Students could focus on the counties of a particular state and perform the same analyses and visualizations to see how the different types of counties compared for opioid pill shipments. Students could be asked to work on different states. Discussion could follow about  how and why the states show different results.
+
 
 
