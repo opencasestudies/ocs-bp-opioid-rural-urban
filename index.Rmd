@@ -1759,7 +1759,9 @@ ggplot( aes(y = value, x = year, colour = category, group = category)) +
 
 Wow, we can see here that the two urban categories actually have larger differneces in normalized pill counts from eachother than either has with the rural counties!
 
-Thus it seems reasonable to lump these two categories together.
+Thus it seems reasonable to lump the rural and small urban  categories together.
+
+So now we will make a new variable based on being either large urban or small urban/rural:
 
 ```{r}
 
@@ -1801,7 +1803,8 @@ scale_color_manual(values = c("#481567FF", "#20A387FF"))
 
 directlabels::direct.label(plot_2cat, method = list(dl.trans(y = y +0.5),
                                                      "far.from.others.borders",
-                                                     fontface = 'bold'))
+                                                     fontface = 'bold',
+                                                    cex = 0.8))
 
 ```
 
@@ -2058,9 +2061,9 @@ wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ co
 
 ```
 
-for small samples, this can then be compared to a [critical $W$ table](https://math.usask.ca/~laverty/S245/Tables/wmw.pdf) (note here that $W$ is $U$) for comparison to determine significance. From this table we see that our example has so few values that the null can't be reliably rejected.
+for small samples, this can then be compared to a [critical $W$ table](https://math.usask.ca/~laverty/S245/Tables/wmw.pdf) (note here that $W$ is $U$) for comparison to determine significance. If the $W$ is lower than the critical value, it suggests that the null hypothesis should be rejected. From this table we see that our example has so few values that the null can't be reliably rejected. Although the small number was useful for illustrative purposes as to how the test is performed.
 
-For larger samples (like our actual data - generally n>20 per group) the $W$ statistic is then used to calculate a $Z$ statistic like so:
+For larger samples (like our actual data - generally n>20 per group) the $W$ statistic is instead used to calculate a $Z$ statistic like so:
 
 $$Z = \frac{W-\mu_W}{\sigma_W}$$
 
