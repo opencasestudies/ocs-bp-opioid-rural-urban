@@ -1238,9 +1238,24 @@ Overall the density has increased, if you take a look at the y-axis you can see 
 
 How does this compare with raw population values?
 
+To make this plot, we will take the sum of the population values for each county rather than the mean. 
+
+
+#### {.think_question_block}
+<b><u> Question Opportunity </u></b>
+
+How might you create this plot?
+
+####
+
+***
+
+<details> <summary> Click here to reveal the code. </summary>
+
+
 ```{r}
 
-Annual %>% 
+overall_density <-Annual %>% 
   group_by(year) %>%
   summarise(total_population = sum(population)) %>%
      ggplot(aes(x =year, y = total_population)) + 
@@ -1252,6 +1267,12 @@ Annual %>%
                  x = "year",
                  y = "US total population")
  
+```
+
+</details>
+
+```{r}
+overall_density
 ```
 
 ## Rural and Urban areas
@@ -1267,12 +1288,10 @@ Annual %>%
   count(rural_urban)
 ```
 
-In this case we can make a plot using two different `geom_*` layers together. Whatever `geom_*` layer is added last will be displayed on top. In this case we will use `geom_point()` and `geom_smooth()` to add a line connecting the points of the scatter plot of the `geom_point()` function.
+In this case we can make a plot using two different `geom_*` layers together. Whatever `geom_*` layer is added last will be displayed on top. In this case we will use `geom_point()` and `geom_smooth()` to add a line connecting the points of the scatter plot of the `geom_point()` function. We can also use the `facet_wrap()` function of the `ggplot2` pacakge to create subplots based on the `rural_urban` variable. Thus we will create a subplot for the `Rural` values and another for the `Urban` values.
 
-avocado why does this look sooooo different for `county_info` and `Annual` - it appears that many of the US counties that are not represented in the DEA data .were rural
-```{r}
-checking %>% filter(is.na(DOSAGE_UNIT)) %>%  group_by(countyfips) %>%count(rural_urban)
-```
+The `scales = "free"` argument allows for each to have a different scale for the y-axis.
+
 
 ```{r}
  Annual  %>% group_by( year) %>%
@@ -1383,7 +1402,6 @@ Nice, now we have a pretty easy to interpret table, but we can make it even easi
 
 ```{r}
 
-
 formattable::formattable(R_U, list(`Percent Urban` = formattable::color_bar("#FA614B")))
 ```
 
@@ -1420,42 +1438,110 @@ formattable(R_U, list(`Percent Urban` = color_bar("#FA614B"),
 
 ```
 
-
-
-
-```{r, fig.height=7}
-
-R_U <- Annual  %>% group_by(BUYER_STATE, year) %>%
-     count(rural_urban)
-R_U %<>% pivot_wider( names_from = rural_urban, values_from = n)
-
-  R_U %<>%mutate(Urban = replace_na(Urban , 0))
-
-R_U %<>% mutate(percent_urban = (Urban/(Urban+Rural))*100) 
- ggplot(R_U, color = "black", aes(x = BUYER_STATE, y = percent_urban, color = year)) + 
-  geom_point() + 
- theme_minimal() +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 90),
-      legend.position = "bottom") +
-   coord_flip() +
-   scale_colour_viridis_d(option = "magma", end = 0, begin = 1, guide = guide_legend(nrow = 1)) +
-   labs(x =  "Percent Urban",
-        title = "State differnces in percentage of counties that are urban over time")
-   
-
-```
-
+Nice, now this is really easy to read.
 
 
 ## US shipments over time
 
 Now let's get a sense of how the shipments of [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) changed over time in general across all counties in the US.
 
+First we are going to create a new variable in the `Annual` data that is the number of pills in millions, as this is easier for us to interpret.
+
+```{r}
+Annual %<>% 
+  mutate(Pills_in_millions =  DOSAGE_UNIT/1000000)
+```
+
+Now, let's make a plot using the `stat_summary()` function rather than a `geom_*` function.
+
+This allows us to cacluate diffrent features about the data to plot. Custom functions can be used or funtions that are wrappers for the `smean.*` functions the `Hmisc` package. 
+
+See the [documination](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) for the `Hmisc` package to learn more about these functions.
+
+ggplot2 wrapper   | Hmisc function | Details                                                                      
+---------- |------------- | -------------------------------------
+mean_cl_normal | smean.cl.normal | computes 3 summary variables: the
+sample mean and lower and upper Gaussian confidence limits based on the t-distribution  
+mean_sd | smean.sd | computes the mean plus or mindus the standard deviation   
+mean_sdl  | smean.sdl | computes the mean plus or minus a constant
+times the standard deviation  
+mean_cl_boot | smean.cl.boot | fast implementation of the basic nonparametric bootstrap for obtaining confidence limits for the population mean without assuming normality (default is 1000 bootstrap samples)
+meadian_hilow | smedian.hilow | computes the sample median and a selected pair of outer quantiles having equal tail areas  
+
+
+We will use the `mean_cl_boot()` function to create our plot. This will create a point at the mean and then lines around the point based on "confidience limits". In this case, the package uses a nonparametric bootstrap to compute a 95 % [confidence interval](https://en.wikipedia.org/wiki/Confidence_interval) for the mean. 
+
+What does this mean?
+
+According to [Wikipedia]((https://en.wikipedia.org/wiki/Confidence_interval), a confidence interval is:
+
+> A range of plausible values for an unknown parameter (for example, the mean)
+
+We don't know the true mean for the number of pills shipped to a US county, our data represents an estimate as we saw that not every county is represented in the data and it is highly possible that not all pill shipments are accounted for. 
+
+Thus confidence intervals show the reliability of the mean estimate. If the interval is very large, than the true mean could possibly be many other values. 
+
+Again according to [Wikipedia]((https://en.wikipedia.org/wiki/Confidence_interval):
+
+> The interval has an associated confidence level that the true parameter is in the proposed range. 
+
+> There is a 95% probability that the calculated confidence interval from some future experiment encompasses the true value of the population parameter.
+
+It does not mean:
+
+> A 95% probability that the interval covers the population parameter
+
+
+Rather it is that we are 95% percent **confident** that the interval covers the population mean.
+
+It is typically calculated as follows:
+
+$\bar{x} +- Z \frac{s}{\sqrt{n}}$
+
+Where \bar{x} is the observed mean, $s$ is the standard deviation, $n$ is the number of observations, and $Z$ is the Z score from the normal distribution for the particular confidence level chosen which is typically 95%. For example with a 95% confidence level the Z is 1.96 indicating that the area around the mean on the [sampling distribution](https://en.wikipedia.org/wiki/Sampling_distribution) is within plus or minus 1.96 standard deviations.
+
+This is best demonstrated with an image of the [sampling distribution](https://en.wikipedia.org/wiki/Sampling_distribution:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "dist.png"))
+```
+
+##### [[source]]((http://onlinestatbook.com/2/estimation/mean.html))
+
+
+As we can see 95% of the distribution (shaded blue) is within 1.96 standard deviations of the mean zero on the normal distribution.
+
+See [here](http://onlinestatbook.com/2/estimation/mean.html) for a more detailed explanation of the confidence interval.
+
+But what about the `boot` part of the function?
+
+This is short for the processes of [bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)), which means that the mean is calculated many times after taking random samples of the data. This is called [resampling](https://en.wikipedia.org/wiki/Resampling_(statistics)) and in the case of bootstrapping, it is called resampling with replacement becuase the same values can be reused within even the same sample. For example if our set of possible values is 1,2,3,4,5, we could obtain a sample that is 1,1,3,4,5)).
+
+The mean for say 1000 different bootstrap samples is calculated and plotted as a histrogram just like the sampling distribution. 
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "boot.png"))
+```
+##### [[source]](https://acclab.github.io/bootstrap-confidence-intervals.html)
+
+
+The confidence interval is then determined from this plot as the point on the where the data is again within a 95% confidence interval around the  most frequently occuring calculated mean across all the different bootstrap samples.
+
+See [here](https://acclab.github.io/bootstrap-confidence-intervals.html) for more details about how this process works.
+
+We can use this function in our plot  as `stat_summary(fun.data = mean_cl_boot)`, we can also add a position argument so that our two groups are not overlapping by chosing the `position_doge` option which takes an argument of `width` which sepcifies how far apart the two groups should be plotted. 
+
+The confidence intervals are then ploted as a line through a point which shows the range of other possible values for the mean based on the bootstrap samples. 
+
+We will also use the `stat_summary()` function to create a line between the points based on the mean.
+
 ```{r}
 Annual %>% group_by(year)  %>%
-ggplot( aes(x = year, y = (DOSAGE_UNIT/1000000))) + 
-  geom_boxplot() + 
+ggplot( aes(x = year, y = Pills_in_millions)) + 
+  stat_summary(fun.data  = mean_cl_boot,
+             position = position_dodge(width=0.5)) +
+  stat_summary(fun = mean,
+                geom = "line") 
   labs(title = "Average Number of Opioid Pills Shipped to a US County",
        y = "Number of pills in millions") +
   theme_minimal()
@@ -1649,21 +1735,7 @@ ggplot( aes(x = year, y = value, colour = year)) +
 
 Ok, now that we can make fair comparisons between counties, we can now take a look at the differences between rural and urban counties.
 
-To make this plot we will use the `stat_summary()` function of the `ggplot2` package. This alllows us to cacluate diffrent features about the data to plot. Custom functions can be used or funtions that are wrappers for the `smean.*` functions the `Hmisc` package. 
-
-See the [documination](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) for the `Hmisc` package to learn more about these functions.
-
-ggplot2 wrapper   | Hmisc function | Details                                                                      
----------- |------------- | -------------------------------------
-mean_cl_normal | smean.cl.normal | computes 3 summary variables: the
-sample mean and lower and upper Gaussian confidence limits based on the t-distribution  
-mean_sd | smean.sd | computes the mean plus or mindus the standard deviation   
-mean_sdl  | smean.sdl | computes the mean plus or minus a constant
-times the standard deviation  
-mean_cl_boot | smean.cl.boot | fast implementation of the basic nonparametric bootstrap for obtaining confidence limits for the population mean without assuming normality
-meadian_hilow | smedian.hilow | computes the sample median and a selected pair of outer quantiles having equal tail areas  
-
-
+To make this plot we will use the `stat_summary()` function of the `ggplot2` package. 
 For example we can calculate
 
 ```{r}
