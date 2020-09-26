@@ -63,7 +63,7 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [
 
 To cite this case study please use:
 
-Wright, Carrie, and Wang, Kexin (Sheena) and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ocs_pop.html. Opioids in the United States (Version v1.0.0).
+Wright, Carrie, and Wang, Kexin (Sheena) and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ Opioids in the United States (Version v1.0.0).
 
 avocado update url
 ####
@@ -115,16 +115,9 @@ They found that:
 include_graphics(here::here("img", "introducedbyprescription.png"))
 ```
 
-> Heroin use has changed from an inner-city, minority-centered problem to one that has a more widespread geographical distribution, involving **primarily white men and women in their late 20s living outside of large urban areas**.
+##### [[sourcce]]((https://doi.org/10.1001/jamapsychiatry.2014.366))
 
-```{r, out.width = "80%", echo = FALSE, fig.align ="center"}
-include_graphics(here::here("img", "mostlywhite.png"))
-```
-
-
-> A much greater percentage of heroin users completing the survey in the SKIP Program reported currently living in **small urban or nonurban areas** than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
-
-This survey used self-declared area of current residence (large urban, small urban, suburban, or rural).
+> Heroin use has **changed from an inner-city**, minority-centered problem to one that has a more widespread geographical distribution, involving primarily white men and women in their late 20s living **outside of large urban areas**.
 
 
 ```{r, out.width = "50%", echo = FALSE, fig.align ="center"}
@@ -133,7 +126,9 @@ include_graphics(here::here("img", "james-yarema-5tyMgag0wRo-unsplash.jpg"))
 
 <span>Photo by <a href="https://unsplash.com/@jamesyarema?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">James Yarema</a> on <a href="https://unsplash.com/s/photos/pills?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
-#### [[source]](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/)
+> A much greater percentage of heroin users completing the survey in the SKIP Program reported currently living in **small urban or nonurban areas** than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
+
+This survey used self-declared area of current residence (large urban, small urban, suburban, or rural).
 
 
 # **Main Question**
@@ -178,7 +173,6 @@ Statistical concepts and methods:
 2. Understanding of when to use a Wilcoxon rank sum test (also called Mann Whitney U test)  
 3. How to implement a Wilcoxon rank sum test in R  
 4. How to interpret a Wilcoxon rank sum test    
-
 
 *** 
 
@@ -249,6 +243,9 @@ knitr::include_graphics(here::here("img","ingo-doerrie-Ti6Sk5rZRP8-unsplash.jpg"
 
 However, technically, opioids are substances that bind to the [opioid receptors](https://www.sciencedaily.com/releases/2007/10/071014163647.htm#:~:text=The%20opioid%20system%20consists%20of,and%20potentially%20initiating%20addictive%20behaviors.) in the body, which are involved in the sensation of `pain` and the experience of [reward](https://en.wikipedia.org/wiki/Reward_system#:~:text=The%20reward%20system%20is%20a,involve%20pleasure%20as%20a%20core). There are actually opioids that naturally are made by the human body, the most well known being the [endorphins](https://www.medicalnewstoday.com/articles/320839#:~:text=Endorphins%20are%20chemicals%20produced%20by,surgery%20or%20for%20pain%2Drelief.).
 
+***
+
+<details> <summary> Click here to learn about why opioids are addictive </summary>
 
 Opioid drugs tend to be addictive because they modulate the [reward system](https://en.wikipedia.org/wiki/Reward_system#:~:text=The%20reward%20system%20is%20a,involve%20pleasure%20as%20a%20core). This is the part of the brain that reinforces behaviors (normally these are behaviors such as drinking water or eating food) by causing the experience of pleasure (through the release of a neurotransmitter called [dopamine](https://en.wikipedia.org/wiki/Dopamine)). 
 
@@ -258,10 +255,12 @@ This same system can be activated by both opioids that naturally occur in the bo
 knitr::include_graphics("https://www.drugabuse.gov/sites/default/files/styles/content_image_large/public/drugstargetthebrainspleasurecenter.gif?itok=Ffd_PCeb")
 ```
 
-#### [[source]](https://www.drugabuse.gov/publications/drugs-brains-behavior-science-addiction/drugs-brain)
+[[source](https://www.drugabuse.gov/publications/drugs-brains-behavior-science-addiction/drugs-brain)]
 
+</details> 
+***
 
-In general, opioids medications and drugs have been found to dull the senses, releive pain, supress cough, reduce respiration and heart rate, induce constipation, and induce feelings of euphoria. They have a high potential for abuse and addiction.
+In general, opioid medications and drugs have been found to dull the senses, releive pain, supress cough, reduce respiration and heart rate, induce constipation, and induce feelings of euphoria. They have a high potential for abuse and addiction.
 
 Drugs within this class include (with prescription drug brand names are shown in parentheses): 
 
@@ -281,6 +280,8 @@ Opium comes from the fluid (which is also called poppy tears) inside the seed ca
 
 Opium has been used by humans since 5000 BCE and it has been used across the world. See [here](https://en.wikipedia.org/wiki/Opium) for an interesting overview of the history. 
 
+***
+<details> <summary> Click here to learn about the history of opioids in the US </summary>
 
 Opium derived medications were historically used in United States to treat a variety of ailments besides pain including: cholera, dysentery, tuberculosis, and mental illness.  
 
@@ -293,9 +294,11 @@ Here you can see a photo of a bottle of heroin:
 knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Bayer_Heroin_bottle.jpg/220px-Bayer_Heroin_bottle.jpg")
 ```
 
-#### [[source]](https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Bayer_Heroin_bottle.jpg/220px-Bayer_Heroin_bottle.jpg)
+[[source](https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Bayer_Heroin_bottle.jpg/220px-Bayer_Heroin_bottle.jpg)]
 
 Opioids have continued to be used in the treatment of pain. 
+
+</details> 
 
 ## The Opioid Epidemic 
 
@@ -333,7 +336,7 @@ knitr::include_graphics(here::here("img", "2018-3-Wave-Lines-Mortality.png"))
 
 #### [[source]](https://www.cdc.gov/drugoverdose/images/epidemic/2018-3-Wave-Lines-Mortality.png)
 
-You can see that moth recent overdose deaths were due to the use of synthetic opioids, where as previous high levels of overdoses (till about 2015) were attributable to natural and semi-synthetic opioids (which is what we will look at in this case study). 
+You can see that most recent overdose deaths were due to the use of **synthetic opioids**, where as previous high levels of overdoses (till about 2015) were attributable to natural and semi-synthetic opioids (which is what we will look at in this case study).
 
 They state that: 
 
@@ -343,19 +346,19 @@ They state that:
 Importantly rates appear to differ across states, according to this [CDC report](https://www.cdc.gov/mmwr/volumes/67/wr/mm675152e1.htm?s_cid=mm675152e1_w) 
 
 
-```{r}
+```{r, echo = FALSE}
 knitr::include_graphics("https://www.cdc.gov/mmwr/volumes/67/wr/figures/mm675152e1-F.gif")
 
 ```
 
-[[source]](https://www.cdc.gov/mmwr/volumes/67/wr/figures/mm675152e1-F.gif)
+##### [[source]](https://www.cdc.gov/mmwr/volumes/67/wr/figures/mm675152e1-F.gif)
 
 
 According to the [motivating report](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs/mm6802a1-H.pdf) for our case study: 
 
 Prescription rates are now declining, however, prescription of opioids was found to be higher in rural areas rather than urban ares. 
 
-```{r}
+```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "context.png"))
 
 ```
@@ -378,6 +381,7 @@ Furthermore, we will define counties as being rural or urban however there can b
 
 Finally, overdose deaths are often due to the use of multiple substances. Simply because a county received more pills does not  mean that people in that county would experience more drug overdoses. It is also important to remember that prescription opioids only account for a portion of the drug overdose deaths reported in this time period. However, according to this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) 75% of heroin users surveyed were introduced to opioids through prescription drug use.
 
+The recent overdose deaths in the US opioid crisis are mostly due to synthetic opioids. Understanding what makes communities vulnerable to these types of opioids is an area of active research but not a focus of this case study.
 
 # **What are the data?**
 *** 
@@ -924,9 +928,9 @@ knitr::include_graphics(here::here("img", "join.png"))
 
 ##### [[source]](https://dplyr.tidyverse.org/reference/join.html)
 
-Here is  a visualization of these options:
+Here is a visualization of these options:
 
-```{r, echo = FALSE, outwidth = "50%"}
+```{r, echo = FALSE, outwidth = "40%"}
 knitr::include_graphics(here::here("img", "join_image.png"))
 ```
 
@@ -1919,6 +1923,18 @@ Annual %<>%
 
 Let's take a look at this with our formatted table and plots as before.
 
+
+#### {.think_question_block}
+<b><u> Question Opportunity </u></b>
+
+Do you recall how we might do this?
+
+####
+
+
+<details> <summary> Click here to reveal the code. </summary>
+
+
 ```{r}
 
 R_U <-Annual%>% 
@@ -1930,23 +1946,31 @@ R_U <-Annual%>%
   mutate("Rural Change" = Rural - lag(Rural), 
          "Small Urban Change" = `Small Urban` - lag(`Small Urban`),
          "Large Urban Change" = `Large Urban` - lag(`Large Urban`),
-        "Percent Large Urban" = round((`Large Urban`/(`Large Urban` + `Small Urban` + Rural))*100, digits = 2)) %>%
+        "Percent Large Urban" = 
+  round((`Large Urban`/(`Large Urban` + `Small Urban` + Rural))*100, digits = 2)) %>%
   rename("Year" = "year")
 
 R_U
 
-formattable(R_U, list(`Percent Large Urban` = color_bar("#FA614B"),
-                      `Rural Change` = formatter(.tag ="span", 
+table_cat <- formattable(R_U, list(`Percent Large Urban` = color_bar("#FA614B"),
+                  `Rural Change` = formatter(.tag ="span", 
+                                            style = ~style(
+                                            color = redgreen(number = 
+                                                               `Rural Change`))),
+             `Small Urban Change` = formatter(.tag = "span", 
+                                            style = ~style(
+                                            color = redgreen(number = 
+                                                          `Small Urban Change`))),
+             `Large Urban Change` = formatter(.tag = "span", 
                                                 style = ~style(
-                                                color = redgreen(number = `Rural Change`))),
-                      `Small Urban Change` = formatter(.tag = "span", 
-                                                style = ~style(
-                                                color = redgreen(number = `Small Urban Change`))),
-                      `Large Urban Change` = formatter(.tag = "span", 
-                                                style = ~style(
-                                                color = redgreen(number = `Large Urban Change`)))))
+                                                color = redgreen(number =
+                                                              `Large Urban Change`)))))
 ```
+</details> 
 
+```{r}
+table_cat
+```
 
 This time when we create our plot we will add labels directly to the lines of our plot using the `directlabels` package. 
 

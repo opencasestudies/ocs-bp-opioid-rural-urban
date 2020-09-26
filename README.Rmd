@@ -28,7 +28,7 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 (
 
 To cite this case study:
 
-Wright, Carrie, and Wang, Kexin (Sheena) and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ocs_pop.html. Opioids in the United States (Version v1.0.0). avocado update url
+Wright, Carrie, and Wang, Kexin (Sheena) and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ Opioids in the United States (Version v1.0.0).
 
 ### Acknowledgements
 

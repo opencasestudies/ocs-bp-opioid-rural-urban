@@ -27,8 +27,8 @@ To cite this case study:
 
 Wright, Carrie, and Wang, Kexin (Sheena) and Jager, Leah and Taub,
 Margaret and Hicks, Stephanie. (2020).
-<a href="https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ocs_pop.html" class="uri">https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ocs_pop.html</a>.
-Opioids in the United States (Version v1.0.0). avocado update url
+<a href="https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/" class="uri">https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/</a>
+Opioids in the United States (Version v1.0.0).
 
 ### Acknowledgements
 
