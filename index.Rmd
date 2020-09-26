@@ -374,7 +374,7 @@ According to the [Washington Post data](https://www.washingtonpost.com/national/
 
 >"It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else."
 
-Furthermore, we will define counties as being rural or urban however there can be great variation within a county and we used land area values form only 2010 even though these can fluctuate. Therefore the way we categorized counties should be seen as an approximation.
+Furthermore, we will define counties as being rural or urban however there can be great variation within a county and we used land area values form only 2010 even though these can fluctuate. Therefore the way we categorized counties should be seen as an approximation. Additionally, other aspects about a county besides population level and density can be influential for creating an environment that would increase the vulnerability of community members to drug abuse and addiction. These include socioeconomic factors among others. 
 
 Finally, overdose deaths are often due to the use of multiple substances. Simply because a county received more pills does not  mean that people in that county would experience more drug overdoses. It is also important to remember that prescription opioids only account for a portion of the drug overdose deaths reported in this time period. However, according to this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) 75% of heroin users surveyed were introduced to opioids through prescription drug use.
 
