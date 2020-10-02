@@ -2412,13 +2412,16 @@ The main conclusion here is that we can see very different results depending on 
 Now, let's create a plot that summarizes our main findings.
 
 
-We will create a plot that is just an arrow using `geom_segment()`. 
+We will create a plot that is just a single arrow using `geom_segment()` function of `ggplot2`.  
+
 
 This requires the following arguments :
 1) x -  x coordinate of starting point of the arrow
 2) y - y coordinate of starting point of the arrow
 3) xend -  x coordinate of end point of the arrow
 4) yend - y coordinate of end point if the arrow
+
+(Note: You can make a straight arrow using `geom_curve()` with the same arguments)
 
 Also `ggplot` requires a data input, we will use this to create the y axis value for the arrow. We will use the `aes()` function to define the length and location of the arrow.
 
@@ -2435,12 +2438,12 @@ Then we will use the `xlim()` function of the `ggplot2` package to specify the o
 arrow_df <- data.frame( y = 1)
 arrow_df
 
-arrowplot<-ggplot(arrow_df, aes(x = .5, y = 1, xend = 1, yend = 1)) +
+arrowplot<-ggplot(arrow_df, aes(x = .5, y = 1, xend = .7, yend = 1)) +
                 geom_segment(arrow = arrow(),
                            lineend = "butt",
                           linejoin = "mitre",
                               size = 3)+
-                xlim(0, 1.5)
+                xlim(0.5, 0.75)
 
 arrowplot
 ```
@@ -2455,27 +2458,31 @@ arrowplot
 
 We can move the legend to the plot area using the `legend.justification` and `legend.position` arguments of the `theme()` function. The relative position on the plot area needs to be specified like so `c(x,y)`. Thus `c(0.7,0.2)` is about 70% across the x axis from right to left and about 20% up from the x axis. 
 
+
+
 ```{r}
+
 main_plot <- Raw_Data  + 
   theme(legend.justification = c(0.7,0.2),
              legend.position = c(0.7,.2)) +
              arrowplot +
-             Norm_Data + 
+             Norm_Data +
   theme(legend.justification = c(0.7,0.1),
              legend.position = c(0.7,.1)) +
              arrowplot +
              plot_cat_norm + 
-  labs(title = " Normalized and Redefined Data") + 
+  labs(title = "Normalized &\nStratified Data") + 
+  plot_layout( nrow = 1, widths = c(5,1.3,5,1.3,5))+
  #theme(title = element_text(hjust = 0.5)) +
-  plot_annotation(title = "How we normalize and how we define types of counties can yield very\ndifferent pictures about opioid (oxycodone and hydrocodone) pill shipments\nin the US") &
-  theme(plot.title = element_text(size = 18, face = "bold"))
+  plot_annotation(title = "How we normalize pill shipment data and how we stratify by different types of\ncounties can yield very different pictures about opioid (oxycodone and \nhydrocodone) pill shipments to counties in the US") &
+  theme(plot.title = element_text(size = 18, face = "bold", hjust = 0.5))
 
 ```
 
 
 ```{r, echo= FALSE}
 png(filename = here::here("img", "mainplot.png"), 
-         res = 300, width = 10, height = 10, units = "in")
+         res = 300, width = 10, height = 6, units = "in")
 main_plot
 dev.off()
 ```
