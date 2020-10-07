@@ -47,6 +47,8 @@ knitr::include_graphics(here("img",
 
 ####
 
+AVOCADO: the title of the figure feels somewhat complicated and should be simplified. Might comment below in the last section after reading through the entire case study though before making suggestions. 
+
 #### {.disclaimer_block}
 
 **Disclaimer**: The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**. A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
@@ -63,7 +65,7 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [
 
 To cite this case study please use:
 
-Wright, Carrie, and Wang, Kexin (Sheena) and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ Opioids in the United States (Version v1.0.0).
+Wright, Carrie, and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ Opioids in the United States (Version v1.0.0).
 
 avocado update url
 ####
@@ -72,11 +74,11 @@ avocado update url
 *** 
 
 
-In this case study we will be examining the number of opioid pills (specifically [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States), as they are the top two abused opioids) shipped to pharmacies and practitioners at the county-level around the United States (US) from 2006 to 2014.
+In this case study we will be examining the number of opioid pills (specifically [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States), as they are the top two most abused opioids) shipped to pharmacies and practitioners at the county-level around the United States (US) from 2006 to 2014.
 
 This data comes from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/) after legal action by the owner of the [Charleston Gazette-Mail](https://www.wvgazettemail.com/) in West Virginia and the [Washington Post](https://www.washingtonpost.com/).
 
-We will investigate how the number of shipped pills compares for rural and urban counties. This analysis will demonstrate how different regions of the country may have been more at risk for opioid addiction crises due to differing rates of opioid prescription (using the number of pills as a proxy for prescription rates). This will help inform students about how evidence-based intervention decisions are made in this area.  
+We will investigate how the number of shipped pills has changed across time and between rural and urban counties in the US. This analysis will demonstrate how different regions of the country may have been more at risk for opioid addiction crises due to differing rates of opioid prescription (using the number of pills as a proxy for prescription rates). This will help inform students about how evidence-based intervention decisions are made in this area.  
 
 This case study is motivated by this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w):
 
@@ -86,7 +88,7 @@ García, M. C. et al. Opioid Prescribing Rates in Nonmetropolitan and Metropolit
 
 ####
 
-This article explores rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://landing.athenahealth.com/g/improvecare?cmp=10672941&utm_salesforce=7016f000001yWQMAA2&utm_medium=cpc&utm_campaign=1%20Branded%20Experimental&utm_adgroup=ModBroad&utm_source=google&utm_term=%2Bathena%20%2Bhealth&utm_type=b&gclid=Cj0KCQjwtZH7BRDzARIsAGjbK2bn_oxyd0jNBGQkPMcSSpEuGbzLUqL8m-tuAQWMZ-smUNLLjtztB7EaAgSlEALw_wcB) for 31,422 primary care providers from January 2014 to March 2017.
+This article explores rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://landing.athenahealth.com/g/improvecare?cmp=10672941) for 31,422 primary care providers from January 2014 to March 2017.
 
 The main takeaways from this article were:
 
@@ -96,8 +98,7 @@ The main takeaways from this article were:
 
 > Higher opioid prescribing rates put patients **at risk for addiction and overdose**.
 
-
-Indeed,  this was confirmed by another [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html)
+Indeed, this was confirmed by another [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575), which surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).
 
 #### {.reference_block}
 
@@ -109,6 +110,8 @@ They found that:
 
 > Respondents who began using heroin in the 1960s were predominantly young men (82.8%; mean age, 16.5 years) whose first opioid of abuse was heroin (80%).
 
+AVOCADO: what does the last 80% refer to? 80% heroin and 20% not? I think so based on the figure below.
+
 > However, more **recent users** were older (mean age, 22.9 years) men and women **living in less urban areas (75.2%)** who were **introduced to opioids through prescription drugs (75.0%)**.
 
 ```{r, out.width = "80%", echo = FALSE, fig.align ="center"}
@@ -118,7 +121,6 @@ include_graphics(here::here("img", "introducedbyprescription.png"))
 ##### [[sourcce]]((https://doi.org/10.1001/jamapsychiatry.2014.366))
 
 > Heroin use has **changed from an inner-city**, minority-centered problem to one that has a more widespread geographical distribution, involving primarily white men and women in their late 20s living **outside of large urban areas**.
-
 
 ```{r, out.width = "50%", echo = FALSE, fig.align ="center"}
 include_graphics(here::here("img", "james-yarema-5tyMgag0wRo-unsplash.jpg"))
@@ -137,7 +139,7 @@ This survey used self-declared area of current residence (large urban, small urb
 #### {.main_question_block}
 <b><u> Our main question: </u></b>
 
-How did opioid shipment rates differ between rural and urban regions over time around the US from 2006-2014?
+How did opioid shipment rates differ between rural and urban regions over time in the US from 2006-2014?
 
 
 ####
@@ -162,23 +164,22 @@ Data science skills:
 4. How to create formatted tables of data with `formattable`  
 5. How to look for missing data in a dataset (`naniar`)  
 6. How to create data visualizations with `ggplot2` 
-7. How to create interactive plot for plots that are difficult to label because they have  many elements (`ggiraph`)  
-8. How to combine plots with `patchwork`
+7. How to create interactive plots that are difficult to label because they have  many elements (`ggiraph`)  
+8. How to combine individual plots into one figure with `patchwork`
 
   
 Statistical concepts and methods:  
   
 1. Understanding of when and why data normalization is useful  
 2. Understanding of how group definitions can change results  
-2. Understanding of when to use a Wilcoxon rank sum test (also called Mann Whitney U test)  
-3. How to implement a Wilcoxon rank sum test in R  
-4. How to interpret a Wilcoxon rank sum test    
+3. Understanding of when to use a Wilcoxon rank sum test (also called Mann Whitney U test)  
+4. How to implement a Wilcoxon rank sum test in R  
+5. How to interpret a Wilcoxon rank sum test    
 
 *** 
 
 
 We will begin by loading the packages that we will need:
-
 
 ```{r}
 library(readxl)
@@ -197,6 +198,7 @@ library(ggpol)
 library(ggiraph)
 library(patchwork)
 library(directlabels)
+library(usdata)
 ```
 
 
@@ -221,6 +223,7 @@ Package   | Use in this case study
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
+[usdata]() | AVOCADO: needs to be added
 
 The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
 
@@ -258,9 +261,10 @@ knitr::include_graphics("https://www.drugabuse.gov/sites/default/files/styles/co
 [[source](https://www.drugabuse.gov/publications/drugs-brains-behavior-science-addiction/drugs-brain)]
 
 </details> 
+
 ***
 
-In general, opioid medications and drugs have been found to dull the senses, releive pain, supress cough, reduce respiration and heart rate, induce constipation, and induce feelings of euphoria. They have a high potential for abuse and addiction.
+In general, opioid medications and drugs have been found to dull the senses, relieve pain, supress cough, reduce respiration and heart rate, induce constipation, and induce feelings of euphoria. They have a high potential for abuse and addiction.
 
 Drugs within this class include (with prescription drug brand names are shown in parentheses): 
 
@@ -289,7 +293,6 @@ Of note, they state that "from 1898 to 1910 heroin was marketed as a non-addicti
 
 Here you can see a photo of a bottle of heroin:
 
-
 ```{r, echo = FALSE, out.width="40%"}
 knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Bayer_Heroin_bottle.jpg/220px-Bayer_Heroin_bottle.jpg")
 ```
@@ -299,6 +302,8 @@ knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/f/
 Opioids have continued to be used in the treatment of pain. 
 
 </details> 
+
+***
 
 ## The Opioid Epidemic 
 
@@ -373,13 +378,13 @@ It is important to identify locations where people are particularly vulnerable t
 
 There are some important considerations regarding this data analysis to keep in mind: 
 
-According to the [Washington Post data](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/ about the DEA data:
+According to the [Washington Post database](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/), they state about the DEA data:
 
 >"It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else."
 
-Furthermore, we will define counties as being rural or urban however there can be great variation within a county and we used land area values form only 2010 even though these can fluctuate. Therefore the way we categorized counties should be seen as an approximation. Additionally, other aspects about a county besides population level and density can be influential for creating an environment that would increase the vulnerability of community members to drug abuse and addiction. These include socioeconomic factors among others. 
+Furthermore, we will define counties as being rural or urban however there can be great variation within a county and we used land area values from only 2010 even though these can fluctuate. Therefore, the way we categorized counties should be seen as an approximation. Additionally, other aspects about a county besides population level and density can be influential for creating an environment that would increase the vulnerability of community members to drug abuse and addiction. These include socioeconomic factors among others. 
 
-Finally, overdose deaths are often due to the use of multiple substances. Simply because a county received more pills does not  mean that people in that county would experience more drug overdoses. It is also important to remember that prescription opioids only account for a portion of the drug overdose deaths reported in this time period. However, according to this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) 75% of heroin users surveyed were introduced to opioids through prescription drug use.
+Finally, overdose deaths are often due to the use of multiple substances. Simply because a county received more pills does notmean that people in that county would experience more drug overdoses. It is also important to remember that prescription opioids only account for a portion of the drug overdose deaths reported in this time period. However, according to this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575), 75% of heroin users surveyed were introduced to opioids through prescription drug use.
 
 The recent overdose deaths in the US opioid crisis are mostly due to synthetic opioids. Understanding what makes communities vulnerable to these types of opioids is an area of active research but not a focus of this case study.
 
@@ -388,30 +393,31 @@ The recent overdose deaths in the US opioid crisis are mostly due to synthetic o
 
 We will use data from two sources:
 
-1) The US census for land area of counties to allow us to estimate county-level population density  
+1. The US census for land area of counties to allow us to estimate county-level population density  
 
-2) The [Washington Post data](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/)from the [Drug Enforcement Administration (DEA)](https://www.dea.gov/) about opioid ([oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) and [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf)) pill shipments to pharmacies and practitioners around the US at the county-level
+2. The [Washington Post data](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/) from the [Drug Enforcement Administration (DEA)](https://www.dea.gov/) about opioid ([oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) and [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf)) pill shipments to pharmacies and practitioners around the US at the county-level
 
-This dataset was released in July of 2019 and has been controversial as according to the Washington Post:
+This second dataset was released in July of 2019 and has been controversial as according to the Washington Post:
 
 > The disclosure is part of a civil action brought by 2,500 cities, towns, counties and tribal nations alleging that nearly two dozen drug companies **conspired to saturate the nation with opioids**.
 
 See [here](https://www.washingtonpost.com/national/2019/07/20/opioid-files/?arc404=true) for more details about how this database was released.
 
-The [Washington Post](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/)states that they:
+The [Washington Post](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/) states that they:
 
 >.. cleaned the data to include only information on shipments of oxycodone and hydrocodone pills. We did not include data on 10 other opioids because they were shipped in much lower quantities...
 
 >It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else.
 
-This data was part of the [Automated Reports and Consolidated Ordering System (ARCOS)]https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/ of the DEA in which:
+AVOCADO: the paragraph was repeated above in the limitations? Should we only include it either there or here? 
+
+This data was part of the [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) of the DEA in which:
 
 > manufacturers and distributors report their controlled substances transactions
 
 Their [website](https://www.deadiversion.usdoj.gov/arcos/index.html#background) indicates that: 
 
-
-> The Controlled Substances Act of 1970  created the requirement for Manufacturers and Distributors to report their controlled substances transactions to the Attorney General. The Attorney General delegates this authority to the Drug Enforcement Administration (DEA).
+> The Controlled Substances Act of 1970 created the requirement for Manufacturers and Distributors to report their controlled substances transactions to the Attorney General. The Attorney General delegates this authority to the Drug Enforcement Administration (DEA).
 
 > ARCOS is an automated, comprehensive drug reporting system which monitors the flow of DEA controlled substances from their point of manufacture through commercial distribution channels to point of sale or distribution at the dispensing/retail level - hospitals, retail pharmacies, practitioners, mid-level practitioners, and teaching institutions. Included in the list of controlled substance transactions tracked by ARCOS are the following: All Schedules I and II materials (manufacturers and distributors); Schedule III narcotic and gamma-hydroxybutyric acid (GHB) materials (manufacturers and distributors); and selected Schedule III and IV psychotropic drugs (manufacturers only).
 
@@ -419,7 +425,7 @@ The annual report about the data from 2019, can be found [here](https://www.dead
 
 As this is a very large dataset, thus the Washington Post created an [application prgoramming interface (API)](https://en.wikipedia.org/wiki/API)  to make it easier for users to access the data. 
 
-An API is a computational interface that simplifies interactions with a data or file system for a user. It is similar to a [Graphical User Interface GUI](https://en.wikipedia.org/wiki/Graphical_user_interface), yet it allows the user some more flexibility/functionality.
+An API is a computational interface that simplifies interactions with a data or file system for a user. It is similar to a [Graphical User Interface (GUI)](https://en.wikipedia.org/wiki/Graphical_user_interface), yet it allows the user some more flexibility/functionality.
 
 This [link](https://arcos-api.ext.nile.works/__swagger__/) takes you to the Washington Post ARCOS API. 
 
@@ -435,7 +441,7 @@ See [here](https://www.washingtonpost.com/national/2019/07/18/how-download-use-d
 
 We will need land area data for our calculations of population density. 
 
-We obtained county land area data from the US census Bureau at this [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011.html#LND)
+We obtained county land area data from the US census Bureau at this [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011.html#LND).
 
 This [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011/file-layout.html) explains how the data is formatted.
 
@@ -446,11 +452,13 @@ land <- readxl::read_excel(here::here("data", "LND01.xls"))
 land <- as_tibble(land)
 ```
 
-We can take a look at the data using the base `head()` function which will show the first 6 rows.
+We can take a look at the data using the base `head()` function which will show the first 3 rows.
 
 ```{r}
-head(land)
+head(land, n=3)
 ```
+
+AVOCADO: maybe a sentence on what is actually in the dataset? it looks like both state level (e.g. alabama, but also non-state level) info? 
 
 Looks good!
 
@@ -460,13 +468,13 @@ save(land, file =  here::here("data", "county_land_area.rda"))
 ```
 
 
-## Accessing APIs
+## Accessing data with APIs
 
-The `httr` package formats what are called "GET requests" so that they will work properly. This allows for the data to be retrieved from the API.
+The `httr` package creates what are called "GET requests" so that we can make these requests inside of R. This allows for the data to be retrieved from the API within R.
 
 The `jsonlite` package allows you to convert the data from `JSON` (often used by APIs) to a different format that is easier to work with.
 
-APIs typically require a password or key to gain access. Thus the `httr` package helps to authenticate your data request. Often these keys are something that you do not want to share, unless the API is public.
+APIs typically require a password or key to gain access or authenticate your data request. The `httr` package helps to authenticate your data request. Often these keys are something that you do not want to share, unless the API is public.
 
 In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed public, and currently "uO4EK6I" is publicly published as a key to use on the [github page](https://github.com/wpinvestigative/arcos) for the `arcos` package. We will use that here to access the API.
 
@@ -475,28 +483,28 @@ In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed p
 
 We are interested in the county level data - first let's get the population data. We can access it by:
 
-1) Pressing the `GET` button on the API.
+1. Pressing the `GET` button on the API.
 
-```{r}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img", "get.png"))
 
 ```
 
-2) Pressing the "Try it out" button.
+2. Pressing the "Try it out" button.
 
-```{r}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img", "tryitout.png"))
 ```
 
-3) Entering the key (which we got from [here]([github page](https://github.com/wpinvestigative/arcos))).
+3. Entering the key (which we got from [here]([github page](https://github.com/wpinvestigative/arcos))).
 
-```{r}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img", "key.png"))
 ```
 
-4) Clicking the "Execute" button.
+4. Clicking the "Execute" button.
 
-```{r}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img", "execute.png"))
 ```
 
@@ -507,7 +515,10 @@ This gives us the following output:
 We can copy the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package :
 
 ```{r}
-county_pop_json<-httr::GET(url = "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I")
+count_url <- "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"
+
+county_pop_json <- 
+  httr::GET(url = count_url)
 ```
 
 If we needed to specify a username and password, we would do so using the `authenticate()` function of the `httr` package within the `GET` function. The `authenticate()` function takes `user`, `password` and `type` arguments.
@@ -515,26 +526,30 @@ If we needed to specify a username and password, we would do so using the `authe
 Here is an example:
 
 ```{r, eval = FALSE}
-GET(url = "https://exampleURL", authenticate(user = "username", password = "password", type = "basic"))
+GET(url = "https://exampleURL", 
+    authenticate(user = "username", 
+                 password = "password", 
+                 type = "basic"))
 ```
 
-The default type is `"basic"` and typically what is needed.
+The default authentication request type is `"basic"` and typically what is needed.
 
-Now that we have used the `GET` function, we have a [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) file of the data. 
-
-JSON files are [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that they don't take up much memory and they are human readable files to make transmitting data from websites easier.
+Now that we have used the `GET` function, let's see what the data are. 
 
 ```{r}
 county_pop_json
 ```
 
+Here we can see that the object called `countyjson` is a `json` object. 
+A [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) object (or file format) is [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that it does not take up much memory and they are human readable files to make transmitting data from websites easier.
 
-Here we can see that the object called `countyjson` is a `json` object. You will also see that the `Satus` is `200`, which means that we were successful in retrieving the data from the API.
+You will also see that the `Status` is `200`, which means that we were successful in retrieving the data from the API.
 
 Now we can use the `content()` function of the `httr` package to extract the text from the file:
 
 ```{r}
-county_pop_text <-httr::content(county_pop_json, "text")
+county_pop_text <- 
+  httr::content(county_pop_json, "text")
 ```
 
 This will be a very large string at this point, we can take a look at part of it by using the `str_sub()` function of the `stringr` package. In this case we will only look at the first 400 characters.
@@ -559,10 +574,13 @@ stringr::str_sub(county_pop_text, start = 1, end = 400)
 ```
 
 
-Now to get the data into a more readable format, we can use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()` 
+To get the data into a more readable format, we can use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()` 
 
 ```{r}
-county_pop <- jsonlite::fromJSON(county_pop_text, flatten = TRUE)
+county_pop <- 
+  jsonlite::fromJSON(county_pop_text, 
+                     flatten = TRUE)
+
 county_pop <- as_tibble(county_pop)
 ```
 
@@ -570,7 +588,7 @@ We can use the `glimpse()` function and the `distinct()` function of the `dplyr`
 
 ```{r}
 dplyr::glimpse(county_pop)
-dplyr::distinct(county_pop,year)
+dplyr::distinct(county_pop, year)
 ```
 
 It looks like we have the full data from 2006-2014.
@@ -581,33 +599,54 @@ write.csv(county_pop, file = here::here("data", "county_pop_arcos.csv"))
 save(county_pop, file =  here::here("data", "county_pop_arcos.rda"))
 ```
 
-We are also interested in opioid pill shipment data at the county level. 
 
 ## Annual Shipment Data
 
-Here is the result of the same steps using the API for the combined_county_annual data:
+We are also interested in opioid pill shipment data at the county level. 
 
-`curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I" -H  "accept: application/json"`
+Here is the result of the same steps using the API for the `combined_county_annual` data:
+
+```
+curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I" 
+     -H  "accept: application/json"
+```     
+
+or in R, the URL is 
+
+```{r}
+annual_url <- 
+  "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
+```
 
 
 #### {.recall_code_question_block}
 <b><u> Question Opportunity </u></b>
 
-See if you can fix import the data without looking at the code for the population data.
+See if you can modify the import code without looking at the code for the population data.
 
 ####
 
+***
 
 <details> <summary> Click here to reveal the code. </summary>
 
 ```{r, eval = FALSE}
-county_annual_json<-httr::GET(url =  "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I")
-county_annual_json_text <-httr::content(county_annual_json, "text")
-county_annual <- jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
-annualDosage <- tibble::as_tibble(county_annual)
+county_annual_json <- 
+  httr::GET(url =  annual_url)
+
+county_annual_json_text <- 
+  httr::content(county_annual_json, "text")
+
+county_annual <- 
+  jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
+
+annualDosage <- 
+  tibble::as_tibble(county_annual)
 ```
 
 </details>
+
+***
 
 ```{r, echo = FALSE, eval = FALSE}
 write.csv(annualDosage, file = here::here("data", "county_annual.csv"))
@@ -626,15 +665,25 @@ distinct(annualDosage, year)
 
 Looks like we have the same years of data.
 
-
 ```{r, eval = FALSE, echo = FALSE}
 # We also retrieved the monthly data for instructors who wish to use this data
-countyjson <- httr::GET(url = "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I")
-countyjson_text <-httr::content(countyjson, "text")
-county <- jsonlite::fromJSON(countyjson_text, flatten = TRUE)
-monthlyDosage <- tibble::as_tibble(county)
-write.csv(monthlyDosage, file = here::here("data", "county_monthly.csv"))
-save(monthlyDosage, file =  here::here("data", "county_monthly.rda"))
+countyjson <- 
+  httr::GET(url = "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I")
+
+countyjson_text <- 
+  httr::content(countyjson, "text")
+
+county <- 
+  jsonlite::fromJSON(countyjson_text, flatten = TRUE)
+
+monthlyDosage <- 
+  tibble::as_tibble(county)
+
+write.csv(monthlyDosage, 
+          file = here::here("data", "county_monthly.csv"))
+
+save(monthlyDosage, 
+     file =  here::here("data", "county_monthly.rda"))
 ```
 
 
