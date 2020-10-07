@@ -715,9 +715,9 @@ How about the population data:
 vis_miss(county_pop)
 ```
 
-We appear to be missing some values for the `Name` and `variable` data, but we don`t intend to use these, so this should be OK. It is however a good idea to check these rows to see if anything strange is happening.
+Although it is very hard to see in the figure, we appear to be missing some values for the `NAME` and `variable` data, but we don`t intend to use these, so this should be OK. It is however a good idea to check these rows to see if anything strange is happening.
 
-Let's use the `filter()` function of the `dplyr` package and the `is.na()` base function to see more about the data that does not have countyfips codes.
+Let's use the `filter()` function of the `dplyr` package and the `is.na()` base function to see more about the data that does not have `NAME` values.
 
 We will also start using the `%>%` pipe of the `magrittr` package for our assignments.
 
@@ -750,7 +750,7 @@ annualDosage %>% filter(is.na(countyfips))
 ```
 
 
-It looks like the missing data is data for Puerto Rico - it makes sense that it doesn't have countyfips codes.
+We can see that the first rows with missing data for `countyfips` is data for Puerto Rico - it might make sense for Puerto Rico to be missing these codes.
 
 Let's see if there is any data other than data for Puerto Rico that is also missing `countyfips` values. We can use the `!=` operator which indicates not equal to.
 
@@ -778,8 +778,7 @@ annualDosage %>% filter(is.na(countyfips)) %>%
  filter(BUYER_STATE == "AR")
 ```
 
-
-According to this [website](https://www.nrcs.usda.gov/wps/portal/nrcs/detail/national/home/?cid=nrcs143_013697) the fIPS code is 05097.
+According to this [website](https://www.nrcs.usda.gov/wps/portal/nrcs/detail/national/home/?cid=nrcs143_013697) the FIPS code is 05097.
 
 
 We will update these values in the next section.
@@ -813,14 +812,18 @@ county_area <- land %>% select(Areaname, STCOU, LND110210D)
 county_area
 ```
 
+AVOCADO: again to the point above, there are more than just counties in this data set, i.e., it contains state data as well as the full US. Should we try to filter to this here, or will that happen automatically later?
+
+We can see that in addition to county-level measurements, we also have state-level and full US measurements of land area. But we will filter this data out down below.
+
 
 ## Updating `countyfips`
 
-We will use the `case_when()` function of the `dplyr` package recode the `NA` values for the rows for the `MONGOMERY` county of `AR` to be `05097`. First we need to specify for these particular rows. Because there Montgomery may be a county name in other states, we need to evaluate when the `BUYER_STATE` is `AR` and when the `BUYER_COUNTY` is `MONTGOMERY`. We will use the `&` operator to indicate that both conditions must be true. We will then recode the `coutryfips` values for these rows to be `"05097"` using the `~` symbol. All other values need to stay the same. Thus we need to use `TRUE ~` to recode all the other `countyfips` values to what they currently are. Otherwise these would automatically be `NA`.
+We will use the `case_when()` function of the `dplyr` package recode the `NA` values for `countyfips` for the rows for the `MONGOMERY` county of `AR` to be `05097`. First we need to identify these particular rows. Because Montgomery may be a county name in other states, we need to evaluate when the `BUYER_STATE` is `AR` and when the `BUYER_COUNTY` is `MONTGOMERY`. We will use the `&` operator to indicate that both conditions must be true. We will then recode the `coutryfips` values for these rows to be `"05097"` using the `~` symbol. All other values need to stay the same. Thus we need to use `TRUE ~` to recode all the other `countyfips` values to what they currently are. Otherwise these would automatically be set to `NA`.
 
-We are also going to use a special pipe operator from the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) called the compound assignment pipe-operator or sometimes the double pipe operator. 
+We are also going to use a special pipe operator from the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) called the *compound assignment pipe operator* or sometimes the *double pipe operator*. 
 
-This allows us to use the `annualDosage` as our input and reassign it at the end after all the subsequent steps have been performed, although in this case it is only one step.
+This allows us to use the `annualDosage` as our input and, in the same step, reassign it to take the updated value of the tibble, after all the subsequent steps have been performed. In this case, it is only one step, but this saves us typing and avoids creating an intermediate version of the tibble.
 
 ```{r}
 annualDosage %<>% 
@@ -852,7 +855,7 @@ First let's take a look at them again.
 annualDosage %>% filter(is.na(BUYER_COUNTY))
 ```
 
-We can filter out these values by using the `!` exclamation mark before the `is.na()` function.
+We can remove these rows from our data set using the `filter` command along with the `!` (exclamation poing) before the `is.na()` function.
 
 ```{r}
 
@@ -866,15 +869,15 @@ annualDosage %>% filter(is.na(BUYER_COUNTY))
 
 ```
 
-Let's check if our land area data has information for US territories. If not, we will remove the data for the territories in our `annualDosage` data. However, this would be very interesting and important to investigate. We can use the `str_detect()` function of the `stringr` package, which contains lots of functions for looking for patterns in character strings, to look for data from Puerto Rico. 
+As we  have seen, our `annualDosage` object has data for US territories. So let's check to see if our land area data also has information for US territories, which would allow us to investiage them as well, a potentially interesting addition to our analysis. If not, we will remove the data for the territories in our `annualDosage` data. As a first case, we can use the `str_detect()` function of the `stringr` package, which contains lots of functions for looking for patterns in character strings, to look for data from Puerto Rico. 
 
-The `str_detect()` function allows us to look for a particular pattern. It does not have to be the full value, there can be a partial match. Thus we can look to see if there are any `PR` strings withing the values of the the `Areaname` variable. 
+The `str_detect()` function allows us to look for a particular pattern. It does not have to be the full value, i.e., a partial match is allowed. Thus we can look to see if there are any `PR` strings within the values of the the `Areaname` variable. 
 
 ```{r}
 county_area %>% filter(str_detect(string = Areaname, pattern = "PR"))
 ```
 
-You can see using a different abbreviation, that this code does as intended:
+It does not look as if there are any entries for Puerto Rico, but let's check our code. You can see using a different abbreviation, that this code works as intended:
 
 ```{r}
 county_area %>% filter(str_detect(string = Areaname, pattern = "AR"))
@@ -897,6 +900,7 @@ annualDosage %<>% filter(!is.na(countyfips))
 ```
 </details> 
 
+AVOCADO: What about the `monthlyDosage` object?
 
 ```{r}
 naniar:: vis_miss(annualDosage)
@@ -907,23 +911,23 @@ Great! Now there is no missing data in our annual data.
 
 ## Rural and Urban Counties
 
-Defining if a region is rural or urban is actually quite complicated as the overall population changes, the structure of our towns and cities changes, and the access between different locations changes over time. Please see this [report](https://www2.census.gov/geo/pdfs/reference/ua/Defining_Rural.pdf) form the US Census Bureau about the history of this definition. 
+Defining if a region is rural or urban is actually quite complicated as overall population, the structure of our towns and cities, and the access between different locations all change over time. Please see this [report](https://www2.census.gov/geo/pdfs/reference/ua/Defining_Rural.pdf) form the US Census Bureau about the history of this definition. 
 
 According to several [definitions](https://www.hrsa.gov/rural-health/about-us/definition/index.html) - urban **areas** are often defined as those with greater than 50,000 people. However, there are also
-[definitions](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/) of rural areas being based on  "population densities of less than 500 people per square mile and places with fewer than 2,500 people". Typically counties are made up of multiple areas. 
+[definitions](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/) of rural areas being based on  "population densities of less than 500 people per square mile and places with fewer than 2,500 people". Typically counties are made up of multiple areas, making it complicated to assign a single "rural" or "urban" label at the county level. 
 
-The census estimates rural and urban areas around the US relatively often. However, census collections about these measurements does not occur every year.
+The census redefines rural and urban areas around the US relatively often. However, census collections about these measurements do not occur every year.
 
 Thus we will define a county as rural or urban based on the population density using the USDA [definition]((https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/)) that we described above:
 
 1) **rural**  = population densities of less than 500 people per square mile, as well as places with fewer than 2,500 people     
-2) **urban** = populations densities of greater than 500 people per square mile  
+2) **urban** = population densities of greater than 500 people per square mile  
 
-Ideally we would want land area from each year, as these do fluctuate a bit, however, this should be a decent approximation as 2010 is in the middle of our time span.
+Ideally we would want land area from each year, as these do fluctuate a bit, however, the 2010 data should be a decent approximation as 2010 is in the middle of our time span.
 
-We will therefore calculate the density as the number of people per square mile by dividing the population values by the land area values. To do so we first need to combine our `county_area` and our `county_pop` data together. First we want to make sure that we have one column, in our case the  column that contains the numeric code for the counties, in the same format and with the same name in both the tibbles that we wish to combine. 
+We will therefore calculate the density as the number of people per square mile by dividing the population values by the land area values. To do so we first need to combine our `county_area` and our `county_pop` data together. First we want to make sure that we have one column, in our case the column that contains the numeric code for the counties, in the same format and with the same name in both the tibbles that we wish to combine. 
 
-We can use the `rename()` function of the `dplyr` package to rename the `STCOU` column to be `countyfips`. The new name is always listed first before the old name with this function like so: `rename(new_name = old_name)`.
+We can use the `rename()` function of the `dplyr` package to rename the `STCOU` column from the `county_area` data set to be `countyfips`. The new name is always listed first before the old name with this function like so: `rename(new_name = old_name)`.
 
 ```{r}
 county_area %<>%
@@ -932,6 +936,8 @@ county_area %<>%
 
 
 We can use the `mutate()` function of the `dplyr` package to make the `countyfips` variable a factor in both tibbles. 
+
+AVOCADO: Why do these variables need to be factors for us to combine them? I believe you can join based on a character valued variable? 
 
 What exactly is a factor?
 
@@ -948,7 +954,7 @@ If data are of class character, than the numeric values will not be processed li
 If you want your numeric values to be interpreted that way, they need to be converted to a numeric class. 
 The options typically used are integer (which has no decimal place) and double precision (which has a decimal place). 
 
-A variable that is a [factor](https://www.stat.berkeley.edu/~s133/factors.html#:~:text=Conceptually%2C%20factors%20are%20variables%20in,refered%20to%20as%20categorical%20variables.&text=Factors%20in%20R%20are%20stored,when%20the%20factor%20is%20displayed.) has a set of particular values called levels. Even if these are numeric, they will be interpreted as level not as a mathematical number. You can modify the order of these levels with the `forcats` package.
+A variable that is a [factor](https://www.stat.berkeley.edu/~s133/factors.html#:~:text=Conceptually%2C%20factors%20are%20variables%20in,refered%20to%20as%20categorical%20variables.&text=Factors%20in%20R%20are%20stored,when%20the%20factor%20is%20displayed.) has a set of particular values called levels. Even if these are numeric, they will be interpreted as levels (i.e., as if they were characters) not as mathematical numbers. The values of a factor are assumed to have a particular ordering; by default the order is alphabetical, but this is not always the correct/intuitive ordering. You can modify the order of these levels with the `forcats` package.
 
 </details>
 
@@ -993,6 +999,8 @@ Since the population data came from the API, we probably have information about 
 ```{r}
 county_info <-left_join(county_pop, county_area)
 ```
+
+You can check to see that the `county_info` tibble has the same number of rows as the `county_pop` tibble, i.e., our join preserved the data points in the `county_pop` tibble and added values from the `county_area` tibble where there was a match on the `countyfips` variable.
 
 We are now ready to calculate the population density per square mile. We can create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. Let's also make the `year` variable a factor.
 
@@ -1046,16 +1054,20 @@ Annual <-left_join(annualDosage, county_info)
 glimpse(Annual)
 ```
 
-Great, now we should have the data that we need for the case study. 
+Great, now we should have the data that we need for the case study. But we will want to do some additional checks before we proceedd with our analysis.
 
 
-Notice how there is a variable called `DOSAGE_UNIT`. This indicates the number of pills shipped to a pharmacy in this county that were either [oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) or [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf).
+Notice how there is a variable called `DOSAGE_UNIT`. This variable gives the number of pills shipped to a pharmacy in this county that were either [oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) or [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf).
 
-Let's do a check to see how complete our data is now that we have combined our `country_info` data with the `monthlyDosage` and `annualDosage` data. We will have NA values for any counties present in the DAE data but not in our land area data. We can use the `vis_miss()` function `naniar` package to create a plot that shows if we have any missing data.
+Let's do a check to see how complete our data is now that we have combined our `country_info` data with the `monthlyDosage` and `annualDosage` data. We will have NA values for any counties present in the DAE data but not in our land area data. We can use the `vis_miss()` function from thee `naniar` package` to create a plot that shows if we have any missing data.
 
 ```{r}
 naniar:: gg_miss_var(Annual)
 ```
+
+We can see that several variables are missing for some of our counties.
+
+AVOCADO: I'm not following why you are filtering on NA for STATE. I would think it would make more  intuitive sense to filter on NA for density for example, since that is relevant to our analysis.
 
 #### {.scrollable }
 
@@ -1066,6 +1078,8 @@ Annual %>%
 ####
 
 There does not appear to be land area and/or population data for these counties.
+
+AVOCADO: I'm not really sure what the goal of this code chunk is. Most of these subgroups do not have any data at all in the table as far as I can see. Are we checking back in the original data tibbles (prior to merging) to see where the data first went missing? 
 ```{r}
 county_info %>% filter(countyfips == "01001") # example of other data that does have values
 county_info %>% filter(countyfips == "05097")
@@ -1109,7 +1123,9 @@ naniar:: gg_miss_var(Annual)
 
 Nice! Now we have no missing data.
 
-Let's also check if there were any counties in `county_info` that were not in the DEA `annualDosage` data?
+Let's also check if there were any counties in `county_info` that were not in the DEA `annualDosage` data.
+
+AVOCADO: I think this code chunk could also use some more explanation.
 
 
 ```{r}
