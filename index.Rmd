@@ -441,6 +441,8 @@ See [here](https://www.washingtonpost.com/national/2019/07/18/how-download-use-d
 
 We will need land area data for our calculations of population density. 
 
+AVOCADO: what's the unit here? number of people per sq miles? 
+
 We obtained county land area data from the US census Bureau at this [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011.html#LND).
 
 This [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011/file-layout.html) explains how the data is formatted.
@@ -480,6 +482,8 @@ In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed p
 
 
 ## Population Data
+
+AVOCADO: maybe a bit more specificity on what we mean by "population data" i.e. the number of people per county in each state in the US for the year 2010.
 
 We are interested in the county level data - first let's get the population data. We can access it by:
 
@@ -602,7 +606,7 @@ save(county_pop, file =  here::here("data", "county_pop_arcos.rda"))
 
 ## Annual Shipment Data
 
-We are also interested in opioid pill shipment data at the county level. 
+We are also interested in the number of opioid pill shipped at the county level. 
 
 Here is the result of the same steps using the API for the `combined_county_annual` data:
 
@@ -701,7 +705,7 @@ load(here::here("data", "county_annual.rda"))
 
 Now let's take a deeper look at the data to see if we have any missing data using the `naniar` package.
 
-We can use the `vis_miss()` function to create a plot of missing data.
+We can use the `vis_miss()` function to create a plot of missing data, which will use a heatmap to show if there are missing data (black) or no missing data (gray). 
 
 Let's start with the land area data.
 ```{r}
@@ -715,7 +719,7 @@ How about the population data:
 vis_miss(county_pop)
 ```
 
-Although it is very hard to see in the figure, we appear to be missing some values for the `NAME` and `variable` data, but we don`t intend to use these, so this should be OK. It is however a good idea to check these rows to see if anything strange is happening.
+Although it is very hard to see in the figure, we appear to be missing some values for the `NAME` and `variable` data, but we do not intend to use these, so this should be OK. It is however a good idea to check these rows to see if anything strange is happening.
 
 Let's use the `filter()` function of the `dplyr` package and the `is.na()` base function to see more about the data that does not have `NAME` values.
 
@@ -732,40 +736,44 @@ This allows us to perform multiple sequential steps on one data input.
 ***
 
 ```{r}
-county_pop %>% filter(is.na(NAME))
+county_pop %>% 
+  filter(is.na(NAME))
 ```
 
-This looks OK. So let's now move on to the DEA data.
+This looks OK. Let's move on to the `annualDosage` data. 
 ```{r}
 vis_miss(annualDosage)
 ```
 
 Interesting, we appear to be missing `countyfips` codes for a small percentage of our annual data.
 
+AVOCADO: what is a countyfips? 
 
 Let's take a look at this data:
 
 ```{r}
-annualDosage %>% filter(is.na(countyfips))
+annualDosage %>% 
+  filter(is.na(countyfips))
 ```
-
 
 We can see that the first rows with missing data for `countyfips` is data for Puerto Rico - it might make sense for Puerto Rico to be missing these codes.
 
-Let's see if there is any data other than data for Puerto Rico that is also missing `countyfips` values. We can use the `!=` operator which indicates not equal to.
+Let's see if there are any data other than data for Puerto Rico that is also missing `countyfips` values. We can use the `!=` operator which indicates not equal to.
 
 
 ```{r, eval = FALSE}
-annualDosage %>% filter(is.na(countyfips)) %>%
- filter(BUYER_STATE != "PR")
+annualDosage %>% 
+  filter(is.na(countyfips)) %>%
+  filter(BUYER_STATE != "PR")
 ```
 
 #### {.scrollable }
 ```{r, echo = FALSE}
-annualDosage %>% filter(is.na(countyfips)) %>%
- filter(BUYER_STATE != "PR") %>%
+annualDosage %>% 
+  filter(is.na(countyfips)) %>%
+  filter(BUYER_STATE != "PR") %>%
   # this allows us to show the full output in the rendered rmarkdown
- print(n = 1e4)
+  print(n = 1e4)
 ```
 ####
 
@@ -774,12 +782,12 @@ It looks like there is also data for other territories in the dataset, as well a
 For some reason the rows for the Montgomery county of Arkansas are also missing a `countyfips` value.
 
 ```{r}
-annualDosage %>% filter(is.na(countyfips)) %>%
- filter(BUYER_STATE == "AR")
+annualDosage %>% 
+  filter(is.na(countyfips)) %>%
+  filter(BUYER_STATE == "AR")
 ```
 
 According to this [website](https://www.nrcs.usda.gov/wps/portal/nrcs/detail/national/home/?cid=nrcs143_013697) the FIPS code is 05097.
-
 
 We will update these values in the next section.
 
@@ -798,17 +806,21 @@ load(here::here("data", "county_monthly.rda"))
 ## Cleaning land data
 
 We want the `LND110210D` column which is the data from the year 2010.
+Let's break this down to understand the meaning of the column. 
 
-LND = Land Area
-110 = unit square miles (subgroup-code of the group) * avocado I found this somewhere else.. the census info was vague would like to confirm that that is indeed what the subgroup code shows us
-2 = century
-10 = 2010 (based on the century)
-D = Data
+- LND = Land Area
+- 110 = unit square miles (subgroup-code of the group) * avocado I found this somewhere else.. the census info was vague would like to confirm that that is indeed what the subgroup code shows us
+- 2 = century
+- 10 = 2010 (based on the century)
+- D = Data
 
-Thus we can select just the county names, the county numeric codes, and the `LND110210D`column by using the `select()` function of the `dplyr` package.
+We can select just the county names, the county numeric codes (`STCOU`), and the `LND110210D` column by using the `select()` function of the `dplyr` package.
 
 ```{r}
-county_area <- land %>% select(Areaname, STCOU, LND110210D)
+county_area <- 
+  land %>% 
+  select(Areaname, STCOU, LND110210D)
+
 county_area
 ```
 
@@ -819,7 +831,13 @@ We can see that in addition to county-level measurements, we also have state-lev
 
 ## Updating `countyfips`
 
-We will use the `case_when()` function of the `dplyr` package recode the `NA` values for `countyfips` for the rows for the `MONGOMERY` county of `AR` to be `05097`. First we need to identify these particular rows. Because Montgomery may be a county name in other states, we need to evaluate when the `BUYER_STATE` is `AR` and when the `BUYER_COUNTY` is `MONTGOMERY`. We will use the `&` operator to indicate that both conditions must be true. We will then recode the `coutryfips` values for these rows to be `"05097"` using the `~` symbol. All other values need to stay the same. Thus we need to use `TRUE ~` to recode all the other `countyfips` values to what they currently are. Otherwise these would automatically be set to `NA`.
+We will use the `case_when()` function of the `dplyr` package recode the `NA` values for `countyfips` for the rows for the `MONGOMERY` county of `AR` to be `05097`. 
+
+First, we need to identify these particular rows. Because Montgomery may be a county name in other states, we need to evaluate when the `BUYER_STATE` is `AR` and when the `BUYER_COUNTY` is `MONTGOMERY`. We will use the `&` operator to indicate that both conditions must be true. 
+
+Then, We will recode the `coutryfips` values for these rows to be `"05097"` using the `~` symbol. All other values need to stay the same. 
+
+We need to use `TRUE ~` to recode all the other `countyfips` values to what they currently are. Otherwise these would automatically be set to `NA`.
 
 We are also going to use a special pipe operator from the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) called the *compound assignment pipe operator* or sometimes the *double pipe operator*. 
 
@@ -828,8 +846,8 @@ This allows us to use the `annualDosage` as our input and, in the same step, rea
 ```{r}
 annualDosage %<>% 
   mutate(countyfips = case_when(BUYER_STATE == "AR" & 
-                               BUYER_COUNTY == "MONTGOMERY" ~ as.character("05097"),
-                               TRUE ~ countyfips))
+                                BUYER_COUNTY == "MONTGOMERY" ~ as.character("05097"),
+                                TRUE ~ countyfips))
 ```
 
 Now we can check that we indeed fixed our data.
@@ -846,44 +864,49 @@ annualDosage %>%
 
 Great! We fixed it.
 
+OK, we also had some rows that did not have county names because they were just missing or the data was for US territories. We will remove the values that do not have county names.
 
-OK, we also had some rows that didn't have county names because they were just missing or the data was for US territories. We will remove the values that don't have county names.
-
-First let's take a look at them again.
+First, let's take a look at them again.
 
 ```{r}
-annualDosage %>% filter(is.na(BUYER_COUNTY))
+annualDosage %>% 
+  filter(is.na(BUYER_COUNTY))
 ```
 
-We can remove these rows from our data set using the `filter` command along with the `!` (exclamation poing) before the `is.na()` function.
+We can remove these rows from our data set using the `filter()` command along with the `!` (exclamation poing) before the `is.na()` function.
 
 ```{r}
 
-annualDosage %<>%  filter(!is.na(BUYER_COUNTY))
+annualDosage %<>% 
+  filter(!is.na(BUYER_COUNTY))
 ```
 
-And now let's check that these `NA` values are gone:
+Now let's check that these `NA` values are gone:
 
 ```{r}
-annualDosage %>% filter(is.na(BUYER_COUNTY))
-
+annualDosage %>% 
+  filter(is.na(BUYER_COUNTY))
 ```
 
-As we  have seen, our `annualDosage` object has data for US territories. So let's check to see if our land area data also has information for US territories, which would allow us to investiage them as well, a potentially interesting addition to our analysis. If not, we will remove the data for the territories in our `annualDosage` data. As a first case, we can use the `str_detect()` function of the `stringr` package, which contains lots of functions for looking for patterns in character strings, to look for data from Puerto Rico. 
+As we have seen, our `annualDosage` object has data for US territories. So let's check to see if our land area data also has information for US territories, which would allow us to investigate them as well, a potentially interesting addition to our analysis. If not, we will remove the data for the territories in our `annualDosage` data. 
 
-The `str_detect()` function allows us to look for a particular pattern. It does not have to be the full value, i.e., a partial match is allowed. Thus we can look to see if there are any `PR` strings within the values of the the `Areaname` variable. 
+As a first case, we can use the `str_detect()` function of the `stringr` package, which contains lots of functions for looking for patterns in character strings, to look for data from Puerto Rico. 
+
+The `str_detect()` function allows us to look for a particular pattern. It does not have to be the full value, i.e., a partial match is allowed. We can look to see if there are any `PR` strings within the values of the the `Areaname` variable. 
 
 ```{r}
-county_area %>% filter(str_detect(string = Areaname, pattern = "PR"))
+county_area %>% 
+  filter(str_detect(string = Areaname, pattern = "PR"))
 ```
 
 It does not look as if there are any entries for Puerto Rico, but let's check our code. You can see using a different abbreviation, that this code works as intended:
 
 ```{r}
-county_area %>% filter(str_detect(string = Areaname, pattern = "AR"))
+county_area %>% 
+  filter(str_detect(string = Areaname, pattern = "AR"))
 ```
 
-OK, so it does mot look like there is any territory land area data in this dataset. Thus we will also remove these from the `annualDosage` and `monthlyDosage` tibbles.
+OK, so it does not look like there is any territory land area data in this dataset. Thus, we will also remove these from the `annualDosage` and `monthlyDosage` tibbles.
 
 #### {.recall_code_question_block}
 <b><u> Question Opportunity </u></b>
@@ -893,12 +916,16 @@ Do you recall how to do this?
 
 ####
 
+***
 
 <details> <summary> Click here to reveal the code. </summary>
 ```{r}
-annualDosage %<>% filter(!is.na(countyfips))
+annualDosage %<>% 
+  filter(!is.na(countyfips))
 ```
 </details> 
+
+***
 
 AVOCADO: What about the `monthlyDosage` object?
 
@@ -911,21 +938,23 @@ Great! Now there is no missing data in our annual data.
 
 ## Rural and Urban Counties
 
-Defining if a region is rural or urban is actually quite complicated as overall population, the structure of our towns and cities, and the access between different locations all change over time. Please see this [report](https://www2.census.gov/geo/pdfs/reference/ua/Defining_Rural.pdf) form the US Census Bureau about the history of this definition. 
+Defining if a region is rural or urban is actually quite complicated as the overall population, the structure of our towns and cities, and the access between different locations all change over time. Please see this [report](https://www2.census.gov/geo/pdfs/reference/ua/Defining_Rural.pdf) form the US Census Bureau about the history of this definition. 
 
 According to several [definitions](https://www.hrsa.gov/rural-health/about-us/definition/index.html) - urban **areas** are often defined as those with greater than 50,000 people. However, there are also
-[definitions](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/) of rural areas being based on  "population densities of less than 500 people per square mile and places with fewer than 2,500 people". Typically counties are made up of multiple areas, making it complicated to assign a single "rural" or "urban" label at the county level. 
+[definitions](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/) of rural areas being based on "population densities of less than 500 people per square mile and places with fewer than 2,500 people". Typically counties are made up of multiple areas, making it complicated to assign a single "rural" or "urban" label at the county level. 
 
-The census redefines rural and urban areas around the US relatively often. However, census collections about these measurements do not occur every year.
+The census re-defines rural and urban areas around the US relatively often. However, census collections about these measurements do not occur every year.
 
-Thus we will define a county as rural or urban based on the population density using the USDA [definition]((https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/)) that we described above:
+We will define a county as rural or urban based on the population density following the USDA [definition]((https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural/)) that we described above:
 
-1) **rural**  = population densities of less than 500 people per square mile, as well as places with fewer than 2,500 people     
-2) **urban** = population densities of greater than 500 people per square mile  
+1. **rural**  = population densities of less than 500 people per square mile, as well as places with fewer than 2,500 people     
+2. **urban** = population densities of greater than 500 people per square mile  
 
-Ideally we would want land area from each year, as these do fluctuate a bit, however, the 2010 data should be a decent approximation as 2010 is in the middle of our time span.
+Ideally, we would want land area from each year, as these do fluctuate a bit, however, the 2010 data should be a decent approximation as 2010 is in the middle of our time span.
 
-We will therefore calculate the density as the number of people per square mile by dividing the population values by the land area values. To do so we first need to combine our `county_area` and our `county_pop` data together. First we want to make sure that we have one column, in our case the column that contains the numeric code for the counties, in the same format and with the same name in both the tibbles that we wish to combine. 
+We will calculate the density as the number of people per square mile by dividing the population values by the land area values. To do so we first need to combine our `county_area` and our `county_pop` data together. 
+
+First, we want to make sure that we have one column, in our case the column that contains the numeric code for the counties, in the same format and with the same name in both the tibbles that we wish to combine. 
 
 We can use the `rename()` function of the `dplyr` package to rename the `STCOU` column from the `county_area` data set to be `countyfips`. The new name is always listed first before the old name with this function like so: `rename(new_name = old_name)`.
 
@@ -933,7 +962,6 @@ We can use the `rename()` function of the `dplyr` package to rename the `STCOU` 
 county_area %<>%
   rename(countyfips = STCOU)
 ```
-
 
 We can use the `mutate()` function of the `dplyr` package to make the `countyfips` variable a factor in both tibbles. 
 
@@ -985,7 +1013,7 @@ knitr::include_graphics(here::here("img", "join.png"))
 
 Here is a visualization of these options:
 
-```{r, echo = FALSE, outwidth = "40%"}
+```{r, echo = FALSE, outwidth = "30%"}
 knitr::include_graphics(here::here("img", "join_image.png"))
 ```
 
@@ -993,16 +1021,23 @@ knitr::include_graphics(here::here("img", "join_image.png"))
 
 See [here](https://dplyr.tidyverse.org/reference/join.html) for more details about joining data.
 
-Since the population data came from the API, we probably have information about opioid pill shipments for each of the included counties. Since the land area data came from a different source, it may contain additional counties that are not in our population or drug shipment data.  Thus we will use the `left_join()` function where x in this case will be the `county_pop`  and y will be the `country_area`. Thus we will add the `LND110210D` (land area) values for all counties that match `county_pop` based on the `countyfips` column that they have in common. 
+Since the population data came from the API, we probably have information about opioid pill shipments for each of the included counties. Since the land area data came from a different source, it may contain additional counties that are not in our population or drug shipment data.  
+
+To address this, we will use the `left_join(x,y)` function where `x` in this case will be the `county_pop` and `y` will be the `country_area`. Here, we will add the `LND110210D` (land area) values for all counties that match `county_pop` based on the `countyfips` column that they have in common. 
 
 
 ```{r}
-county_info <-left_join(county_pop, county_area)
+county_info <- 
+  left_join(county_pop, county_area, by = "countyfips")
 ```
 
 You can check to see that the `county_info` tibble has the same number of rows as the `county_pop` tibble, i.e., our join preserved the data points in the `county_pop` tibble and added values from the `county_area` tibble where there was a match on the `countyfips` variable.
 
-We are now ready to calculate the population density per square mile. We can create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. Let's also make the `year` variable a factor.
+```{r}
+nrow(county_info) == nrow(county_pop)
+```
+
+We are now ready to calculate the population density per square mile. We create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. Let's also make the `year` variable a factor.
 
 ```{r}
 county_info %<>%
@@ -1012,14 +1047,19 @@ county_info %<>%
 glimpse(county_info)
 ```
 
+Great, now we are ready to create a variable that classifies if a county was rural or urban based on our definition of rural counties being those with less than 500 people per square mile as well as those with less than 2,500 people. 
 
-Great, now we are ready to create a variable that classifies if a county was rural or urban based on our definition of rural counties being those with less than 500 people per square mile as well as those with less than 2,500 people. We will use the `case_when()` function of the `dplyr` package to classify the new `rural_urban` variable as either `"Urban"` or `"Rural"` based on the evaluations of the `density` and the `population` variables. If the density is greater than or equal to 500 people per square mile, then the county will be coded as `"Urban"`, alternatively if the density is less than 500 people per square mile or the population is less than 2500, than the county will be coded as `"Rural"`. The `|` operator is used to indicate that either expression should result in coding the county as `"Rural"`
+We will use the `case_when()` function of the `dplyr` package to classify the new `rural_urban` variable as either `"Urban"` or `"Rural"` based on the evaluations of the `density` and the `population` variables. 
+
+- If the density is greater than or equal to 500 people per square mile, then the county will be coded as `"Urban"`. 
+- Alternatively if the density is less than 500 people per square mile or the population is less than 2500, than the county will be coded as `"Rural"`. 
+
+The `|` operator is used to indicate that either expression should result in coding the county as `"Rural"`
 
 ```{r}
-
 county_info %<>%
   mutate(rural_urban = case_when(density  >= 500 ~ "Urban",
-                                 density  < 500 | population < 2500 ~ "Rural"))
+                                 density  <  500 | population < 2500 ~ "Rural"))
 ```
 
 We can use the `count()` function of the `dplyr` package to see how many of each this resulted in:
@@ -1037,29 +1077,33 @@ How might we do this?
 
 ####
 
+***
 
 <details> <summary> Click here to reveal the code. </summary>
 
 ```{r}
 annualDosage %<>%
   mutate(countyfips = as.factor(countyfips),
-                  year = as.factor(year))
+         year = as.factor(year))
   
-Annual <-left_join(annualDosage, county_info)
-
+Annual <- 
+  left_join(annualDosage, county_info)
 ```
 </details>
+
+***
 
 ```{r}
 glimpse(Annual)
 ```
 
-Great, now we should have the data that we need for the case study. But we will want to do some additional checks before we proceedd with our analysis.
+Great, now we should have the data that we need to answer our question, but first let's do some additional checks before we proceed with our analysis.
 
+**Notice** how there is a variable called `DOSAGE_UNIT`. This variable gives the number of pills shipped to a pharmacy in this county that were either [oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) or [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf).
 
-Notice how there is a variable called `DOSAGE_UNIT`. This variable gives the number of pills shipped to a pharmacy in this county that were either [oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) or [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf).
+Let's do a check to see how complete our data is now that we have combined our `country_info` data with the `monthlyDosage` and `annualDosage` data. 
 
-Let's do a check to see how complete our data is now that we have combined our `country_info` data with the `monthlyDosage` and `annualDosage` data. We will have NA values for any counties present in the DAE data but not in our land area data. We can use the `vis_miss()` function from thee `naniar` package` to create a plot that shows if we have any missing data.
+We have NA values for any counties present in the DAE data, but not in our land area data. We can use the `vis_miss()` function from thee `naniar` package` to create a plot that shows if we have any missing data.
 
 ```{r}
 naniar:: gg_miss_var(Annual)
@@ -1081,20 +1125,38 @@ There does not appear to be land area and/or population data for these counties.
 
 AVOCADO: I'm not really sure what the goal of this code chunk is. Most of these subgroups do not have any data at all in the table as far as I can see. Are we checking back in the original data tibbles (prior to merging) to see where the data first went missing? 
 ```{r}
-county_info %>% filter(countyfips == "01001") # example of other data that does have values
-county_info %>% filter(countyfips == "05097")
-county_info %>% filter(countyfips == "02201")
-county_info %>% filter(countyfips == "02280")
+county_info %>% 
+  filter(countyfips == "01001") # example of other data that does have values
 
-# there is land data for this county but thats all
-land %>% filter(STCOU == "05097")
-land %>% filter(STCOU == "02201")
-land %>% filter(STCOU == "02280")
+county_info %>% 
+  filter(countyfips == "05097")
 
-county_pop %>% filter(countyfips == "05097")
+county_info %>% 
+  filter(countyfips == "02201")
 
-county_pop %>% filter(countyfips == "05097")
-county_pop %>% filter(BUYER_COUNTY == "MONTGOMERY"& BUYER_STATE =="AK")
+county_info %>% 
+  filter(countyfips == "02280")
+```
+
+There is land data for this county, but that's all
+```{r}
+land %>% 
+  filter(STCOU == "05097")
+
+land %>% 
+  filter(STCOU == "02201")
+
+land %>% 
+  filter(STCOU == "02280")
+```
+
+
+```{r}
+county_pop %>% 
+  filter(countyfips == "05097")
+
+county_pop %>% 
+  filter(BUYER_COUNTY == "MONTGOMERY"& BUYER_STATE =="AK")
 ```
 
 We will now remove these rows before further analysis:
@@ -1106,16 +1168,18 @@ Do you recall how you would do this?
 
 ####
 
+***
 
 <details> <summary> Click here to reveal the code. </summary>
 
 ```{r}
-
-Annual %<>% filter(!is.na(STATE))
-
+Annual %<>% 
+  filter(!is.na(STATE))
 ```
 
 </details>
+
+*** 
 
 ```{r}
 naniar:: gg_miss_var(Annual)
@@ -1125,24 +1189,32 @@ Nice! Now we have no missing data.
 
 Let's also check if there were any counties in `county_info` that were not in the DEA `annualDosage` data.
 
-AVOCADO: I think this code chunk could also use some more explanation.
-
+AVOCADO: I think the next two code chunks could also use some more explanation.
 
 ```{r}
-checking <-left_join(county_info, annualDosage)
-gg_miss_var(checking)
+checking <-
+  left_join(county_info, annualDosage)
+  gg_miss_var(checking)
+
 checking %>%
   filter(is.na(DOSAGE_UNIT)) 
 
 checking %>%
   filter(is.na(DOSAGE_UNIT)) %>% 
   distinct(countyfips) 
-
-annualDosage %>% filter(BUYER_COUNTY == "BORDEN")
-annualDosage %>% filter(BUYER_COUNTY == "COKE")
 ```
 
-There are 174 counties that don't have any data in the DEA data. It is unclear why these counties are not included case.  A Google search of the [Borden](https://en.wikipedia.org/wiki/Borden_County,_Texas) and [Coke](https://en.wikipedia.org/wiki/Coke_County,_Texas) counties in Texas does not indicate anything usual about the counties in terms of when it was established or if it became part of another county later in time. It is important to keep in mind as we continue to analyze this data, that the ARCOS data from the DEA released by the Washington Post does not include pill shipment information for all US counties. 
+```{r}
+annualDosage %>% 
+  filter(BUYER_COUNTY == "BORDEN")
+
+annualDosage %>% 
+  filter(BUYER_COUNTY == "COKE")
+```
+
+There are 174 counties that do not have any data in the DEA data. It is unclear why these counties are not included. A Google search of the [Borden](https://en.wikipedia.org/wiki/Borden_County,_Texas) and [Coke](https://en.wikipedia.org/wiki/Coke_County,_Texas) counties in Texas does not indicate anything usual about the counties in terms of when it was established or if it became part of another county later in time. 
+
+**Note**: It is important to keep in mind as we continue to analyze this data, that the ARCOS data from the DEA released by the Washington Post does not include pill shipment information for all US counties. 
 
 ```{r,echo= FALSE, eval = TRUE}
 write.csv(Annual, file = here::here("data","Wrangled", "Annual_opioid_data.csv"))
@@ -1154,11 +1226,11 @@ save(county_info, file = here::here("data", "Wrangled", "county_info.rda"))
 # **Data Visualization**
 ***
 
-```{r,echo= FALSE, eval = TRUE}
+```{r,echo=FALSE, eval=TRUE}
 # In case instructors wish to start here, we will load the necessary data
 
-load(file =  here::here("data","Wrangled", "Annual_opioid_data.rda"))
-load( file = here::here("data", "Wrangled", "county_info.rda"))
+load(file = here::here("data","Wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("data", "Wrangled", "county_info.rda"))
 ```
 
 We will begin by taking a deeper look at our data with some visualizations. We will use the `ggplot2` package to create these visualizations.
@@ -1207,48 +1279,58 @@ These will define what we are interested in illustrating using the data.
 
 Let's make a plot to see how population density has changed over time in each state.
 
-To do so we want to calculate a mean population density (across all the counties) for each state for each year. 
+To do this, we want to calculate a mean population density (across all the counties) for each state for each year. 
 
 We can do this using the `group_by()`  and `summarize()` functions of the `dplyr` package. The `group_by` functions allows for the data to be arranged into groups for subsequent functions. 
 
-Thus, if we group only by state using the following code, you will see that this results in 51 groups (one for each state including Washington DC). This doesn't change anything about the data itself (or even how it is printed aside from the groups written above the table), just how it will be handled in subsequent steps.
+If we group only by `BUYER_STATE`, you see that this results in 51 groups (one for each state including Washington DC). This does not change anything about the data itself (or even how it is printed aside from the groups written above the table), just how it is handled in subsequent steps.
 
 ```{r}
-Annual  %>% group_by(BUYER_STATE)
+Annual %>% 
+  group_by(BUYER_STATE)
 ```
 
-Alternatively, if we group by year this results in 9 groups of data, one for each year.
+Alternatively, if we group by `year` this results in 9 groups of data, one for each year.
 
 ```{r}
-Annual  %>% group_by(year)
+Annual %>% 
+  group_by(year)
 ```
 
-We want to group by both `BUYER_STATE` and `year`, so that we get the mean of all the counties for each state for each year. If we only did by state, we would only get 51 summarized results, one for each state representing a mean across the years. 
+We want to group by both `BUYER_STATE` and `year`, so that we get the mean of all the counties for each state for each year. If we only did by `BUYER_STATE`, we would only get 51 summarized results, one for each state representing a mean across the years. 
 
 ```{r}
-Annual  %>% group_by(BUYER_STATE, year)
+Annual %>% 
+  group_by(BUYER_STATE, year)
 ```
+
 We can see that this results in 459 groups. This makes sense because 51 groups over 9 years is 51 multiplied by 9, which equals 459. 
 
-We can then use the `summarize` function to create a new variable called `sum_DENS` which will be equal to the mean of the `density` variable for all the counties within each of the 449 groups. If we had missing values we would need to use the `na.rm = TRUE` argument to remove any missing values in our calculation.
+We can use the `summarize()` function to create a new variable called `mean_DENS`, which will be equal to the mean of the population `density` variable for all the counties within each of the 449 groups. If we had missing values we would need to use the `na.rm = TRUE` argument to remove any missing values in our calculation.
 
 ```{r}
-Annual %>% group_by(BUYER_STATE, year) %>%
-     summarize(mean_DENS = mean(density, na.rm = TRUE))
+Annual %>% 
+  group_by(BUYER_STATE, year) %>%
+  summarize(mean_DENS = mean(density, na.rm = TRUE))
 ```
 
 OK! Now we are ready to make our first plot. 
 
-We will start with the `ggplot()`function to specify what variables will be used for the x-axis and y-axis, as well as if any variable should be used to specify different colors on the plot. This will result in a blank plot.  Then we need to use a `geom_*` function to specify what type of plot we would like to make. 
+We will start with the `ggplot()`function to specify what variables will be used for the x-axis and y-axis, as well as if any variable should be used to specify different colors on the plot. This will result in a blank plot. 
+
+We need to use a `geom_*` function to specify what type of plot we would like to make. 
 
 If you type `geom_` into the console of RStudio, you will see a list of options. 
+
 ```{r, echo = FALSE, out.width = "60%"}
 knitr::include_graphics(here::here("img", "geom.png"))
 ```
 
 We will create a scatter plot using the `geom_point()` function. We will also use the `theme_minimal()` function to change the overall aesthetics of the plot. See [here](https://ggplot2.tidyverse.org/reference/ggtheme.html) for a list of options.
 
-We will also use the `theme()` function to further specify how we want the plot to be displayed. We would like the x axis text to be angled by 90 degrees. We can use the `element_text()` function to change aspects about the text. and we can use the `axis.text.x` argument to specify that we want to specifically change the text of the x axis. You can type `theme(` in the RStudio console and press tab to see a list of argument options for things that you can change in your plot. 
+We will also use the `theme()` function to further specify how we want the plot to be displayed. We would like the x-axis text to be angled by 90 degrees. We can use the `element_text()` function to change aspects about the text and we can use the `axis.text.x` argument to specify that we want to specifically change the text of the x-axis. 
+
+You can type `theme()` in the RStudio console and press tab to see a list of argument options for things that you can change in your plot. 
 
 ```{r, echo = FALSE, out.width = "60%"}
 knitr::include_graphics(here::here("img", "theme.png"))
@@ -1256,7 +1338,8 @@ knitr::include_graphics(here::here("img", "theme.png"))
 Finally, we can use the `labs()` function of the `ggplot2` package to specify the labels of the plot. 
 
 ```{r}
-Annual %>% group_by(BUYER_STATE, year) %>%
+Annual %>% 
+  group_by(BUYER_STATE, year) %>%
   summarize(mean_DENS = mean(density, na.rm = TRUE)) %>%
   ggplot(aes(x = BUYER_STATE, y = mean_DENS, col = year)) + 
     geom_point() + 
@@ -1264,7 +1347,7 @@ Annual %>% group_by(BUYER_STATE, year) %>%
     theme(axis.title.x = element_blank(),
            axis.text.x = element_text(angle = 90)) +
     labs(x = "State",
-     title =  "Mean County Population Density of each State",
+         title = "Mean County Population Density of each State",
          y = "Mean Population Density (People per square mile)")
 ```
 
@@ -1273,7 +1356,6 @@ We can see that the average state population density is fairly similar for most 
 What about overall population density, how did the national average of all US counties change?
 
 We will ignore the different states in this case and we will calculate the mean of all US counties for each year.
-
 
 #### {.think_question_block}
 <b><u> Question Opportunity </u></b>
@@ -1287,15 +1369,17 @@ How might you create this plot?
 <details> <summary> Click here to reveal the code. </summary>
 
 ```{r}
-USavg_dens <-Annual %>% group_by( year) %>%
-     summarize(mean_DENS = mean(density)) %>%
-     ggplot(aes(x = year, y = mean_DENS)) + 
-        geom_point() +
-        theme_minimal() +
-        theme(axis.title.x=element_blank()) +
-        labs(title = "US mean population density",
-                 x = "year",
-                 y = "population density (people per square mile)")
+USavg_dens <- 
+  Annual %>% 
+  group_by(year) %>%
+  summarize(mean_DENS = mean(density)) %>%
+  ggplot(aes(x = year, y = mean_DENS)) + 
+    geom_point() +
+    theme_minimal() +
+    theme(axis.title.x=element_blank()) +
+    labs(title = "US mean population density",
+         x = "year",
+         y = "population density (people per square mile)")
 ```
 
 In this case we saved the plot to an object called `USavg_dens`.
@@ -1307,7 +1391,6 @@ In this case we saved the plot to an object called `USavg_dens`.
 ```{r}
 USavg_dens
 ```
-
 
 Overall the density has increased, if you take a look at the y-axis you can see that the density has changed by about 13 people per square mile from 2006 to 2014. 
 
@@ -1329,18 +1412,18 @@ How might you create this plot?
 
 
 ```{r}
-
-overall_density <-Annual %>% 
+overall_density <- 
+  Annual %>% 
   group_by(year) %>%
   summarise(total_population = sum(population)) %>%
-     ggplot(aes(x =year, y = total_population)) + 
-        geom_point() +
-        geom_smooth() +
-        theme_minimal() +
-        theme(axis.title.x = element_blank()) +
-        labs(title = "US Population from 2006-2014",
-                 x = "year",
-                 y = "US total population")
+  ggplot(aes(x = year, y = total_population)) + 
+      geom_point() +
+      geom_smooth() +
+      theme_minimal() +
+      theme(axis.title.x = element_blank()) +
+      labs(title = "US Population from 2006-2014",
+           x = "year",
+           y = "US total population")
  
 ```
 
@@ -1354,7 +1437,7 @@ overall_density
 
 How have the number of rural and urban areas changed over years?
 
-To determine how the number of each type of county has changed over time, we will use the `count()` function of the `dlyr` package after grouping by the `year` variable to count the number of occurrences of the unique values (which are `Rural` and `Urban`) in the `rural_ubran` variable.
+To determine how the number of each type of county has changed over time, we will use the `count()` function of the `dplyr` package after grouping by the `year` variable to count the number of occurrences of the unique values (which are `Rural` and `Urban`) in the `rural_ubran` variable.
 
 
 ```{r}
@@ -1363,40 +1446,50 @@ Annual %>%
   count(rural_urban)
 ```
 
-In this case we can make a plot using two different `geom_*` layers together. Whatever `geom_*` layer is added last will be displayed on top. In this case we will use `geom_point()` and `geom_smooth()` to add a line connecting the points of the scatter plot of the `geom_point()` function. We can also use the `facet_wrap()` function of the `ggplot2` package to create subplots based on the `rural_urban` variable. Thus we will create a subplot for the `Rural` values and another for the `Urban` values.
+In this case, we can make a plot using two different `geom_*` layers together. Whatever `geom_*` layer is added last will be displayed on top. 
 
-The `scales = "free"` argument allows for each to have a different scale for the y-axis.
+We will use `geom_point()` and `geom_smooth()` to add a line connecting the points of the scatter plot of the `geom_point()` function. We can also use the `facet_wrap()` function of the `ggplot2` package to create subplots based on the `rural_urban` variable. 
 
+This creates a subplot for the `Rural` values and another for the `Urban` values. The `scales = "free"` argument allows for each to have a different scale for the y-axis.
 
-```{r}
- Annual  %>% group_by( year) %>%
-      count(rural_urban) %>%
- ggplot(aes(x = year, y = n, col = rural_urban, group = rural_urban)) + 
-  geom_point() + 
-  geom_smooth() +
-  facet_wrap(~ rural_urban, scales = "free") +
-  theme_minimal() +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 90),
-        legend.title = element_blank()) +
-  labs(y = "Number of Counties", 
-       x = "Year",
-   title = "Change in the number of the type of county in the US over time")
+```{r, fig.width=10}
+Annual %>% 
+  group_by(year) %>%
+  count(rural_urban) %>%
+  ggplot(aes(x = year, y = n, col = rural_urban, 
+             group = rural_urban)) + 
+    geom_point() + 
+    geom_smooth() +
+    facet_wrap(~ rural_urban, scales = "free") +
+    theme_minimal() +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_text(angle = 90),
+          legend.title = element_blank()) +
+    labs(y = "Number of Counties", 
+         x = "Year",
+         title = "Change in the number of the rural and urban counties in the US over time")
 ```
 
 As one might expect, it looks like the number of urban areas has increased, while the number of rural areas has decreased over time.
 
+Let's also create a table to look at the number of rural and urban counties over time. To do this we can use the package `formattable`. We will convert our data into a format needed for the `formattable` package. 
 
-Let's also create a table to look at the number of rural and urban counties over time. To do this we can use the package `formattable`. First we need to get the data into the format that we would like. We previously counted the number of `Rural` and `Urban` counties for each year. However, the data was presented in a format that is called [long format](https://en.wikipedia.org/wiki/Wide_and_narrow_data). In this format, variables that could possibly be presented as separate columns are condensed into fewer columns, while still maintaining only a single value per cell. The opposite of this format is called [wide format](https://en.wikipedia.org/wiki/Wide_and_narrow_data) data, which therefore has more columns and fewer rows. This is best illustrated with an example.
+We previously counted the number of `Rural` and `Urban` counties for each year. However, the data was presented in a format that is called [long format](https://en.wikipedia.org/wiki/Wide_and_narrow_data). In this format, variables that could possibly be presented as separate columns are condensed into fewer columns, while still maintaining only a single value per cell.
 
-Here you can see wide data on the left in the following image with more columns and fewer rows and long data on the right where the month columns have been collapsed into two longer columns (one with the name of the month and one with the numeric value) resulting in fewer columns and more rows. While long format is very useful for creating plots with `ggplot2` it is helpful to have the data in wide format for tables that someone would quickly read, which is our current goal.
-
+The opposite of this format is called [wide format](https://en.wikipedia.org/wiki/Wide_and_narrow_data) data, which therefore has more columns and fewer rows. This is best illustrated with an example.
 
 ```{r, echo = FALSE}
 knitr::include_graphics("https://flourish.studio/images/blog/wide-to-long.png")
 ```
 
 #### [[source]](https://flourish.studio/images/blog/wide-to-long.png)
+
+On the left is "wide" dataset with more columns and fewer rows. 
+On the right is a "long" dataset where the month columns have been collapsed into two longer columns (one with the name of the month and one with the numeric value) resulting in fewer columns and more rows. 
+
+While long format is very useful for creating plots with `ggplot2` it is helpful to have the data in wide format for tables that someone would quickly read, which is our current goal.
+
+
 ***
 <details> <summary> Click here to see another example. </summary>
 
@@ -1417,7 +1510,7 @@ long
 </details>
 ***
 
-Now we will demonstrate how to make the counts of `Rural` and `Urban` data into wide format from long format. Here is our original data:
+Next, we demonstrate how to convert the counts of `Rural` and `Urban` data into wide format from long format. Here is our original data:
 
 ```{r}
 Annual  %>% 
@@ -1425,28 +1518,27 @@ Annual  %>%
   count(rural_urban)
 ```
 
-We would like the `rural_urban` data to be shown in two different columns; one that shows `Rural` counts and one that shows `Urban` counts, as this would be easier for people to read. We can use the `pivot_wider()` function of the `tidyr` package to do this. This takes two important arguments:
+We would like the `rural_urban` data to be shown in two different columns; one that shows `Rural` counts and one that shows `Urban` counts. We can use the `pivot_wider()` function of the `tidyr` package to do this. This takes two important arguments:
 
-1) `names_from`  - this argument indicates what variable to use to create the names of the new variables
-2) `values_from` - this argument indicates what variable to use to fill in the values of the new variables
+1. `names_from`: this argument indicates what variable to use to create the names of the new variables
+2. `values_from`: this argument indicates what variable to use to fill in the values of the new variables
 
-In our case we will obtain the names from the `rural_urban` variable and the values from the `n` variable.
+In our case, we use the names from the `rural_urban` variable and the values from the `n` variable.
 
 ```{r}
-Annual  %>% 
-  group_by( year) %>%
+Annual %>% 
+  group_by(year) %>%
   count(rural_urban) %>%
   tidyr::pivot_wider(names_from = rural_urban, 
-                    values_from = n)
+                     values_from = n)
 ```
 
 Nice!
 
-Now, let's also create two new variables that show the change in count of rural and urban counties from one year to the next. We can do so using the `lag()` function of the `dplyr` package. This function will find the previous value thus `Rural- lag(Rural)` will take the current row and subtract the previous row's value. Note that is necessary to include the `ungroup()` function to stop grouping by year.
+Now, let's also create two new variables that show the change in count of rural and urban counties from one year to the next. We can do so using the `lag()` function of the `dplyr` package. This function will find the previous value thus `Rural - lag(Rural)` will take the current row and subtract the previous row's value. Note that is necessary to include the `ungroup()` function to stop grouping by year.
 
 ```{r}
-
-Annual%>% 
+Annual %>% 
   group_by(year) %>%
   count(rural_urban) %>%
   tidyr::pivot_wider(names_from = rural_urban,
@@ -1456,11 +1548,13 @@ Annual%>%
          "Urban Change" = Urban - lag(Urban))
 ```
 
-Let's also add a column about the percent urban for each year. We will use the base `round()` function to round the percentages to 2 digits after the decimal using the `digits = 2` argument. Finally, we also rename the `year` variable to be `Year` using the `rename()` function of the `dplyr` package, which requires that the new name be listed before the `=` sign followed by the old name. 
+Let's also add a column about the percent urban for each year. We use the base `round()` function to round the percentages to 2 digits after the decimal using the `digits = 2` argument. 
+
+Finally, we rename the `year` variable to be `Year` using the `rename()` function of the `dplyr` package, which requires that the new name be listed before the `=` sign followed by the old name. 
 
 ```{r}
-
-R_U <-Annual%>% 
+R_U <- 
+  Annual %>% 
   group_by(year) %>%
   count(rural_urban) %>%
   tidyr::pivot_wider(names_from = rural_urban,
@@ -1468,31 +1562,39 @@ R_U <-Annual%>%
   ungroup() %>% 
   mutate("Rural Change" = Rural - lag(Rural), 
          "Urban Change" = Urban - lag(Urban),
-        "Percent Urban" = round((Urban/(Urban + Rural))*100, digits = 2)) %>%
+         "Percent Urban" = round((Urban/(Urban + Rural))*100, 
+                                 digits = 2)) %>%
   rename("Year" = "year")
 
 R_U
 ```
-Nice, now we have a pretty easy to interpret table, but we can make it even easier to quickly assess trends in the data using the `formattable` package. The `formmattable()` function creates a formatted table, and takes a list of variables and a stylized version of each variable in which to add special formatting.  As a simple example, we will use the `color_bar()` function of this package to add color bars to the `percent_urban` column which shows changes in values by the width of a color bar.
+
+Nice, now we have a pretty easy to interpret table, but we can make it even easier to quickly assess trends in the data using the `formattable` package. 
+
+The `formmattable()` function creates a formatted table, and takes a list of variables and a stylized version of each variable in which to add special formatting.
+
+As a simple example, we will use the `color_bar()` function of this package to add color bars to the `percent_urban` column which shows changes in values by the width of a color bar.
 
 ```{r}
-
-formattable::formattable(R_U, list(`Percent Urban` = formattable::color_bar("#FA614B")))
+formattable::formattable(R_U, list(`Percent Urban` = 
+                                     formattable::color_bar("#FA614B")))
 ```
 
 Nice, now we can see how much the percentage has changed over time. 
 
+AVOCADO: the next set of text below through the end of the subsection needs either more text explaining what's happening or we might consider removing it. It really gets into the weeds and it's not clear if the reader needs to know this. 
+
 We also use the `formatter()` function to change the color of the `Rural Change` and `Urban Change` variables so that if the value is negative it will be red and if it is positive it will be green. 
 
-The `formatter()` function takes an HTML style [tag](https://developer.mozilla.org/en-US/docs/Glossary/Tag) name which can be any character string (although generally one would use ["span"](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span#:~:text=The%20HTML%20element%20is,attribute%20values%2C%20such%20as%20lang%20.) using the `.tag` argument  and a `style` argument where style aspects such as color can be specified using a `color` argument.
+The `formatter()` function takes an HTML style [tag](https://developer.mozilla.org/en-US/docs/Glossary/Tag) name which can be any character string (although generally one would use ["span"](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span#:~:text=The%20HTML%20element%20is,attribute%20values%2C%20such%20as%20lang%20.) using the `.tag = "span"` argument  and a `style` argument where style aspects such as color can be specified using a `color` argument.
 
 We will create a function called `redgreen` that will specify that if a value is less than zero it should be red and if it is greater than zero it should be green. To do this we will use the `case_when()` function like we did previously when creating our `rural_urban` variable of the `county_info` object in the [**Data Wrangling**] section.
 
 To create a function we will use the base `function()` function. The inputs of the function are contained within the parentheses `()`, while the steps that should be performed on the input are contained within the curly brackets `{}`. In this case, our input will be called `number`.  Now when `redgreen` is used this will perform the `case_when` evaluation on the input provided.
 
-
 ```{r}
-redgreen <- function(number){case_when(number < 0 ~"red", number > 0 ~ "green")}
+redgreen <- function(number){ case_when(number < 0 ~"red", 
+                                       number > 0 ~ "green") }
 ```
 
 We can see that this function does indeed change numeric values to be the color names `red` and `green`.
@@ -1505,140 +1607,138 @@ Now this function can be used to replace the `color` values for the `Rural Chang
 ```{r}
 formattable(R_U, list(`Percent Urban` = color_bar("#FA614B"),
                       `Rural Change` = formatter(.tag ="span", 
-                                                style = ~style(
+                                                style = ~ style(
                                                 color = redgreen(number = `Rural Change`))),
                       `Urban Change` = formatter(.tag = "span", 
-                                                style = ~style(
+                                                style = ~ style(
                                                 color = redgreen(number = `Urban Change`)))))
 
 ```
 
 Nice, now this is really easy to read.
 
-
 ## US shipments over time
 
-Now let's get a sense of how the shipments of [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) changed over time in general across all counties in the US.
+Now let's get a sense of how the shipments of [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) changed over time across all counties in the US.
 
-First we are going to create a new variable in the `Annual` data that is the number of pills in millions, as this is easier for us to interpret.
+First, we create a new variable in the `Annual` data that is the number of pills (in millions), as this is easier for us to interpret.
 
 ```{r}
 Annual %<>% 
-  mutate(Pills_in_millions =  DOSAGE_UNIT/1000000)
+  mutate(Pills_in_millions = DOSAGE_UNIT/1000000)
 ```
 
-Now, let's make a plot using the `stat_summary()` function rather than a `geom_*` function.
+Next, let's make a plot using the `stat_summary()` function rather than a `geom_*` function, because this allows a user to calculate different features about the data to plot using custom functions that are wrappers for the `smean.*` functions from the `Hmisc` package. 
 
-This allows us to calculate different features about the data to plot. Custom functions can be used or functions that are wrappers for the `smean.*` functions the `Hmisc` package. 
+For example, the `stat_summary(fun.data = mean_sd)` is a wrapper around the `smean.sd` function from the `Hmisc` package. 
 
-See the [documination](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) for the `Hmisc` package to learn more about these functions.
+See the [documentation](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) for the `Hmisc` package to learn more about these functions.
 
-ggplot2 wrapper   | Hmisc function | Details                                                                      
+ggplot2 wrapper | Hmisc function | Details
 ---------- |------------- | -------------------------------------
-mean_cl_normal | smean.cl.normal | computes 3 summary variables: the
-sample mean and lower and upper Gaussian confidence limits based on the t-distribution  
-mean_sd | smean.sd | computes the mean plus or minus the standard deviation   
-mean_sdl  | smean.sdl | computes the mean plus or minus a constant
-times the standard deviation  
-mean_cl_boot | smean.cl.boot | fast implementation of the basic nonparametric bootstrap for obtaining confidence limits for the population mean without assuming normality (default is 1000 bootstrap samples)
-meadian_hilow | smedian.hilow | computes the sample median and a selected pair of outer quantiles having equal tail areas  
+`mean_cl_normal` | `smean.cl.normal` | computes 3 summary variables: the sample mean and lower and upper Gaussian confidence limits based on the t-distribution  
+`mean_sd` | `smean.sd` | computes the mean plus or minus the standard deviation   
+`mean_sdl`  | `smean.sdl` | computes the mean plus or minus a constant times the standard deviation
+`mean_cl_boot` | `smean.cl.boot` | fast implementation of the basic nonparametric bootstrap for obtaining confidence limits for the population mean without assuming normality (default is 1000 bootstrap samples)
+`median_hilow` | `smedian.hilow` | computes the sample median and a selected pair of outer quantiles having equal tail areas  
+
+We will use the `mean_cl_boot()` function to create our plot. As noted above, this function uses something called a "bootstrap" calculate confidence limits for the population mean. Let's dig into a bit how this works. 
+
+The bootstrap is based on the idea of **random sampling with replacement**. Let's assume we take a random sample from a population and calculate the sample mean $\bar{x}$ = $\frac{1}{n} \sum_{i=1}^n x_i$, which resulted in $\bar{x}=3.2$ number of shipped pills (in millions). However, a different random sample might have yielded $\bar{x}=3.0$, or $\bar{x}=3.5$. It would be nice to 
+get a sense of the accuracy of the original estimate. 
+
+To do that, we need to understand how the proportions $\bar{x}$ vary sample to sample, or due to random sampling. But first, we need to define a _sampling distribution_. 
+
+### Sampling distribution
+
+If we took 50 different random samples of the number of pills shipped in a given year for a given county, we could see a distribution of the $\bar{x}$ from the recorded numbers from the different random samples taken ($\bar{x}_1, \ldots, \bar{x}_{50}$). 
+
+The most important thing to understand about sampling distributions is it's the distribution of a test statistic (e.g. $\bar{x}$) that summarizes a dataset and represents how the statistic 
+varies across many random datasets. 
+
+**A histogram of one set of observations drawn from a population does not represent a sampling distribution**. 
+
+**A histogram of permutation means, each from one sample, does represent a sampling distribution**. 
+
+We call the standard deviation of a statistic the _standard error_. 
 
 
-We will use the `mean_cl_boot()` function to create our plot. This will create a point at the mean and then lines around the point based on "confidence limits". In this case, the package uses a nonparametric bootstrap to compute a 95 % [confidence interval](https://en.wikipedia.org/wiki/Confidence_interval) for the mean. 
+### The bootstrap
 
-What does this mean?
+In the scenario where the true population mean is unknown, all we have are the data and a statistic estimated from the data. We need to estimate the sampling distribution of $\bar{x}$ to understand how much variability or uncertainty there is. 
 
-According to [Wikipedia]((https://en.wikipedia.org/wiki/Confidence_interval), a confidence interval is:
-
-> A range of plausible values for an unknown parameter (for example, the mean)
-
-We don't know the true mean for the number of pills shipped to a US county, our data represents an estimate as we saw that not every county is represented in the data and it is highly possible that not all pill shipments are accounted for. 
-
-Thus confidence intervals show the reliability of the mean estimate. If the interval is very large, than the true mean could possibly be many other values. 
-
-Again according to [Wikipedia]((https://en.wikipedia.org/wiki/Confidence_interval):
-
-> The interval has an associated confidence level that the true parameter is in the proposed range. 
-
-> There is a 95% probability that the calculated confidence interval from some future experiment encompasses the true value of the population parameter.
-
-It does not mean:
-
-> A 95% probability that the interval covers the population parameter
+Here, we will use what's called the _bootstrap_ to create a new distribution called the _bootstrap distribution_, which approximates the sampling distribution for test statistics. 
 
 
-Rather it is that we are 95% percent **confident** that the interval covers the population mean.
+#### How does the bootstrap work? 
 
-It is typically calculated as follows:
+To find the bootstrap distribution of sample mean, we draw samples (called _resamples_ or _bootstrap samples_) of size $n$, with replacement, from the original sample and then compute the mean of each resample. 
 
-$\bar{x} +- Z \frac{s}{\sqrt{n}}$
+A few things to note about bootstrap distributions: 
 
-Where \bar{x} is the observed mean, $s$ is the standard deviation, $n$ is the number of observations, and $Z$ is the Z score from the normal distribution for the particular confidence level chosen which is typically 95%. For example with a 95% confidence level the Z is 1.96 indicating that the area around the mean on the [sampling distribution](https://en.wikipedia.org/wiki/Sampling_distribution) is within plus or minus 1.96 standard deviations.
+1. We treat the original sample as the population. If the original sample is representative of the population, then the bootstrap distribution of the test statistics will look approximately like the sampling distribution of the test statistic (same spread and shape). 
 
-This is best demonstrated with an image of the [sampling distribution](https://en.Wikipedia.org/wiki/Sampling_distribution:
+2. The bootstrap standard error is the standard deviation of the bootstrap distribution of that statistic. 
 
-```{r, echo = FALSE}
-knitr::include_graphics(here::here("img", "dist.png"))
-```
-
-##### [[source]]((http://onlinestatbook.com/2/estimation/mean.html))
+3. However, the mean of the bootstrap distribution will be the same as the mean of the original sample (not necessarily that of the original population). 
 
 
-As we can see 95% of the distribution (shaded blue) is within 1.96 standard deviations of the mean zero on the normal distribution.
+#### Steps to construct the bootstrap distribution
 
-See [here](http://onlinestatbook.com/2/estimation/mean.html) for a more detailed explanation of the confidence interval.
+1. Start with a sample of size $n$ from a population
+2. Draw a resample of size $n$ with replacement from the sample
+3. Compute a statistic that describes the sample, such as the sample mean
+4. Repeat the resampling process many times
+5. Construct the bootstrap distribution of the statistic. Inspect the spread, bias and shape. 
 
-But what about the `boot` part of the function?
+#### Bootstrap percentile confidence intervals
 
-This is short for the processes of [bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)), which means that the mean is calculated many times after taking random samples of the data. This is called [resampling](https://en.wikipedia.org/wiki/Resampling_(statistics)) and in the case of bootstrapping, it is called resampling with replacement because the same values can be reused within even the same sample. For example if our set of possible values is 1,2,3,4,5, we could obtain a sample that is 1,1,3,4,5)).
+The interval between the 2.5 and 97.5 percentiles of the bootstrap distribution of a statistic is a 95% _bootstrap percentile confidence interval_ for the corresponding parameter.  
 
-The mean for say 1000 different bootstrap samples is calculated and plotted as a histogram just like the sampling distribution. 
-
-```{r, echo = FALSE}
-knitr::include_graphics(here::here("img", "boot.png"))
-```
-##### [[source]](https://acclab.github.io/bootstrap-confidence-intervals.html)
-
-
-The confidence interval is then determined from this plot as the point on the where the data is again within a 95% confidence interval around the  most frequently occurring calculated mean across all the different bootstrap samples.
+**We can then say that we are 95% confident that the true statistic lies within this interval.**
 
 See [here](https://acclab.github.io/bootstrap-confidence-intervals.html) for more details about how this process works.
 
-We can use this function in our plot  as `stat_summary(fun.data = mean_cl_boot)`, we can also add a position argument so that our two groups are not overlapping by choosing the `position_doge` option which takes an argument of `width` which specifies how far apart the two groups should be plotted. 
+#### Back to the bootstrap
+
+We can use the `mean_cl_boot` function in our plot with `stat_summary(fun.data = mean_cl_boot)` to calculate the 95% bootstrap confidence intervals.
+
+We can also add a position argument so that our two groups are not overlapping by choosing the `position_doge` option which takes an argument of `width` which specifies how far apart the two groups should be plotted. 
 
 The confidence intervals are then plotted as a line through a point which shows the range of other possible values for the mean based on the bootstrap samples. 
 
 We will also use the `stat_summary()` function to create a line between the points based on the mean.
 
 ```{r}
-raw_average <-Annual %>% 
-                group_by(year) %>%
-                ggplot(aes(x = year, y = Pills_in_millions)) + 
-                   stat_summary(fun.data = mean_cl_boot,
-                                position = position_dodge(width=0.5)) +
-                   stat_summary(fun = mean,
-                               geom = "line") +
-                   labs(title = "Average Number of Opioid Pills Shipped to a US County",
-                            y = "Number of pills in millions") +
-                   theme_minimal()
+raw_average <- 
+  Annual %>% 
+  group_by(year) %>%
+  ggplot(aes(x = year, y = Pills_in_millions)) + 
+    stat_summary(fun.data = mean_cl_boot,
+                 position = position_dodge(width=0.5)) +
+    stat_summary(fun = mean, geom = "line") +
+    labs(title = "Average Number of Opioid Pills Shipped to a US County",
+         y = "Number of pills in millions") +
+  theme_minimal()
 
 raw_average
 ```
 
 It looks like the average number of opioid pills shipped to a county peaked in 2011 and has slowly declined. 
 
-
 We can look a bit deeper if we only calculate a mean for each state. To make a visual of this we will use the `geom_boxjitter()` function of the `ggpol` package.
 
 ```{r}
-raw_state_avg <- Annual %>% 
-     group_by(BUYER_STATE, year) %>%
-     summarise( mean_DOSAGE = mean(Pills_in_millions)) %>% ungroup() %>%
-     ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-        ggpol::geom_boxjitter()+ 
-        labs(title = "Average number of opioid pills shipped to a given county for each state",
-                 y = "Number of pills in millions")+
-        theme_minimal()
+raw_state_avg <- 
+  Annual %>% 
+  group_by(BUYER_STATE, year) %>%
+  summarise( mean_DOSAGE = mean(Pills_in_millions)) %>% 
+  ungroup() %>%
+  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
+    ggpol::geom_boxjitter() +
+    labs(title = "Average number of opioid pills shipped to a given county for each state",
+         y = "Number of pills in millions") + 
+  theme_minimal()
 
 raw_state_avg
 ```
@@ -1647,58 +1747,62 @@ Again we see the same general overall trend, we also see that the spread was qui
 
 
 ## State Shipments over time
+
 To get a better sense of how each state changed over time we can create a line plot instead.
 
-
 ```{r}
-Annual  %>% group_by(BUYER_STATE, year) %>%
-     summarise( mean_DOSAGE = mean(Pills_in_millions)) %>% ungroup() %>%
-ggplot(aes(x = year, 
-           y = mean_DOSAGE, 
-           group = BUYER_STATE, 
-           color = BUYER_STATE)) + 
-  geom_line()+
-       labs(title = "Average number of opioid pills shipped to a given county for each state",
-              y = "Number of pills in millions")+
-     theme_minimal()
+Annual %>% 
+  group_by(BUYER_STATE, year) %>%
+  summarise(mean_DOSAGE = mean(Pills_in_millions)) %>%
+  ungroup() %>% 
+  ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, 
+             color = BUYER_STATE)) + 
+    geom_line() +
+    labs(title = "Average number of opioid pills shipped to a given county for each state",
+         y = "Number of pills in millions")+
+    theme_minimal()
 ```
 
-Since we have so many states, the legend is not very useful. Instead we can use the `girafe` package to create an interactive plot that will tell people what state each line represents when they hover over different data points.
+Since we have so many states, the legend is not very useful. Instead we can use the `girafe` package to create an **interactive plot** that will tell people what state each line represents when they hover over different data points.
 
 ```{r}
-  
-g<-Annual  %>% group_by(BUYER_STATE, year) %>%
-     summarise( mean_DOSAGE = mean(Pills_in_millions)) %>% ungroup() %>%
-ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, color = BUYER_STATE)) +
-  geom_line()+
-         labs(title = "Average number of opioid pills shipped to a given county for each state",
-              y = "Number of pills in millions")+
-     theme_minimal()
+g <- 
+  Annual %>% 
+  group_by(BUYER_STATE, year) %>%
+  summarise(mean_DOSAGE = mean(Pills_in_millions)) %>%
+  ungroup() %>% 
+  ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, 
+             color = BUYER_STATE)) +
+    geom_line() +
+    labs(title = "Average number of opioid pills shipped to a given county for each state",
+         y = "Number of pills in millions") +
+    theme_minimal()
 
 
-  g <- g + geom_point_interactive(aes(
-                color = BUYER_STATE, 
-              tooltip = usdata::abbr2state(BUYER_STATE)), 
-                 size = 2,
-                alpha = 3/10) +theme(legend.position = "none")
+g <- 
+  g + geom_point_interactive(aes(color = BUYER_STATE, 
+                                 tooltip = usdata::abbr2state(BUYER_STATE)), 
+                             size = 2, alpha = 3/10) +
+  theme(legend.position = "none")
  
 girafe(code = print(g))
 ```
 
-In this plot it appears that the largest number of pills were shipped to counties in California However, since we did not account for population or population density, this could simply be because it is the most populated state. To account for this we will perform something called normalization to make a more fair comparison.
+In this plot, it appears that the largest number of pills were shipped to counties in California. However, since we did not account for population or population density, this could simply be because it is the most populated state. 
 
+To account for this we will perform something called **normalization** (or in this case we will adjust for differences in population or population density across different states) to make a more fair comparison.
 
-## Normalization of pill count
+## Normalization of number of shipped pills
 
 The term data [normalization](https://en.wikipedia.org/wiki/Normalization_(statistics)) actually has a variety of meanings. 
 
-In some cases it indicates the process of making data "more normally distributed", which means that the data is transformed in a such way that when the frequencies of the various data points are plotted, it resembles that of the [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution), which looks like a "bell curve". This may be helpful for performing certain statistical tests that assume that the data is normally distributed.
+In some cases, it indicates the process of making data "more normally distributed", which means that the data is transformed in a such way that when the frequencies of the various data points are plotted, it resembles that of the [normal distribution](https://en.wikipedia.org/wiki/Normal_distribution), which looks like a "bell curve". This may be helpful for performing certain statistical tests that assume that the data is normally distributed.
 
 In other cases, it may mean the process of transforming the data to a common scale so that comparisons can be made fairly. 
 
-In our case we want to compare the number of pills shipped to each county. However, using the raw data results in an unfair comparison as the counties themselves have very different populations. Therefore, if a county has a very large population, we may assume that the large number of pills shipped to that county may indicate that this county received a particularly high amount of opioids, however, it may actually be that this county received far fewer pills per person than a smaller county.
+In our case, we want to compare the number of pills shipped to each county. However, using the raw data results in an unfair comparison as the counties themselves have very different populations. Therefore, if a county has a very large population, we may assume that the large number of pills shipped to that county may indicate that this county received a particularly high amount of opioids, however, it may actually be that this county received far fewer pills per person than a smaller county.
 
-Thus if we divide or scale the number of pills shipped to be relative to the number of people in a given county, then we have the number of pills shipped per person. Thus the data is now on the same scale for each county. 
+If we divide (or scale) the number of pills shipped to be relative to the number of people in a given county, then we have the number of pills shipped per person. Therefore, the data will be on a similar scale for each county. 
 
 This can be extended to evaluating differences between states and rural or urban counties by taking the mean of the normalized pill counts per person for each county within each group.
 
@@ -1706,58 +1810,57 @@ See [here](http://www.pbcgis.com/normalize/#:~:text=To%20normalize%2C%20in%20a%2
 
 This may be best illustrated with some example data. 
 
-Here we will create a tibble for three imaginary counties. Each has a different population but received the same number of pills. 
+Here, we create a tibble for three imaginary counties. Each has a different population but received the same number of pills. 
 
-Then we will calculate the number of pills per person by dividing the number of pills shipped to that county by the population of that county.
+Next, we calculate the number of pills per person by dividing the number of pills shipped to that county by the population of that county.
 
 ```{r}
-example_data <-tibble(population = c(10, 50, 100),
-                           pills = c(100, 100, 100))
+example_data <- 
+  tibble(population = c(10, 50, 100),
+         pills = c(100, 100, 100))
 
-example_data %<>% mutate(norm_pills = pills/population)
+example_data %<>% 
+  mutate(norm_pills = pills/population)
 
 example_data
 ```
 
-
 You can see that on average 10 pills were shipped for each person for the first county.
 
-In the second row, the population is much larger, thus despite the same number of pills being shipped to this example county, there were only enough pills shipped for on average 2 per person. In the final row the population is very large, thus only enough pills were shipped to give on average 1 per person.
+In the second row, the population is much larger. Despite the same number of pills being shipped to this example county, there were only enough pills shipped for on average 2 per person. In the final row, the population is very large. Only enough pills were shipped to give on average 1 per person.
 
 Note that however, it is likely that only a small portion of the county populations actually received the pills that were shipped to a given county, but this helps us get a sense of the relative amount shipped to each county and likely used by people in the county where the pills were shipped (although this also not certain).
 
-
-Now we will create a new variable called `pop_DOSAGE` that is the number of pills shipped per county divided by the population of that county:
+Back to our example: we create a new variable called `pop_DOSAGE` that is the number of pills shipped per county divided by the population of that county:
 
 ```{r}
-
-Annual%<>%  mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
+Annual %<>%
+  mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
 
 glimpse(Annual)
 ```
 
-
-Now we will create a plot of the national county average for this normalized pill count over time.
-
+We create a plot of the national county average for this normalized pill count over time.
 
 ```{r}
-
-norm_average <- Annual %>% 
-  group_by(year)  %>%
-  ggplot( aes(x = year, y = pop_DOSAGE)) + 
+norm_average <- 
+  Annual %>% 
+  group_by(year) %>%
+  ggplot(aes(x = year, y = pop_DOSAGE)) + 
     stat_summary(fun.data = mean_cl_boot,
                  position = position_dodge(width=0.5)) +
     stat_summary(fun = mean,
-                geom = "line") +
+                 geom = "line") +
     labs(title = "Average Number of pills shipped per person for a given county",
-             y = "Normalized Number of pills") +
+         y = "Normalized Number of pills") +
     theme_minimal()
 
 norm_average
 ```
 
-Now, let's put this with the comparable raw data plot using the `patchwork` package.
-Using this package we can use a `+` to combine plots together. We can also continue to use the `theme()` function of the `ggplot2` package to remove the previous titles and then use the `plot_annotation()` function of the `patchwork` package to add an overall title using the `title` argument. This function can also be used with the `theme` argument and then using the `ggplot2` `theme()` function as usual. This will apply changes to all plots that are combined but only regarding to the titles plot margin and background.
+Let's make a plot comparing this plot with the data on the raw scale using the `patchwork` package, using a `+` to combine plots together.
+
+We continue to use the `theme()` function of the `ggplot2` package to remove the previous titles and then use the `plot_annotation()` function of the `patchwork` package to add an overall title using the `title` argument. This function can also be used with the `theme` argument and then using the `ggplot2` `theme()` function as usual. This will apply changes to all plots that are combined but only regarding to the titles plot margin and background.
 
 ```{r}
 raw_average +
@@ -1767,7 +1870,7 @@ norm_average +
   patchwork::plot_annotation(title = "Raw vs Normalized Data")
 ```
 
-We can see that the variability is much lower for the normalized data (however this is in part because the scale is different), but we see the same general trend from one year to the next. 
+We can see that the variability of the sample mean is much lower for the normalized data (however this is in part because the scale is different), but we see the same general trend from one year to the next. 
 
 This is now also a bit easier to interpret. It is easier to think about 30 vs 50 pills per person as opposed to 10 million pills vs 20 million pills for a given county.
 
@@ -1780,35 +1883,40 @@ Do you recall how to do this? How would you combine the previous plot of the raw
 
 ####
 
+***
 
 <details> <summary> Click here to reveal the code. </summary>
 
 
 ```{r}
-norm_state_avg <-Annual  %>% 
+norm_state_avg <-
+  Annual %>% 
   group_by(BUYER_STATE, year) %>%
-  summarise( mean_DOSAGE = mean(pop_DOSAGE)) %>% ungroup() %>%
-    ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    geom_boxjitter()+ 
+  summarise(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
+  ungroup() %>%
+  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
+    geom_boxjitter() + 
     labs(title = "Average number of opioid pills shipped to a given county for each state",
-            y = "Number of Pills Per Capita")+
+         y = "Number of Pills Per Capita")+
     theme_minimal()
 
 norm_state_avg 
 
-
-together <- raw_state_avg + 
-            theme(axis.text.x = element_text(angle = 90)) +
-            norm_state_avg + 
-            theme(plot.title = element_blank(), axis.text.x = element_text(angle = 90)) +
-            plot_annotation(title = "Raw vs Normalized Data")
+together <- 
+  raw_state_avg + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  norm_state_avg + 
+  theme(plot.title = element_blank(), 
+        axis.text.x = element_text(angle = 90)) +
+  plot_annotation(title = "Raw vs Normalized Data")
 ```
 
 </details>
 
+*** 
+
 ```{r}
 together
-
 ```
 
 We see a similar spread and the same general trend although the difference from one year to the next appears to be steeper for the normalized data.
@@ -1822,36 +1930,39 @@ Do you recall how to create the state specific and interactive plot?
 
 ####
 
+***
 
 <details> <summary> Click here to reveal the code. </summary>
 
 
 ```{r}
+g2 <- 
+  Annual %>% 
+  group_by(BUYER_STATE,year) %>%
+  summarise(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
+  ungroup() %>%
+  ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE,
+             color = BUYER_STATE)) +
+    geom_line()
 
-g2<-Annual  %>% group_by(BUYER_STATE,year) %>%
-     summarise( mean_DOSAGE = mean(pop_DOSAGE)) %>% ungroup() %>%
-ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, color = BUYER_STATE)) +
-  geom_line()
-
-
-  g2 <- g2 + geom_point_interactive(aes(
-                color = BUYER_STATE, 
-              tooltip = usdata::abbr2state(BUYER_STATE)), 
-                 size = 2,
-                alpha = 3/10) +theme(legend.position = "none")
+g2 <- 
+  g2 + geom_point_interactive(aes(color = BUYER_STATE, 
+                                  tooltip = usdata::abbr2state(BUYER_STATE)), 
+                              size = 2, alpha = 3/10) + 
+  theme(legend.position = "none")
 ```
  
 </details> 
 
+*** 
+
 ```{r}
 girafe(code = print(g2))
-
 ```
 
 This dramatically changed the resulting plot!
 
 We can see that now Tennessee, Kentucky, and West Virginia were among the top to receive pills relative to their populations. California is no longer at the top of the plot.
-
 
 
 ## Rural and Urban Differences
@@ -1862,103 +1973,105 @@ To make this plot we will again use the `stat_summary()` function of the `ggplot
 
 We want to include both the raw data and the normalized data in the same plot. 
 
-
 Recall that we can do this using the `facet_wrap()` function. 
 
+***
 <details> <summary> Click here to see how this can be done using `facet_wrap()` </summary>
 
 In this option we use the `labeller` argument of the `facet_wrap()` function to change what the `strip.text` labels will be (which is the text above each plot - the location of which can be changed).
 
 ```{r}
-Annual %>% pivot_longer(names_to = "type", 
-                        values_to  = "value", 
-                        cols = c(Pills_in_millions, 
-                                 pop_DOSAGE))%>%
+Annual %>% 
+  pivot_longer(names_to = "type", 
+               values_to  = "value", 
+               cols = c(Pills_in_millions, 
+                        pop_DOSAGE))%>%
   mutate(type = forcats::fct_inorder(type)) %>%
-
-ggplot( aes(y = value, x = year, colour = rural_urban, group = rural_urban)) + 
-  stat_summary(fun.data = mean_cl_boot,
-               position = position_dodge(width = 0.5),
-               geom = "pointrange") +
-  stat_summary(fun.y = mean,
-                geom = "line") +
-  facet_wrap( ~ type, scales = "free", labeller = 
-                as_labeller(c(Pills_in_millions = "Raw Data", 
-                              pop_DOSAGE = "Normalized Data (pills per capita)"))) +
-  labs(title = "Difference in Opioid Shipments With and Without Normalization",
-       y = "Number of Pills",
-       x = NULL)+
-  theme_minimal()+
-  theme(axis.text.x = element_text(angle = 90),
-        legend.title = element_blank())+
-  scale_color_manual(values = c("#20A387FF", "#481567FF"))
+  ggplot(aes(y = value, x = year, colour = rural_urban, 
+             group = rural_urban)) + 
+    stat_summary(fun.data = mean_cl_boot,
+                 position = position_dodge(width = 0.5),
+                 geom = "pointrange") +
+    stat_summary(fun.y = mean, geom = "line") +
+    facet_wrap( ~ type, scales = "free", labeller = 
+                  as_labeller(c(Pills_in_millions = "Raw Data", 
+                                pop_DOSAGE = "Normalized Data (pills per capita)"))) +
+    labs(title = "Difference in Opioid Shipments With and Without Normalization",
+         y = "Number of Pills", x = NULL)+
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 90),
+          legend.title = element_blank())+
+    scale_color_manual(values = c("#20A387FF", "#481567FF"))
 ```
 
 </details> 
 ***
 
-Or, instead we can continue to use `patchwork` to combine two different plots. Both options allow for a more flexibility about specifying different aspects of the plot. Notice that in both cases we use a manual color scheme to color the two groups using the `scale_color_manual()` function of the `ggplot2` package. This function takes a `values` argument that must be a list of colors that is equal to the number of groups to be colored. Also the `element_text(hjust = 0.5)` of the `theme()` function, allows for the titles to be centered.
+Or, instead we can continue to use `patchwork` to combine two different plots. Both options allow for a more flexibility about specifying different aspects of the plot. 
 
-```{r}
-Raw_Data <-Annual %>%
-ggplot( aes(y = Pills_in_millions, x = year, colour = rural_urban, group = rural_urban)) + 
-  stat_summary(fun.data = mean_cl_boot,
-               position = position_dodge(width = 0.5),
-               geom = "pointrange") +
-  stat_summary(fun = mean,
-                geom = "line") +
-  labs(title = "Raw Data",
-       y = "Number of Pills in millions",
-       x = NULL)+
-  theme_linedraw()+
-  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        axis.text.x = element_text(angle = 90),
-        axis.text = element_text(size = 10),
-        legend.title = element_blank(),
-        legend.position = "none") +
+In both cases, we use a manual color scheme to color the two groups using the `scale_color_manual()` function of the `ggplot2` package. This function takes a `values` argument that must be a list of colors that is equal to the number of groups to be colored. Also the `element_text(hjust = 0.5)` of the `theme()` function, allows for the titles to be centered.
+
+```{r, fig.width=10}
+Raw_Data <- 
+  Annual %>% 
+  ggplot(aes(y = Pills_in_millions, x = year, colour = rural_urban, 
+             group = rural_urban)) + 
+    stat_summary(fun.data = mean_cl_boot,
+                 position = position_dodge(width = 0.5),
+                 geom = "pointrange") +
+    stat_summary(fun = mean, geom = "line") +
+    labs(title = "Raw Data",
+         y = "Number of Pills in millions",
+         x = NULL) +
+    theme_linedraw() +
+    theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+          axis.text.x = element_text(angle = 90),
+          axis.text = element_text(size = 10),
+          legend.title = element_blank(),
+          legend.position = "none") +
+    scale_color_manual(values = c("#20A387FF", "#481567FF"))
+
+
+Norm_Data <- 
+  Annual %>%
+  ggplot( aes(y = pop_DOSAGE, x = year, colour = rural_urban, 
+              group = rural_urban)) + 
+    stat_summary(fun.data = mean_cl_boot,
+                 position = position_dodge(width = 0.5),
+                 geom = "pointrange") +
+    stat_summary(fun = mean, geom = "line") +
+    labs(title = "Normalized Data",
+         y = "Number of Pills Per Capita",
+         x = NULL) +
+    theme_linedraw() +
+    theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+          axis.text.x = element_text(angle = 90),
+          axis.text = element_text(size = 10),
+          legend.title = element_blank()) +
   scale_color_manual(values = c("#20A387FF", "#481567FF"))
 
-
-Norm_Data<-Annual %>%
-ggplot( aes(y = pop_DOSAGE, x = year, colour = rural_urban, group = rural_urban)) + 
-  stat_summary(fun.data = mean_cl_boot,
-               position = position_dodge(width = 0.5),
-               geom = "pointrange") +
-  stat_summary(fun = mean,
-                geom = "line") +
-  labs(title = "Normalized Data",
-       y = "Number of Pills Per Capita",
-       x = NULL)+
-  theme_linedraw()+
-  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        axis.text.x = element_text(angle = 90),
-        axis.text = element_text(size = 10),
-        legend.title = element_blank())+
-  scale_color_manual(values = c("#20A387FF", "#481567FF"))
-
-Raw_Data + Norm_Data + plot_annotation(title = "Difference in Opioid Shipments across different types of counties")
+Raw_Data + 
+  Norm_Data + 
+  plot_annotation(title = "Difference in Opioid Shipments across different types of counties")
 ```
 
 
-We can see that without accounting for population the urban counties recieved many more pills than the urban counties. In contrast, when population is taken into account, the rates appear to be very similar.
+We can see that without accounting for population, the urban counties recieved many more pills than the rural counties. In contrast, when population is taken into account, the rates appear to be very similar.
 
 We can also see that there appears to be much higher variability among the urban counties as compared to the rural counties. 
 
 Let's save our `theme()` function code as an actual theme to be used for our future plots so that they can be stylized similarly.
 
 ```{r}
-theme_county <-function() {
-  theme_linedraw()+
+theme_county <- function() {
+  theme_linedraw() +
   theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
         axis.text.x = element_text(angle = 90),
         axis.text = element_text(size = 10),
         legend.title = element_blank())
 }
-
 ```
-Now we simply need to type county_theme() instead to achieve the same style for our plot.
-
-
+Now we simply need to type `county_theme()` instead to achieve the same style for our plot.
 
 ## Greater granularity of density
 
