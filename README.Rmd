@@ -6,7 +6,7 @@ output: md_document
 
 # OpenCaseStudies
 
-
+The rendered version of this case study can be found here: [https://www.opencasestudies.org/ocs-bp-opioid-rural-urban/](https://www.opencasestudies.org/ocs-bp-opioid-rural-urban/)
 
 ### Disclaimer 
 
@@ -28,7 +28,8 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 (
 
 To cite this case study:
 
-Wright, Carrie, and Wang, Kexin (Sheena) and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ Opioids in the United States (Version v1.0.0).
+Wright, Carrie, and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban) Opioids in the United States (Version v1.0.0).
+
 
 ### Acknowledgements
 
@@ -40,6 +41,7 @@ We would also like to acknowledge the [Bloomberg American Health Initiative](htt
 ### Title 
 
 Opioids in United States
+
 
 ### Motivation 
 
@@ -163,7 +165,7 @@ This data is from the [DEA](https://www.dea.gov/) [Automated Reports and Consoli
 
 A wrapper package about this API is available [here](https://github.com/wpinvestigative/arcos).
 
- <u>**Packages used in this case study:** </u>
+<u>**Packages used in this case study:** </u>
 
 Package   | Use in this case study                                                                      
 ---------- |-------------
@@ -183,6 +185,7 @@ Package   | Use in this case study
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
+[usdata](https://cran.r-project.org/web/packages/usdata/usdata.pdf) | to add full state names to plots based on the state abbreviations
 
 
 If you or a loved one is struggling with opioid addiction, contact the SAMHSA’s National Helpline at [1-800-662-HELP (4357)](tel:1-800-662-HELP (4357)). 

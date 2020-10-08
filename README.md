@@ -2,6 +2,9 @@
 OpenCaseStudies
 ===============
 
+The rendered version of this case study can be found here:
+<https://www.opencasestudies.org/ocs-bp-opioid-rural-urban/>
+
 ### Disclaimer
 
 The purpose of the [Open Case
@@ -25,9 +28,9 @@ United States License.
 
 To cite this case study:
 
-Wright, Carrie, and Wang, Kexin (Sheena) and Jager, Leah and Taub,
-Margaret and Hicks, Stephanie. (2020).
-<a href="https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/" class="uri">https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/</a>
+Wright, Carrie, and Wang, Kexin and Jager, Leah and Taub, Margaret and
+Hicks, Stephanie. (2020).
+[https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban)
 Opioids in the United States (Version v1.0.0).
 
 ### Acknowledgements
@@ -324,6 +327,10 @@ A wrapper package about this API is available
 <tr class="even">
 <td><a href="https://cran.r-project.org/web/packages/directlabels/directlabels.pdf">directlabels</a></td>
 <td>to add labels directly on lines within plots</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/usdata/usdata.pdf">usdata</a></td>
+<td>to add full state names to plots based on the state abbreviations</td>
 </tr>
 </tbody>
 </table>

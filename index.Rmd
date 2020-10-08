@@ -47,8 +47,6 @@ knitr::include_graphics(here("img",
 
 ####
 
-AVOCADO: the title of the figure feels somewhat complicated and should be simplified. Might comment below in the last section after reading through the entire case study though before making suggestions. 
-
 #### {.disclaimer_block}
 
 **Disclaimer**: The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**. A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
@@ -65,9 +63,8 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [
 
 To cite this case study please use:
 
-Wright, Carrie, and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-opioid-rural-urban/ Opioids in the United States (Version v1.0.0).
+Wright, Carrie, and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban) Opioids in the United States (Version v1.0.0).
 
-avocado update url
 ####
 
 # **Motivation**
@@ -110,7 +107,7 @@ They found that:
 
 > Respondents who began using heroin in the 1960s were predominantly young men (82.8%; mean age, 16.5 years) whose first opioid of abuse was heroin (80%).
 
-AVOCADO: what does the last 80% refer to? 80% heroin and 20% not? I think so based on the figure below.
+Meaning that 80% of the heroin users who started using heroin in the 1960s, started with heroin directly, while  20% first used another opioid and then became heroin users. 
 
 > However, more **recent users** were older (mean age, 22.9 years) men and women **living in less urban areas (75.2%)** who were **introduced to opioids through prescription drugs (75.0%)**.
 
@@ -118,7 +115,7 @@ AVOCADO: what does the last 80% refer to? 80% heroin and 20% not? I think so bas
 include_graphics(here::here("img", "introducedbyprescription.png"))
 ```
 
-##### [[sourcce]]((https://doi.org/10.1001/jamapsychiatry.2014.366))
+##### [[source]]((https://doi.org/10.1001/jamapsychiatry.2014.366))
 
 > Heroin use has **changed from an inner-city**, minority-centered problem to one that has a more widespread geographical distribution, involving primarily white men and women in their late 20s living **outside of large urban areas**.
 
@@ -223,7 +220,7 @@ Package   | Use in this case study
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
-[usdata]() | AVOCADO: needs to be added
+[usdata](https://cran.r-project.org/web/packages/usdata/usdata.pdf) | to add full state names to plots based on the state abbreviations
 
 The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
 
@@ -264,12 +261,12 @@ knitr::include_graphics("https://www.drugabuse.gov/sites/default/files/styles/co
 
 ***
 
-In general, opioid medications and drugs have been found to dull the senses, relieve pain, supress cough, reduce respiration and heart rate, induce constipation, and induce feelings of euphoria. They have a high potential for abuse and addiction.
+In general, opioid medications and drugs have been found to dull the senses, relieve pain, suppress cough, reduce respiration and heart rate, induce constipation, and induce feelings of euphoria. They have a high potential for abuse and addiction.
 
 Drugs within this class include (with prescription drug brand names are shown in parentheses): 
 
 1) Non-synthetic purified: Morphine, Codeine, Thebaine
-2) Semi-synthetic:  Heroin, Oxycodone (OxyContin, Oxecta, Roxicodone), and Hydrocodone ( Vicodin, Lortab, Lorcet)), oxymorphone (Opana), Hydromorphone (Dilaudid, Exalgo)
+2) Semi-synthetic:  Heroin, Oxycodone (Oxycontin, Oxecta, Roxicodone), and Hydrocodone ( Vicodin, Lortab, Lorcet)), oxymorphone (Opana), Hydromorphone (Dilaudid, Exalgo)
 3) Synthetic: Meperidine (Demerol), Methadone (Methadose, Dolophine), and Fentanyl (Abstral, Actiq, Fentora, Duragesic, Lazanda, Subsys), Tramadol (ConZip, Ryzolt, Ultram)
 
 
@@ -380,11 +377,13 @@ There are some important considerations regarding this data analysis to keep in 
 
 According to the [Washington Post database](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/), they state about the DEA data:
 
->"It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else."
+> [Washington Post]... cleaned the data to include only information on shipments of oxycodone and hydrocodone pills. We did not include data on 10 other opioids because they were shipped in much lower quantities...
+
+> "It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else."
 
 Furthermore, we will define counties as being rural or urban however there can be great variation within a county and we used land area values from only 2010 even though these can fluctuate. Therefore, the way we categorized counties should be seen as an approximation. Additionally, other aspects about a county besides population level and density can be influential for creating an environment that would increase the vulnerability of community members to drug abuse and addiction. These include socioeconomic factors among others. 
 
-Finally, overdose deaths are often due to the use of multiple substances. Simply because a county received more pills does notmean that people in that county would experience more drug overdoses. It is also important to remember that prescription opioids only account for a portion of the drug overdose deaths reported in this time period. However, according to this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575), 75% of heroin users surveyed were introduced to opioids through prescription drug use.
+Finally, overdose deaths are often due to the use of multiple substances. Simply because a county received more pills does not mean that people in that county would experience more drug overdoses. It is also important to remember that prescription opioids only account for a portion of the drug overdose deaths reported in this time period. However, according to this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575), 75% of heroin users surveyed were introduced to opioids through prescription drug use.
 
 The recent overdose deaths in the US opioid crisis are mostly due to synthetic opioids. Understanding what makes communities vulnerable to these types of opioids is an area of active research but not a focus of this case study.
 
@@ -393,23 +392,16 @@ The recent overdose deaths in the US opioid crisis are mostly due to synthetic o
 
 We will use data from two sources:
 
-1. The US census for land area of counties to allow us to estimate county-level population density  
+1. The US census for land area of counties to allow us to estimate county-level population density. This was obtained from [here](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011.html#LND) and contains county, state, and national land area estimates (for a few years in a few different ways, we will explain more about that later).
+ 
 
-2. The [Washington Post data](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/) from the [Drug Enforcement Administration (DEA)](https://www.dea.gov/) about opioid ([oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) and [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf)) pill shipments to pharmacies and practitioners around the US at the county-level
+2. The [Washington Post data](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/) from the [Drug Enforcement Administration (DEA)](https://www.dea.gov/) about opioid ([oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) and [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf)) pill shipments to pharmacies and practitioners around the US at the county-level from 2006 to 2014.
 
 This second dataset was released in July of 2019 and has been controversial as according to the Washington Post:
 
 > The disclosure is part of a civil action brought by 2,500 cities, towns, counties and tribal nations alleging that nearly two dozen drug companies **conspired to saturate the nation with opioids**.
 
 See [here](https://www.washingtonpost.com/national/2019/07/20/opioid-files/?arc404=true) for more details about how this database was released.
-
-The [Washington Post](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/) states that they:
-
->.. cleaned the data to include only information on shipments of oxycodone and hydrocodone pills. We did not include data on 10 other opioids because they were shipped in much lower quantities...
-
->It’s important to remember that the number of pills in each county does not necessarily mean those pills went to people who live in that county. The data only shows us what pharmacies the pills are shipped to and nothing else.
-
-AVOCADO: the paragraph was repeated above in the limitations? Should we only include it either there or here? 
 
 This data was part of the [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) of the DEA in which:
 
@@ -429,23 +421,34 @@ An API is a computational interface that simplifies interactions with a data or 
 
 This [link](https://arcos-api.ext.nile.works/__swagger__/) takes you to the Washington Post ARCOS API. 
 
-There was also an R package on cran called [arcos](https://cran.r-project.org/package=arcos) for interacting with the API, but this has been archived.  This package is however still available [here](https://github.com/wpinvestigative/arcos) on Github.
+There was also an R package on cran called [arcos](https://cran.r-project.org/package=arcos) for interacting with the API, but this has been archived.  This package is however still available [here](https://github.com/wpinvestigative/arcos) on GitHub.
 
 See [here](https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/) for more information about how to get access the Washington Post DEA database.
 
+Importantly, the API also includes population estimates for the years (2006 to 2014) and counties within the DEA database.
 
 # **Data Import**
 *** 
 
 ## Land Area
 
-We will need land area data for our calculations of population density. 
-
-AVOCADO: what's the unit here? number of people per sq miles? 
+We will need county land area data for our calculations of population density. 
 
 We obtained county land area data from the US census Bureau at this [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011.html#LND).
 
+This data contains land areas (in a few different ways for a number of years) at the national, state, and county level.
+
 This [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011/file-layout.html) explains how the data is formatted.
+
+Based, on this we determined that we want to use the `LND110210D` column which is the data from the year 2010.
+
+Let's break this down to understand the meaning of the column. 
+
+- LND = Land Area
+- 110 = Land Area unit in square miles (subgroup-code of the group)
+- 2 = century
+- 10 = 2010 (based on the century)
+- D = Data
 
 We will use the `read_excel()` function of the `readxl` package to import the data. We will also convert the data into a [tibble](https://tibble.tidyverse.org/) (which is a the tidyverse version of a data frame) by using the `as_tibble()` function of the `tibble` package.
 
@@ -460,13 +463,13 @@ We can take a look at the data using the base `head()` function which will show 
 head(land, n=3)
 ```
 
-AVOCADO: maybe a sentence on what is actually in the dataset? it looks like both state level (e.g. alabama, but also non-state level) info? 
+Indeed, this looks as expected with both the US, state, and county level land areas. We will look into this further in later sections.
 
 Looks good!
 
 ```{r, echo = FALSE, eval = FALSE}
-write.csv(land, file = here::here("data", "county_land_area.csv"))
-save(land, file =  here::here("data", "county_land_area.rda"))
+write.csv(land, file = here::here("data", "land_area.csv"))
+save(land, file =  here::here("data", "land_area.rda"))
 ```
 
 
@@ -481,11 +484,11 @@ APIs typically require a password or key to gain access or authenticate your dat
 In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed public, and currently "uO4EK6I" is publicly published as a key to use on the [github page](https://github.com/wpinvestigative/arcos) for the `arcos` package. We will use that here to access the API.
 
 
-## Population Data
+## County Population Data
 
-AVOCADO: maybe a bit more specificity on what we mean by "population data" i.e. the number of people per county in each state in the US for the year 2010.
+We are interested in the county level data. Conveniently, the API also includes county-level population data (the number of people per county in each state in the US from 2006 to 2014)
 
-We are interested in the county level data - first let's get the population data. We can access it by:
+We can access it from the API by:
 
 1. Pressing the `GET` button on the API.
 
@@ -697,7 +700,7 @@ save(monthlyDosage,
 ```{r, echo = FALSE}
 # In case an instructor wants to start here we will load the data
 
-load(here::here("data", "county_land_area.rda"))
+load(here::here("data", "land_area.rda"))
 load(here::here("data", "county_pop_arcos.rda"))
 load(here::here("data", "county_annual.rda"))
 ```
@@ -745,9 +748,8 @@ This looks OK. Let's move on to the `annualDosage` data.
 vis_miss(annualDosage)
 ```
 
-Interesting, we appear to be missing `countyfips` codes for a small percentage of our annual data.
+Interesting, we appear to be missing `countyfips` codes (recall that FIPS stands for the [Federal Information Processing Standards (FIPS)](https://en.wikipedia.org/wiki/Federal_Information_Processing_Standards) code) for a small percentage of our annual data.
 
-AVOCADO: what is a countyfips? 
 
 Let's take a look at this data:
 
@@ -798,35 +800,54 @@ We will update these values in the next section.
 ```{r, echo = FALSE}
 # In case an instructor wants to start here we will load the data
 
-load(here::here("data", "county_land_area.rda"))
+load(here::here("data", "land_area.rda"))
 load(here::here("data", "county_pop_arcos.rda"))
-load(here::here("data", "county_monthly.rda"))
+load(here::here("data", "county_annual.rda"))
 ```
 
 ## Cleaning land data
 
-We want the `LND110210D` column which is the data from the year 2010.
-Let's break this down to understand the meaning of the column. 
+Recall that we want to use the `LND110210D` column which is the data from the year 2010.
 
-- LND = Land Area
-- 110 = unit square miles (subgroup-code of the group) * avocado I found this somewhere else.. the census info was vague would like to confirm that that is indeed what the subgroup code shows us
+This [link](https://www.census.gov/library/publications/2011/compendia/usa-counties-2011/file-layout.html)  [link](https://www2.census.gov/library/publications/2011/compendia/usa-counties/excel/Mastdata.xls) explains what each of the column names indicate.
+
+Using these we see that our column of interest `LND110210D` stands for:
+- LND = Area
+- 110 = Land Area in square miles (subgroup code of the group)
 - 2 = century
-- 10 = 2010 (based on the century)
-- D = Data
+- 10 = year code - 2010 (based on the century)
+- D = Data (data type: F = flag, D = data value, N1 = Footnote 1, N2 = Footnote 2)
 
-We can select just the county names, the county numeric codes (`STCOU`), and the `LND110210D` column by using the `select()` function of the `dplyr` package.
+The 010 subgroup code indicates total area (including land and water).  
+The 210 subgroup code indicates water area.  
+
+***
+<details> <summary> Click here to see some other census code explanations. </summary>
+LND010190D	Total area in square miles 1990  
+LND010200D	Total area in square miles 2000  
+LND110180D	Land area in square miles 1980  
+LND110190D	Land area in square miles 1990  
+LND110200D	Land area in square miles 2000  
+LND110210D	Land area in square miles 2010  
+LND210190D	Water area in square miles 1990  
+LND210200D	Water area in square miles 2000
+
+</details>
+****
+
+We also want to be able to identify what land area is for what county, thus we will also keep the the column with area names as well as the column called `STCOU`. This variable contains numeric codes that are used to identify states and counties called [Federal Information Processing Standards (FIPS)](https://en.wikipedia.org/wiki/Federal_Information_Processing_Standards). In this dataset we have national state, and county codes, so this variable is called `STCOU` (short for State and County).  
+
+We can select just the names, the county/state numeric codes (`STCOU`), and the `LND110210D` column by using the `select()` function of the `dplyr` package.
 
 ```{r}
-county_area <- 
+land_area <- 
   land %>% 
   select(Areaname, STCOU, LND110210D)
 
-county_area
+land_area
 ```
 
-AVOCADO: again to the point above, there are more than just counties in this data set, i.e., it contains state data as well as the full US. Should we try to filter to this here, or will that happen automatically later?
-
-We can see that in addition to county-level measurements, we also have state-level and full US measurements of land area. But we will filter this data out down below.
+Thus, we still have state-level and full US measurements of land area in addition to the county data. But we will join this with our other datasets in a bit based on the county name/county FIPS code and thus only keep the county level data. 
 
 
 ## Updating `countyfips`
@@ -873,7 +894,7 @@ annualDosage %>%
   filter(is.na(BUYER_COUNTY))
 ```
 
-We can remove these rows from our data set using the `filter()` command along with the `!` (exclamation poing) before the `is.na()` function.
+We can remove these rows from our data set using the `filter()` command along with the `!` (exclamation point) before the `is.na()` function.
 
 ```{r}
 
@@ -895,18 +916,18 @@ As a first case, we can use the `str_detect()` function of the `stringr` package
 The `str_detect()` function allows us to look for a particular pattern. It does not have to be the full value, i.e., a partial match is allowed. We can look to see if there are any `PR` strings within the values of the the `Areaname` variable. 
 
 ```{r}
-county_area %>% 
+land_area %>% 
   filter(str_detect(string = Areaname, pattern = "PR"))
 ```
 
 It does not look as if there are any entries for Puerto Rico, but let's check our code. You can see using a different abbreviation, that this code works as intended:
 
 ```{r}
-county_area %>% 
+land_area %>% 
   filter(str_detect(string = Areaname, pattern = "AR"))
 ```
 
-OK, so it does not look like there is any territory land area data in this dataset. Thus, we will also remove these from the `annualDosage` and `monthlyDosage` tibbles.
+OK, so it does not look like there is any territory land area data in this dataset. Thus, we will also remove these from the `annualDosage` tibble.
 
 #### {.recall_code_question_block}
 <b><u> Question Opportunity </u></b>
@@ -926,8 +947,6 @@ annualDosage %<>%
 </details> 
 
 ***
-
-AVOCADO: What about the `monthlyDosage` object?
 
 ```{r}
 naniar:: vis_miss(annualDosage)
@@ -952,22 +971,10 @@ We will define a county as rural or urban based on the population density follow
 
 Ideally, we would want land area from each year, as these do fluctuate a bit, however, the 2010 data should be a decent approximation as 2010 is in the middle of our time span.
 
-We will calculate the density as the number of people per square mile by dividing the population values by the land area values. To do so we first need to combine our `county_area` and our `county_pop` data together. 
+We will calculate the density as the number of people per square mile by dividing the population values by the land area values. To do so we first need to combine our `land_area` and our `county_pop` data together. 
 
-First, we want to make sure that we have one column, in our case the column that contains the numeric code for the counties, in the same format and with the same name in both the tibbles that we wish to combine. 
+First, we want to make sure that we have one column, in our case the column that contains the numeric code for the counties, in the same format and with the same name in both the tibbles that we wish to combine. We can check the class of data for this column in both datasets using the `glimpse()`function.
 
-We can use the `rename()` function of the `dplyr` package to rename the `STCOU` column from the `county_area` data set to be `countyfips`. The new name is always listed first before the old name with this function like so: `rename(new_name = old_name)`.
-
-```{r}
-county_area %<>%
-  rename(countyfips = STCOU)
-```
-
-We can use the `mutate()` function of the `dplyr` package to make the `countyfips` variable a factor in both tibbles. 
-
-AVOCADO: Why do these variables need to be factors for us to combine them? I believe you can join based on a character valued variable? 
-
-What exactly is a factor?
 
 ***
 <details> <summary> Click here for an explanation of data classes in R </summary>
@@ -989,13 +996,18 @@ A variable that is a [factor](https://www.stat.berkeley.edu/~s133/factors.html#:
 
 ***
 
+```{r}
+glimpse(land_area)
+glimpse(county_pop)
+```
+
+Great, it looks like both are character strings based on the `<chr>` next to the column names. However, the columns in both tibbles need to have the same name.
+
+We can use the `rename()` function of the `dplyr` package to rename the `STCOU` column from the `land_area` data set to be `countyfips`. The new name is always listed first before the old name with this function like so: `rename(new_name = old_name)`.
 
 ```{r}
-county_pop %<>%
-  mutate(countyfips = as.factor(countyfips))
-
-county_area %<>%
-  mutate(countyfips = as.factor(countyfips))
+land_area %<>%
+  rename(countyfips = STCOU)
 ```
 
 Great! Now we are ready to combine our data together.
@@ -1028,16 +1040,25 @@ To address this, we will use the `left_join(x,y)` function where `x` in this cas
 
 ```{r}
 county_info <- 
-  left_join(county_pop, county_area, by = "countyfips")
+  left_join(x = county_pop, y = land_area, by = "countyfips")
 ```
 
-You can check to see that the `county_info` tibble has the same number of rows as the `county_pop` tibble, i.e., our join preserved the data points in the `county_pop` tibble and added values from the `county_area` tibble where there was a match on the `countyfips` variable.
+It is not actually necessary to list `x` and `y` like this, you can simply rely on the `x` being listed first and the `y` being listed second. 
+
+Thus, this works too:
+
+```{r}
+county_info <- 
+  left_join(county_pop, land_area, by = "countyfips")
+```
+
+You can check to see that the `county_info` tibble has the same number of rows as the `county_pop` tibble, i.e., our join preserved the data points in the `county_pop` tibble and added values from the `land_area` tibble where there was a match on the `countyfips` variable.
 
 ```{r}
 nrow(county_info) == nrow(county_pop)
 ```
 
-We are now ready to calculate the population density per square mile. We create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. Let's also make the `year` variable a factor.
+We are now ready to calculate the population density per square mile. We create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. Let's also make the `year` variable a factor. We can do using the `as.factor()` base function. If you are not familiar with factors, please see the click to expand section above about data classes in R. 
 
 ```{r}
 county_info %<>%
@@ -1101,7 +1122,7 @@ Great, now we should have the data that we need to answer our question, but firs
 
 **Notice** how there is a variable called `DOSAGE_UNIT`. This variable gives the number of pills shipped to a pharmacy in this county that were either [oxycodone](https://www.dea.gov/sites/default/files/2020-06/Oxycodone-2020_0.pdf) or [hydrocodone](https://www.deadiversion.usdoj.gov/drug_chem_info/hydrocodone.pdf).
 
-Let's do a check to see how complete our data is now that we have combined our `country_info` data with the `monthlyDosage` and `annualDosage` data. 
+Let's do a check to see how complete our data is now that we have combined our `country_info` data with the `annualDosage` data. 
 
 We have NA values for any counties present in the DAE data, but not in our land area data. We can use the `vis_miss()` function from thee `naniar` package` to create a plot that shows if we have any missing data.
 
@@ -1111,19 +1132,20 @@ naniar:: gg_miss_var(Annual)
 
 We can see that several variables are missing for some of our counties.
 
-AVOCADO: I'm not following why you are filtering on NA for STATE. I would think it would make more  intuitive sense to filter on NA for density for example, since that is relevant to our analysis.
+Let's take a look at the counties that are missing density.
 
 #### {.scrollable }
 
 ```{r}
 Annual %>%
-  filter(is.na(STATE))
+  filter(is.na(density))
 ```
 ####
 
 There does not appear to be land area and/or population data for these counties.
 
-AVOCADO: I'm not really sure what the goal of this code chunk is. Most of these subgroups do not have any data at all in the table as far as I can see. Are we checking back in the original data tibbles (prior to merging) to see where the data first went missing? 
+Let's take a look back at our original data tibbles (prior to merging) for a few of these counties to see where the data first went missing.
+
 ```{r}
 county_info %>% 
   filter(countyfips == "01001") # example of other data that does have values
@@ -1138,18 +1160,24 @@ county_info %>%
   filter(countyfips == "02280")
 ```
 
-There is land data for this county, but that's all
+Ah ha, it looks like there wasn't information for it in the `county_info` tibble. If you recall this was created by joining the `land_area` data with the `county_pop` data.
+
+Let's take a look in these tibbles.
+
+
+There is land data for the first county, but that's all:
 ```{r}
-land %>% 
-  filter(STCOU == "05097")
+land_area %>% 
+  filter(countyfips == "05097")
 
-land %>% 
-  filter(STCOU == "02201")
+land_area %>% 
+  filter(countyfips == "02201")
 
-land %>% 
-  filter(STCOU == "02280")
+land_area %>% 
+  filter(countyfips == "02280")
 ```
 
+Did we have population data for the Montgomery, AR county?
 
 ```{r}
 county_pop %>% 
@@ -1158,6 +1186,10 @@ county_pop %>%
 county_pop %>% 
   filter(BUYER_COUNTY == "MONTGOMERY"& BUYER_STATE =="AK")
 ```
+
+It looks like we didn't.
+
+It's a good idea to check your original data, to make sure that you didn't lose values simply from the process of joining data together. It' does not look like that was the case for us.  
 
 We will now remove these rows before further analysis:
 
@@ -1189,32 +1221,30 @@ Nice! Now we have no missing data.
 
 Let's also check if there were any counties in `county_info` that were not in the DEA `annualDosage` data.
 
-AVOCADO: I think the next two code chunks could also use some more explanation.
+This time we will use the `left_join()` function but with the `county_info` listed first, to preserve all values of the `county_info` tibble. 
 
 ```{r}
 checking <-
   left_join(county_info, annualDosage)
   gg_miss_var(checking)
+```
+We can see that there are over one thousand `NA` values for the `DOSAGE_UNIT` variable.
 
+We can use the `filter()` function again to see what counties don't have any `DOSAGE_UNIT` values and thus don't appear to have this data in the Washington Post DEA data.
+
+```{r}
 checking %>%
-  filter(is.na(DOSAGE_UNIT)) 
-
+  filter(is.na(DOSAGE_UNIT))
+  
 checking %>%
   filter(is.na(DOSAGE_UNIT)) %>% 
   distinct(countyfips) 
 ```
+It looks like there are 174 counties that do not have any data in the DEA data.
 
-```{r}
-annualDosage %>% 
-  filter(BUYER_COUNTY == "BORDEN")
+It is unclear why these counties are not included. A Google search of some of these counties did not indicate anything usual about the counties in terms of when it was established or if it became part of another county later in time. 
 
-annualDosage %>% 
-  filter(BUYER_COUNTY == "COKE")
-```
-
-There are 174 counties that do not have any data in the DEA data. It is unclear why these counties are not included. A Google search of the [Borden](https://en.wikipedia.org/wiki/Borden_County,_Texas) and [Coke](https://en.wikipedia.org/wiki/Coke_County,_Texas) counties in Texas does not indicate anything usual about the counties in terms of when it was established or if it became part of another county later in time. 
-
-**Note**: It is important to keep in mind as we continue to analyze this data, that the ARCOS data from the DEA released by the Washington Post does not include pill shipment information for all US counties. 
+Thus, it is important to keep in mind as we continue to analyze this data, that the ARCOS data from the DEA released by the Washington Post **does not include pill shipment information for all US counties**. 
 
 ```{r,echo= FALSE, eval = TRUE}
 write.csv(Annual, file = here::here("data","Wrangled", "Annual_opioid_data.csv"))
@@ -1582,40 +1612,6 @@ formattable::formattable(R_U, list(`Percent Urban` =
 
 Nice, now we can see how much the percentage has changed over time. 
 
-AVOCADO: the next set of text below through the end of the subsection needs either more text explaining what's happening or we might consider removing it. It really gets into the weeds and it's not clear if the reader needs to know this. 
-
-We also use the `formatter()` function to change the color of the `Rural Change` and `Urban Change` variables so that if the value is negative it will be red and if it is positive it will be green. 
-
-The `formatter()` function takes an HTML style [tag](https://developer.mozilla.org/en-US/docs/Glossary/Tag) name which can be any character string (although generally one would use ["span"](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span#:~:text=The%20HTML%20element%20is,attribute%20values%2C%20such%20as%20lang%20.) using the `.tag = "span"` argument  and a `style` argument where style aspects such as color can be specified using a `color` argument.
-
-We will create a function called `redgreen` that will specify that if a value is less than zero it should be red and if it is greater than zero it should be green. To do this we will use the `case_when()` function like we did previously when creating our `rural_urban` variable of the `county_info` object in the [**Data Wrangling**] section.
-
-To create a function we will use the base `function()` function. The inputs of the function are contained within the parentheses `()`, while the steps that should be performed on the input are contained within the curly brackets `{}`. In this case, our input will be called `number`.  Now when `redgreen` is used this will perform the `case_when` evaluation on the input provided.
-
-```{r}
-redgreen <- function(number){ case_when(number < 0 ~"red", 
-                                       number > 0 ~ "green") }
-```
-
-We can see that this function does indeed change numeric values to be the color names `red` and `green`.
-```{r}
-redgreen(number = c(1,0,-1))
-```
-
-Now this function can be used to replace the `color` values for the `Rural Change` and `Urban Change` variables. 
-
-```{r}
-formattable(R_U, list(`Percent Urban` = color_bar("#FA614B"),
-                      `Rural Change` = formatter(.tag ="span", 
-                                                style = ~ style(
-                                                color = redgreen(number = `Rural Change`))),
-                      `Urban Change` = formatter(.tag = "span", 
-                                                style = ~ style(
-                                                color = redgreen(number = `Urban Change`)))))
-
-```
-
-Nice, now this is really easy to read.
 
 ## US shipments over time
 
@@ -2056,7 +2052,7 @@ Raw_Data +
 ```
 
 
-We can see that without accounting for population, the urban counties recieved many more pills than the rural counties. In contrast, when population is taken into account, the rates appear to be very similar.
+We can see that without accounting for population, the urban counties received many more pills than the rural counties. In contrast, when population is taken into account, the rates appear to be very similar.
 
 We can also see that there appears to be much higher variability among the urban counties as compared to the rural counties. 
 
@@ -2130,25 +2126,16 @@ R_U <-Annual%>%
 
 R_U
 
-table_cat <- formattable(R_U, list(`Percent Large Urban` = color_bar("#FA614B"),
-                  `Rural Change` = formatter(.tag ="span", 
-                                            style = ~style(
-                                            color = redgreen(number = 
-                                                               `Rural Change`))),
-             `Small Urban Change` = formatter(.tag = "span", 
-                                            style = ~style(
-                                            color = redgreen(number = 
-                                                          `Small Urban Change`))),
-             `Large Urban Change` = formatter(.tag = "span", 
-                                                style = ~style(
-                                                color = redgreen(number =
-                                                              `Large Urban Change`)))))
+table_cat <- formattable::formattable(R_U, list(`Percent Large Urban` = 
+                                     formattable::color_bar("#FA614B")))
 ```
 </details> 
 
 ```{r}
 table_cat
 ```
+
+
 
 This time when we create our plot we will add labels directly to the lines of our plot using the `directlabels` package. 
 
@@ -2360,7 +2347,7 @@ Annual %>% pivot_longer(names_to = "type", values_to = "value", cols = c(pop_DOS
   
 ```
 
-OK, this did not help very much; we can still see large deviations of the points from the lines. So now we have two options. One is that we can continue with the [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test) because this test is fairly **robust** to violations of the normality assumption if the sample size is relatively large, due to what is called the [central limit theorem](https://www.analyticsvidhya.com/blog/2019/05/statistics-101-introduction-central-limit-theorem/){target="_blank"}, which states that as samples get larger, the sample mean has an approximate normal distribution. Since we are trying to make inference about the population mean by using our sample mean, as long as the sample mean has a normal distribution, it is OK that our data themseves are not normal. 
+OK, this did not help very much; we can still see large deviations of the points from the lines. So now we have two options. One is that we can continue with the [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test) because this test is fairly **robust** to violations of the normality assumption if the sample size is relatively large, due to what is called the [central limit theorem](https://www.analyticsvidhya.com/blog/2019/05/statistics-101-introduction-central-limit-theorem/){target="_blank"}, which states that as samples get larger, the sample mean has an approximate normal distribution. Since we are trying to make inference about the population mean by using our sample mean, as long as the sample mean has a normal distribution, it is OK that our data themselves are not normal. 
  
 ```{r}
 Annual %>%
@@ -2381,7 +2368,7 @@ In this test, the hypothesis is slightly different. Instead of comparing means, 
 
 > the probability that a randomly selected value of the first group (X) is greater than a randomly selected value of the second group (Y) is equal to the probability that a randomly selected value of the second group (Y) is greater than a randomly selected value of the first group (X).
 
-The alternative hypothesis would then be that these probabilities are not equal, i.e., random values of one group are more likley to be larger than random values from the other group. 
+The alternative hypothesis would then be that these probabilities are not equal, i.e., random values of one group are more likely to be larger than random values from the other group. 
 
 We can also use what is called a *one-sided alternative* to test that random values of X are more likely to be greater than random values of Y or that random values of X are less likely to be greater than random values Y, if we are interested in a particular direction of comparison, as we might be here (i.e., we could ask the more specific question of whether opioid shipment rates are higher for rural compared to urban counties). 
 
@@ -2557,7 +2544,7 @@ wilcox.test(pop_DOSAGE ~ large_urban, data = Annual,
 
 Both results have $p$ values that are less than 0.05, which is the threshold commonly used in hypothesis testing to determine if there is enough evidence to reject the null hypothesis. 
 
-In both cases this indicates that indeed there is enough evidence, and we can reject the null hypothesis. Furthermore, the confidence interval does not overlap zero for either test, suggesting that the `Rural` group is larger for the first test (as both confidence inverval limits are positive) and that the `Large Rural` group is smaller for the second test (as both confidence interval limits are negative).
+In both cases this indicates that indeed there is enough evidence, and we can reject the null hypothesis. Furthermore, the confidence interval does not overlap zero for either test, suggesting that the `Rural` group is larger for the first test (as both confidence interval limits are positive) and that the `Large Rural` group is smaller for the second test (as both confidence interval limits are negative).
 
 For the second test, the absolute value of the difference estimate is larger than that of the first test suggesting that there is a larger difference between the `Large Urban` and `Small Urban or Rural` groups than the `Rural` and `Urban` groups.
 
@@ -2660,8 +2647,9 @@ main_plot <- Raw_Data  +
   labs(title = "Normalized &\nStratified Data") + 
   plot_layout( nrow = 1, widths = c(5,1.3,5,1.3,5))+
  #theme(title = element_text(hjust = 0.5)) +
-  plot_annotation(title = "How we normalize pill shipment data and how we stratify by different types of\ncounties can yield very different pictures about opioid (oxycodone and \nhydrocodone) pill shipments to counties in the US") &
-  theme(plot.title = element_text(size = 18, face = "bold", hjust = 0.5))
+  plot_annotation(title = "Opioid pill shipments to different types of counties in the US", subtitle = "How we normalize opioid (oxycodone and hydrocone) pill shipment data and how we stratify by different \ntypes of counties can yield very different pictures about shipments") &
+  theme(plot.title = element_text(size = 18, face = "bold" ),
+        plot.subtitle = element_text(size = 14))
 
 ```
 
@@ -2694,6 +2682,7 @@ Students could focus on the counties of a particular state and perform the same 
 
 # **Additional Information**
 ***
+
 Note: Monthly data is also available within the `data` directory. This could be used for time series analysis. 
 
 ## Helpful Links
@@ -2763,6 +2752,8 @@ Package   | Use in this case study
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
+[usdata](https://cran.r-project.org/web/packages/usdata/usdata.pdf) | to add full state names to plots based on the state abbreviations
+
 
 #### {.emphasis_block}
 
