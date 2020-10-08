@@ -2280,19 +2280,19 @@ Annual %<>%
 ```
 
 
-## Student t-test
+## Student's t-test
 
-OK, we can tell that there appears to be a difference between small urban and rural counties compared to large urban counties by looking at this plot, however is the difference between these two categories of counties meaningful? To evaluate this we could possibly use a statistical test called the [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test), which can be used to determine if [two group means are different](http://onlinestatbook.com/2/estimation/difference_means.html){target="_blank"}.
+OK, we can tell that there appears to be a difference between small urban and rural counties compared to large urban counties by looking at this plot, however is the difference between these two categories of counties meaningful, or is it just due to random differences from sampling? To evaluate this we may consider employing a statistical test called the [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test), which can be used to determine if [two group means are different](http://onlinestatbook.com/2/estimation/difference_means.html){target="_blank"}.
 
 Let's remind ourselves of one of our original questions, 
 
 > Has there been a difference between opioid pill shipments to rural and urban counties in the US?
 
-In hypothesis testing, we are interested in comparing two different hypotheses: a "null" hypothesis (can be thought of like a baseline e.g. the means between two groups are the same) compared to an "alternative" hypothesis (e.g. the means between two groups are different). We are going to ask if there is enough evidence in our data to reject the null hypothesis.  
+In hypothesis testing, we are interested in comparing two different hypotheses: a "null" hypothesis (can be thought of like a baseline e.g. the means between two groups are the same, or there is a difference of 0 between the means of the two groups) compared to an "alternative" hypothesis (e.g. the means between two groups are different). We are going to ask if there is enough evidence in our data to reject the null hypothesis.  
 
 Let's try to formalize this a bit. 
 
-Using the student-test,  we can test whether the mean pill number for pills shipped to the rural counties is the same as the mean  number of pill shipped to the urban areas. If we call the true unknown means of the two groups $\mu_U$ and $\mu_R$, for the urban and rural areas, respectively, then we can define the <b>null hypothesis</b> that there is no difference in the two means:
+Using Student's t-test,  we can test whether the mean number of pills shipped to the rural counties is the same as the mean  number of pills shipped to the urban areas. If we call the true unknown population means of the two groups $\mu_U$ and $\mu_R$, for the urban and rural areas, respectively, then we can define the <b>null hypothesis</b> that there is no difference in the two means:
 
 $$ H_0: \mu_U = \mu_R $$  
 
@@ -2314,13 +2314,15 @@ However, performing this test depends on certain assumptions about our data:
 4) The observations within each group are [independent](https://www.stat.cmu.edu/~cshalizi/36-220/lecture-5.pdf){target="_blank"} (meaning that observations do not influence each other).
 
 
-OK, for the first assumption, we can test if each group to be tested in normally distributed by making what is called a "quantile-quantile" plot (or <b>Q-Q plot</b> for short). When we talk about a <b>quantile</b>, we are talking about dividing up the distribution of the data into roughly equal portions where roughly the same number of observations fall into each portion. For example, if you divide your data into 100 quantiles, you can think about this as percentiles, but you could also divide your data into 10 quantiles and these would be called deciles. 
+We will start by showing you a tool to assess whether the first assumption seems to be true in our data. We can observe visually whether each group to be tested appears to be normally distributed by making what is called a "quantile-quantile" plot (or <b>Q-Q plot</b> for short). When we talk about a <b>quantile</b>, we are talking about dividing up the distribution of the data into equal portions where roughly the same number of observations fall into each portion. For example, if you divide your data into 100 quantiles, you can think about this as percentiles, but you could also divide your data into 10 quantiles and these would be called deciles. 
 
-<b>Why Q-Q plots?</b> This plot allows us to compare the quantiles of two distributions together: (1) quantiles of a known theoretical distribution (like the normal distribution) compared to (2) quantiles of the distribution of our data.  If the quantiles from these two distributions line up in the plot, then that is a visual piece of evidence that our data follow that theoretical distribution (like the normal distribution).  
+If our data are normally distributed, then the quantiles of our data points should in some way match the quantiles of a certain normal distribution. A Q-Q plot can allow us to see visually whether this seems to be the case.
+
+<b>Why Q-Q plots?</b> Q-Q plots allow us to compare the quantiles of two distributions to one another. For example, we may want to compare (1) quantiles of a known theoretical distribution (like the normal distribution) to (2) quantiles of the distribution of our data.  If the quantiles from these two distributions line up in the plot, then that is a visual piece of evidence that our data have a distribution that is similar to that theoretical distribution (like the normal distribution).  
 
 <b>How does this work?</b> To do this we will plot the quantiles of our data on the y-axis and the quantiles of the theoretical normal distribution on the x-axis. If the quantiles line up then we can say that our data is fairly normal. See [here](http://onlinestatbook.com/2/advanced_graphs/q-q_plots.html) for more information about Q-Q plots.
 
-Using the `stat_qq()` function of the `ggplot2` package, we can easily create a Q-Q plot for our data randomly sampled from a normal distribution ("sample") and compare it to the quantiles from a normal distribution ("theoretical").  The default comparison distribution for these functions is the normal distribution, so we don't need to specify it in our code.
+Using the `stat_qq()` function of the `ggplot2` package, we can easily create a Q-Q plot for quantiles from our data ("sample") and compare it to the quantiles from a normal distribution, i.e. using data randomly sampled from a normal distribution ("theoretical").  The default comparison distribution for these functions is the normal distribution, so we don't need to specify it in our code. Here, we will look at both `pop_DOSAGE` and `DOSAGE_UNIT` values from both types of our urban/rural categorization, and see what their distributions look like.
 
 ```{r}
 Annual %>% pivot_longer(names_to = "type", values_to = "value", cols = c(pop_DOSAGE, DOSAGE_UNIT)) %>%
@@ -2336,11 +2338,11 @@ Annual %>% pivot_longer(names_to = "type", values_to = "value", cols = c(pop_DOS
   facet_wrap(~rural_urban + type, scales = "free")
 ```
 
-The `stat_qq_line()` function is used to add a line (computes the slope an intercept) on the plot. If the points lie on this straight line, this is evidence that the data have a normal distribution, not that the data have a particular normal distribution.
+The `stat_qq_line()` function is used to add a line (with a particular slope and intercept) to the plot. If the points lie on this straight line, this is evidence that the data have some normal distribution, not that the data have a particular normal distribution.
 
-OK, we can see that in all cases the points appear too deviate from the line for at least one group, indicating that the quantiles are fairly dissimilar between the observed and theoretical data.
+OK, we can see that in all cases the points appear to deviate from the line for at least one group, indicating that the quantiles are fairly dissimilar between the observed and theoretical data.
 
-We can see if we can overcome this by transforming the data by log scaling the number of pills or the normalized number of pills. 
+Sometimes using a data transformation, like the log transformation, can help make our sample data look more normal. So we can see if we can overcome this observed deviation from normality by transforming the data, taking the log (base $e$) of the number of pills or the normalized number of pills. 
 
 ```{r}
 
@@ -2358,7 +2360,7 @@ Annual %>% pivot_longer(names_to = "type", values_to = "value", cols = c(pop_DOS
   
 ```
 
-OK, this did not help very much. So now we have two options, we can continue with the [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test) because this test is fairly **robust** to violations of the normality assumption if the sample size is relatively large, due to what is called the [central limit theorem](https://www.analyticsvidhya.com/blog/2019/05/statistics-101-introduction-central-limit-theorem/){target="_blank"}, which states that as samples get larger, the sample mean has an approximate normal distribution.  
+OK, this did not help very much; we can still see large deviations of the points from the lines. So now we have two options. One is that we can continue with the [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test) because this test is fairly **robust** to violations of the normality assumption if the sample size is relatively large, due to what is called the [central limit theorem](https://www.analyticsvidhya.com/blog/2019/05/statistics-101-introduction-central-limit-theorem/){target="_blank"}, which states that as samples get larger, the sample mean has an approximate normal distribution. Since we are trying to make inference about the population mean by using our sample mean, as long as the sample mean has a normal distribution, it is OK that our data themseves are not normal. 
  
 ```{r}
 Annual %>%
@@ -2368,22 +2370,24 @@ Annual %>%
    count(rural_urban)
 ```
 
-Our samples are indeed quite large, thus it would probably be reasonable to continue with the $t$-test. However, we can also perform a test called the 
-[Mann Whitney U test](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test) also known as the Wilcoxon rank sum test or the two-sample Wilcox test or the Mann–Whitney–Wilcoxon (MWW) test. Importantly, this test does not rely on the assumption that the data is normally distributed and it is more robust than the t-test to [outliers](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm) (extreme values compared to the others). Given that the data appears to be quite different from the normal distribution, we will proceed using this test. 
+Our samples are indeed quite large, thus it would probably be reasonable to continue with the $t$-test. 
 
-## Mann–Whitney–Wilcoxon (MWW) test
+However, our second option is to perform a test called the 
+[Mann Whitney U test](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test) also known as the Wilcoxon rank sum test or the two-sample Wilcox test or the Mann–Whitney–Wilcoxon (MWW) test. Importantly, this test does not rely on the assumption that the data are normally distributed and it is more robust than the t-test to [outliers](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm) (extreme values compared to the others). Given that the data appears to be quite different from the normal distribution, we will proceed using this test. 
 
-In this test, the hypothesis is slightly different. Instead of comparing means,  this test evaluates the following null hypothesis according to Wikipedia:
+## Mann–Whitney–Wilcoxon (MWW) test (Wilcox test for short)
 
-> that the probability that randomly selected values of X (1st group) are greater than randomly selected values of Y (2nd group) is equal to the probability that randomly selected values of Y (2nd group) are greater than randomly selected values of X (1st group).
+In this test, the hypothesis is slightly different. Instead of comparing means, this test evaluates the following null hypothesis for comparing the two groups (adapted from Wikipedia):
 
-The alternative hypothesis would then be that this probability is not equal. 
+> the probability that a randomly selected value of the first group (X) is greater than a randomly selected value of the second group (Y) is equal to the probability that a randomly selected value of the second group (Y) is greater than a randomly selected value of the first group (X).
 
-We can also use a one-sided alternative to test that random values of X are greater than random values of Y or that  random values of X are less than random values Y. 
+The alternative hypothesis would then be that these probabilities are not equal, i.e., random values of one group are more likley to be larger than random values from the other group. 
 
-Another way of describing this is that the distributions of the probabilities of the occurrences of the range of possible values of X and Y are equal or have a shift of mu = zero. Where as, the alternative would be that the shift between the probability distributions is not zero. and that the one-sided alternatives are either the shift being greater than zero or less than zero. 
+We can also use what is called a *one-sided alternative* to test that random values of X are more likely to be greater than random values of Y or that random values of X are less likely to be greater than random values Y, if we are interested in a particular direction of comparison, as we might be here (i.e., we could ask the more specific question of whether opioid shipment rates are higher for rural compared to urban counties). 
 
-Here you can see an illustration of the null hypothesis on the left and a one-sided hypothesis on the right:
+Another way of describing this null hypothesis is that the distributions of the probabilities of the occurrences of the possible values of X and Y are equal or have a shift of 0. Whereas, the alternative would be that the shift between the probability distributions is not zero. Similarly, the one-sided alternatives are either that the shift in probability distributions is greater than zero or that it is less than zero. 
+
+Here you can see an illustration of the null hypothesis on the left and a one-sided alternative hypothesis on the right:
 
 ```{r}
 include_graphics(here::here("img", "null.png"))
@@ -2392,9 +2396,9 @@ include_graphics(here::here("img", "null.png"))
 ##### [[source]](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pdf)
 
 
-So in our case using the Wilcox test,  we can test whether the null hypothesis that there is an equal probability that random subsets of counties categorized as rural counties is larger than the number of pills shipped to a random subset of counties categorized as urban (or to compare small urban and rural counties vs large urban counties). 
+So in our case, using the Wilcox test, we can test the null hypothesis that the following two probabilities are the same: (1) the probability that a random county categorized as rural has a larger number of pills shipped than a random county categorized as urban and (2) the probability that a random county categorized as urban has a larger number of pills shipped than a random county categorized as rural (or similarly comparing small urban and rural counties to large urban counties). 
 
-If we call the random subsets of counties $U$ and $R$, for the urban and rural areas, respectively, then we can define the <b>null hypothesis</b> that there is no difference in the probabilities $P$:
+If we call the random counties $U$ and $R$, for the urban and rural areas, respectively, then we can define the <b>null hypothesis</b> that there is no difference in the probabilities $P$:
 
 $$ H_0: P(U > R) = P(R>U) $$  
 
@@ -2402,31 +2406,31 @@ In contrast, we also define an <b>alternative hypothesis</b> that there is a dif
 
 $$ H_a: P(U > R) \neq P(R>U)$$
 
-With a one-sided alternative that a larger number of pills are shipped per person to Rural counties as:
+With a one-sided alternative that a larger number of pills are shipped per person to rural counties as:
 
 $$ H_a: P(R>U) > P(U > R) $$
-Here the probability that a random subset of rural counties had a larger number of pills shipped than that of urban counties is greater than the probabilities of a random subset of urban counties having a larger number of pills than a subset of rural counties. 
+Here the probability that a random rural county had a larger number of pills shipped than a random urban county is greater than the probability that a random urban county had a larger number of pills shipped than a random rural county. 
 
 We can extend this to the small urban/rural vs the large rural county comparison.
 
 
-To implement this test in R we will use the `wilcox.test()` in  the `stats` package. X is automatically the group that comes first alphabetically, while Y is the group that comes second alphabetically. 
+To implement this test in R we will use the `wilcox.test()` function in  the `stats` package. This function always orders the groups in alphabetical order: X is automatically the group that comes first alphabetically, while Y is the group that comes second alphabetically. 
 
 Thus for the `rural_urban` variable, the `**R**ural` values would be the X group, while the `**U**rban` would be the Y group, as R comes before U in the alphabet.
 
 For the `large_urban` variable, the `**L**arge Urban` group values would be the X group, while the `**S**mall Urban or Rural` values would be the Y group.
 
 
-This test statistic $W$ is actually quite simple to perform manually with small sample sizes. 
+The test statistic for the Wilcoxon test, $W$, is actually quite simple to calculate manually with small sample sizes. 
 
 ***
 
 <details> <summary> Click here to see how $W$ is calculated manually </summary>
 
-Let's say that the US only had 3 counties that were Rural and 3 counties that were Urban and we wanted to compare the distributions using this test.
+Let's say that the US only had 3 counties that were rural and 3 counties that were urban and we wanted to compare the distributions using this test.
 
 
-The number of pills shipped to each of the 3 Rural counties was:   
+The number of pills shipped to each of the 3 rural counties was:   
 1) 10   
 2) 50  
 3) 30  
@@ -2437,7 +2441,9 @@ The number of pills shipped to each of the 3 urban counties was:
 3) 12  
 
 
-The first step would be to list out the counties by order of the number of pills shipped. We will use  "R" or "C" if the number came from a rural or urban county:   
+We can calculate our Wilcoxon test statistic in two ways: either using the sum of the ranks of the ordered values from the two groups combined, or the number of "wins" in for each group in all pairwise comparisons of values from the two groups. While this is not obvious, it turns out that these two methods will give the same results.
+
+Using the rank-sum method, the first step is to list the counties in order of the number of pills shipped, labeling them with their group membership. We will use  "R" or "U" if the number came from a rural or urban county:   
 
 County: R   U   U    U   R    R   
  pills: 10  12  20   25  30   40   
@@ -2465,9 +2471,9 @@ Using our example data:
   $W_2 = R_2-\frac{n_2(n_2+1)}{2}$  
   $W_2 = 9-(3(4)/2) = 9-6 = 3$  
   
-  Many definitions of $W$ are as follows:  
+We now want to use these two values to get one overall test statistic for our hypothesis test. It turns out that this test statistic can be defined in different ways. Often $W$ is defined as follows:  
 
-  $W = min(W_1, W_2) = 3$. However, R calculates $W$  based on what sample is listed first (or X in or description of the hypothesis test). Thus the output will give the $W_x$ for the first group. 
+  $W = min(W_1, W_2) = 3$. However, R takes the value $W_1$ or $W_2$ for $W$ depending on what sample is listed first. Thus for this data set, the R output will give the value $W_1$ for the test statistic in this case. 
   
   In our case the first group (rural counties) had a $W$ of 6.  
 
@@ -2475,7 +2481,7 @@ From the documentation for the `stats` package for the `wilcox.text()` function:
   
 > R's value can also be computed as the number of all pairs (x[i], y[j]) for which y[j] is not greater than x[i], the most common definition of the Mann-Whitney test.  
 
-If you are familiar with linear algebra, this can also be calculated by getting all the pairs of values between the two groups using the `outer()` base function and using the `>` (instead of the product or `*` function as this is typically used by default to get the [outer product](https://en.wikipedia.org/wiki/Outer_product)) to determine how often the rural counties have a greater value than the urban counties.
+If you are familiar with linear algebra, we can calculate this value in a clever way in R by getting all the pairwise comparisons of values between the two groups using the `outer()` base function and using the `>` (instead of the product or `*` function as this is typically used by default to get the [outer product](https://en.wikipedia.org/wiki/Outer_product)) to determine how often the rural counties have a greater value than the urban counties.
 
 ```{r}
 example <-tibble(pills = c(10,12, 20, 25,30, 40), county = c("R", "U", "U", "U", "R", "R"))
@@ -2486,9 +2492,9 @@ U = c(12, 20, 25)
 
 outer(R,U, ">")
 
-# 10 is less than 12, 20, or 25 (R is always less than U for all 3 comparisons)
-# 30 is greater than 12, 20, or 25 (3 times that R is greater than U)
-# 40 is greather than 12, 20, or 25 ( 3 tiems that R is greater than U)
+# 10 is less than 12, 20, and 25 (R is always less than U for all 3 comparisons)
+# 30 is greater than 12, 20, and 25 (3 times that R is greater than U)
+# 40 is greather than 12, 20, and 25 ( 3 tiems that R is greater than U)
 
 # 3+3 = 6 pairs out of 9 where R was greater than U thus W is equal to 6
 
@@ -2498,7 +2504,7 @@ wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ co
 ```
 
 
-We can see that if we switched the order of our counties, (thus we make the values that were for urban now the values for rural) we then get the $W$ for what was previously our second group in the result. (Remember what ever is alphabetically first will be the first group - so again the results are for "R")
+We can also see that if we switch the order of our counties (i.e., we make the values that were for urban now the values for rural) we then get the $W$ for what was previously our second group in the result. (Remember whatever is alphabetically first will be the first group - so again the results are for "R".)
 
 ```{r }
 
@@ -2509,9 +2515,9 @@ wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ co
 
 ```
 
-for small samples, this can then be compared to a [critical $W$ table](https://math.usask.ca/~laverty/S245/Tables/wmw.pdf) (note here that $W$ is $U$) for comparison to determine significance. If the $W$ is lower than the critical value, it suggests that the null hypothesis should be rejected. From this table we see that our example has so few values that the null can't be reliably rejected. Although the small number was useful for illustrative purposes as to how the test is performed.
+For small samples, the statistic $W$ can then be compared to a [critical $W$ table](https://math.usask.ca/~laverty/S245/Tables/wmw.pdf) (note here that what we refer to as $W$ is called $U$ in the table) to determine significance. If $W$ is lower than the critical value, it suggests that the null hypothesis should be rejected. From this table we see that our example has so few values that the null can't be reliably rejected. 
 
-For larger samples (like our actual data - generally n>20 per group) the $W$ statistic is instead used to calculate a $Z$ statistic like so:
+For larger samples (like our actual data, or in general at least 20 per group) the $W$ statistic is instead used to calculate a $Z$ statistic like so:
 
 $$Z = \frac{W-\mu_W}{\sigma_W}$$
 
@@ -2522,16 +2528,16 @@ They are calculated as follows:
 $$\mu_W = \frac{n_1n_2}{2}$$
 
 $$\sigma_W = \sqrt{\frac{n_1n_2(n_1+n_2+1)}{12}}$$
-This can then be used in a [$Z$ table](https://www.simplypsychology.org/z-table.html#:~:text=A%20z%2Dtable%2C%20also%20called,standard%20normal%20distribution%20(SND).)  or using a [calculator](https://www.socscistatistics.com/pvalues/normaldistribution.aspx) to determine a $p$-value.
+This can then be used in a [$Z$ table](https://www.simplypsychology.org/z-table.html#:~:text=A%20z%2Dtable%2C%20also%20called,standard%20normal%20distribution%20(SND).) or using a [calculator](https://www.socscistatistics.com/pvalues/normaldistribution.aspx) to determine a $p$-value.
 
 Here is also a [link](https://youtu.be/BT1FKd1Qzjw) to a video for a more detailed explanation about calculating this by hand.
 
 </details>
 ***
 
-Now, to implement this test in R we can use the `wilcox.test()` of the `stats` package. 
+Now, to implement this test in R we can use the `wilcox.test()` function of the `stats` package. 
 
-We need to specify that we want to look for differences of normalized pill counts (`pop_DOSAGE`) between the `rural_urban` groups. We can do so by using the `~` to indicate the dependent variable on the left and the independent variable on the right. We assume that the number of normalized pills depends on the county group, thus the normalized pill count is the dependent variable. Our data is not paired, thus we use the `paried = FALSE` argument. This would be the case if we had comparable rural and urban counties for every state, but that is not the case. See [this case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/) for an example of the paired version of this test. We will use the` alternative =` argument to specify that we expect the first of the groups by alphabet which would  would be `Rural` of the `rural_urban` variable to have greater values than the `Urban` group with the `greater` argument. Thus we will also use the `less` argument for the `large_urban` group comparison as we expect the first group (alphabetically) `Large Urban`to have smaller values than the `Small Urban or Rural` group.
+We need to specify that we want to look for differences of normalized pill counts (`pop_DOSAGE`) between the `rural_urban` groups. We can do so by using the `~` to indicate the dependent variable on the left and the independent variable on the right. We assume that the number of normalized pills depends on the county group, thus the normalized pill count is the dependent variable. Our data are not paired, thus we use the `paried = FALSE` argument. We would have paired data for example in the case where we had comparable rural and urban counties for every state, but that is not the case. See [this case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/) for an example of the paired version of this test. We will use the` alternative =` argument to specify that we expect the first of the groups by alphabet (which would  would be `Rural` of the `rural_urban` variable) to have greater values than the `Urban` group by setting it to "greater". Thus we will also use the `alternative = "less"` argument for the `large_urban` group comparison as we expect the first group (alphabetically) `Large Urban` to have smaller values than the `Small Urban or Rural` group.
 
 ```{r}
 
@@ -2549,13 +2555,13 @@ wilcox.test(pop_DOSAGE ~ large_urban, data = Annual,
                                   estimate = TRUE)
 ```
 
-Both results have p values that are less than 0.05, which is the threshold commonly used in hypothesis testing to determine if there is enough evidence to reject the null hypothesis. 
+Both results have $p$ values that are less than 0.05, which is the threshold commonly used in hypothesis testing to determine if there is enough evidence to reject the null hypothesis. 
 
-In both cases this indicates that indeed there is enough evidence, and we can reject the null hypothesis. Furthermore, the confidence interval does not overlap zero for either test, suggesting that the `Rural` group is larger for the first test and that the `Large Rural` group is smaller for the second test.
+In both cases this indicates that indeed there is enough evidence, and we can reject the null hypothesis. Furthermore, the confidence interval does not overlap zero for either test, suggesting that the `Rural` group is larger for the first test (as both confidence inverval limits are positive) and that the `Large Rural` group is smaller for the second test (as both confidence interval limits are negative).
 
-For the second test, the absolute value of the difference estimate is larger than that of the first test suggesting that there is a larger difference between these groups than the `Rural` and `Urban` groups.
+For the second test, the absolute value of the difference estimate is larger than that of the first test suggesting that there is a larger difference between the `Large Urban` and `Small Urban or Rural` groups than the `Rural` and `Urban` groups.
 
-What about if we had not normalized the data, what would our results be like?
+If we had not normalized the data, what would our results look like?
 
 ```{r}
 
@@ -2575,9 +2581,9 @@ wilcox.test(DOSAGE_UNIT ~ large_urban, data = Annual,
 
 ```
 
-Using the raw data, we see that there is no difference between the rural and urban categories, and the rural data actually shows lower values than the urban (based on the sign of the estimated difference). Similarly, there was no difference between small urban and rural counties vs. large urban counties, in this case the large urban counties (the first group by alphabetically order) also had larger values (based on the sign of the estimated difference).
+Using the raw data, we see that there is no difference between the rural and urban categories, and the rural data actually show lower values than the urban (based on the sign of the estimated difference). Similarly, there is no difference between small urban and rural counties vs. large urban counties. In this case the large urban counties (the first group alphabetically) also had larger values (based on the sign of the estimated difference).
 
-Notice that in both of these tests the Confidence Interval overlaps zero. While this is not the case for the other previous tests. When the confidence interval overlaps zero that indicates that there is the possibility that the two populations have in fact no difference.
+Notice that in both of these tests the confidence interval overlaps zero, while this is not the case for the previous tests. When the confidence interval overlaps zero that indicates that there is the possibility that the two populations have in fact no difference.
 
 The main conclusion here is that we can see very different results depending on how we define the data and how we normalize the data!
 
@@ -2590,18 +2596,20 @@ The main conclusion here is that we can see very different results depending on 
 Now, let's create a plot that summarizes our main findings.
 
 
-We will create a plot that is just a single arrow using `geom_segment()` function of `ggplot2`.  
+We will use some of our plots from the Data Visualization section, including `Raw_Data`, `Norm_Data` and `plot_cat_norm`, and create a multi-panel figure, where each plot is connected to the next with an arrow. 
+
+To make these arrow connectors, we will create a plot that is just a single arrow using `geom_segment()` function of `ggplot2`. We are doing this because we want to create a layout where the different panels are joined by arrows.
 
 
-This requires the following arguments :
-1) x -  x coordinate of starting point of the arrow
-2) y - y coordinate of starting point of the arrow
-3) xend -  x coordinate of end point of the arrow
-4) yend - y coordinate of end point if the arrow
+Creating this arrow requires the following arguments :
+1) x:  x coordinate of starting point of the arrow
+2) y: y coordinate of starting point of the arrow
+3) xend:  x coordinate of end point of the arrow
+4) yend: y coordinate of end point if the arrow
 
-(Note: You can make a straight arrow using `geom_curve()` with the same arguments)
+(Note: You can make a straight arrow using `geom_curve()` with the same arguments.)
 
-Also `ggplot` requires a data input, we will use this to create the y axis value for the arrow. We will use the `aes()` function to define the length and location of the arrow.
+Also, since `ggplot` requires a data input, we will create a dummy `data.frame` to create the y axis value for the arrow. We will use the `aes()` function to define the length and location of the arrow.
 
 
 We need to use the `arrow` argument with the `arrow()` function to create an arrow. The `lineend` and `linejoin` arguments specify what styles to use. The `size()` function specifies how thick the arrow is displayed.
@@ -2636,7 +2644,7 @@ arrowplot
 
 We can move the legend to the plot area using the `legend.justification` and `legend.position` arguments of the `theme()` function. The relative position on the plot area needs to be specified like so `c(x,y)`. Thus `c(0.7,0.2)` is about 70% across the x axis from right to left and about 20% up from the x axis. 
 
-
+Finally, we can build our three panel plot with the arrow connectors as follows:
 
 ```{r}
 
@@ -2657,6 +2665,8 @@ main_plot <- Raw_Data  +
 
 ```
 
+Now we can see the steps that we went through, from our raw data through to our normalized an stratified data, and how our choices impacted the apparent relationship between county classification and number of pills.
+
 
 ```{r, echo= FALSE}
 png(filename = here::here("img", "mainplot.png"), 
@@ -2672,15 +2682,15 @@ knitr::include_graphics(here("img",
 
 ## Synopsis
 
-In this case study we evaluated the number of [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) pills shipped to pharmacies and practitioners at the county-level around the United States (US) from 2006 to 2014. This data comes form the [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) of the [DEA](https://www.dea.gov/) and was released by the [Washington Post](https://www.washingtonpost.com/). We compared counties based on the level of urbanicity based on the fact that previous research suggests that regions of the country that are more rural may have communities that were more vulnerable to opioid abuse than that of large urban areas due to likely higher rates of prescription for opioid pills in the time period that we evaluated. 
+In this case study we evaluated the number of [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) pills shipped to pharmacies and practitioners at the county-level around the United States (US) from 2006 to 2014. This data comes form the [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) of the [DEA](https://www.dea.gov/) and was released by the [Washington Post](https://www.washingtonpost.com/). We compared counties based on the level of urbanicity using the fact that previous research suggests that regions of the country that are more rural may have communities that were more vulnerable to opioid abuse than those of large urban areas due to likely higher prescription rates for opioid pills in the time period that we evaluated. 
 
-Our results also suggests that this is the case, as we identified higher numbers of opioid pill shipments to counties that were more rural and less urban.However we learned that how regions are defined and how the data is normalized can have great impact on the results of such comparisons. Furthermore, other factors may be involved in creating a situation that may leave members of communities more vulnerable to drug abuse and addiction, such as socioeconomic factors. Further research is necessary to better understand why the opioid crisis became such a problem in the US and particularly to better understand what current populations are particularly vulnerable and why. 
+Our results also suggest that this is the case, as we identified higher numbers of opioid pill shipments to counties that were more rural and less urban. However we learned that how regions are defined and how the data are normalized can have a great impact on the results of such comparisons. Furthermore, other factors may be involved in creating a situation that may leave members of communities more vulnerable to drug abuse and addiction, such as socioeconomic factors. Further research is necessary to better understand why the opioid crisis became such a problem in the US and particularly to better understand what current populations are particularly vulnerable and why. 
 
 
 # **Suggested Homework**
 *** 
 
-Students could focus on the counties of a particular state and perform the same analyses and visualizations to see how the different types of counties compared for opioid pill shipments. Students could be asked to work on different states. Discussion could follow about  how and why the states show different results.
+Students could focus on the counties of a particular state and perform the same analyses and visualizations to see how the different types of counties compared for opioid pill shipments. Students could be asked to work on different states. Discussion could follow about how and why the states show different results.
 
 # **Additional Information**
 ***
