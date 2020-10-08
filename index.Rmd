@@ -2081,13 +2081,13 @@ Recall that the [article](https://jamanetwork.com/journals/jamapsychiatry/fullar
 
 This survey used self-declared area of current residence (large urban, small urban, suburban, or rural).
 
-According to the [Organization for Economic Co-operation and Development(OECD)](https://data.oecd.org/popregion/urban-population-by-city-size.htm#:~:text=their%20administrative%20boundaries.-,Urban%20areas%20in%20OECD%20countries%20are%20classified%20as%3A%20large%20metropolitan,areas%20if%20their%20population%20is):
+According to the [Organization for Economic Co-operation and Development (OECD)](https://data.oecd.org/popregion/urban-population-by-city-size.htm#:~:text=their%20administrative%20boundaries.-,Urban%20areas%20in%20OECD%20countries%20are%20classified%20as%3A%20large%20metropolitan,areas%20if%20their%20population%20is):
 
 > Urban population by city size is determined by population density and commuting patterns; this better reflects the economic function of cities in addition to their administrative boundaries. Urban areas in OECD countries are classified as: large metropolitan areas if they have a population of 1.5 million or more; metropolitan areas if their population is between 500 000 and 1.5 million; medium-size urban areas if their population is between 200 000 and 500 000; and, small urban areas if their population is between 50 000 and 200 000. This indicator is measured as a percentage of the national population.
 
 Thus the small urban cutoff is populations less than 200,000.
 
-Given that we saw a large degree of variability among the urban counties, we will now use parse this group further to see if examining counties that were either large urban or smaller (included small urban and rural) seems reasonable.
+Given that we saw a large degree of variability among the urban counties, we will now parse this group further to see if examining counties that were either large urban or smaller (including small urban and rural) seems reasonable.
 
 ```{r}
 
@@ -2199,7 +2199,7 @@ ggplot( aes(y = pop_DOSAGE, x = year, colour = category, group = category)) +
 
 Wow, we can see here that the two urban categories actually have larger differences in normalized pill counts from each other than either has with the rural counties!
 
-Thus it seems reasonable to lump the rural and small urban  categories together.
+Thus it seems reasonable to lump the rural and small urban categories together, rather than grouping large urban and small urban as we were doing.
 
 So now we will make a new variable based on being either large urban or small urban/rural:
 
