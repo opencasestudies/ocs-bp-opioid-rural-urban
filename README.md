@@ -88,8 +88,8 @@ They found that:
 
 <b><u> Our main question: </u></b>
 
-How did opioid shipment rates differ between rural and urban regions
-over time around the US from 2006-2014?
+1.  How did opioid shipment rates differ between rural and urban regions
+    over time around the US from 2006-2014?
 
 ### Data
 
