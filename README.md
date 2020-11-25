@@ -118,7 +118,7 @@ According to the [Washington Post](https://www.washingtonpost.com/):
 The skills, methods, and concepts that students will be familiar with by
 the end of this case study are:
 
-Data science skills:
+<u>**Data Science Learning Objectives:**</u>
 
 1.  Importing data from an [API](https://en.wikipedia.org/wiki/API)
     (`httr` and `jasonlite`)  
@@ -132,7 +132,7 @@ Data science skills:
     because they have many elements (`ggiraph`)  
 8.  How to combine plots with `patchwork`
 
-Statistical concepts and methods:
+<u>**Statistical Learning Objectives:**</u>
 
 1.  Understanding of when and why data normalization is useful  
 2.  Understanding of how group definitions can change results  
