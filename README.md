@@ -28,7 +28,7 @@ United States License.
 
 To cite this case study:
 
-Wright, Carrie, and Wang, Kexin and Jager, Leah and Taub, Margaret and
+Wright, Carrie and Wang, Kexin and Jager, Leah and Taub, Margaret and
 Hicks, Stephanie. (2020).
 [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban)
 Opioids in the United States (Version v1.0.0).

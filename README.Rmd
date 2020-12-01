@@ -28,7 +28,7 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 (
 
 To cite this case study:
 
-Wright, Carrie, and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban) Opioids in the United States (Version v1.0.0).
+Wright, Carrie and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban) Opioids in the United States (Version v1.0.0).
 
 
 ### Acknowledgements
@@ -199,7 +199,7 @@ According to their website:
 
 >Remember, that being able to treat an overdose at home is not a replacement for a hospital. Even if the moment has passed, and the victim seems fine, there is still a chance that something is going on that cannot be seen by the human eye. Taking the victim to the hospital, can mean the difference between life and death.
 
-> Overdose is a scary word. We often associate it with death, but the two are not always connected. Life can go on after an overdose, but only if the person suffering understands and learns from it. Getting on the road to recovery is not easily done but it is always possible, and the only guaranteed way to never suffer an overdose again. If you don’t know where this path begins, or need help getting help for a loved one, please reach out to a dedicated treatment provider. They’re here, 24/7, to answer any questions you may have. Be it for yourself or someone else.
+>Overdose is a scary word. We often associate it with death, but the two are not always connected. Life can go on after an overdose, but only if the person suffering understands and learns from it. Getting on the road to recovery is not easily done but it is always possible, and the only guaranteed way to never suffer an overdose again. If you don’t know where this path begins, or need help getting help for a loved one, please reach out to a dedicated treatment provider. They’re here, 24/7, to answer any questions you may have. Be it for yourself or someone else.
 
 According to [harmreduction.org](https://harmreduction.org/issues/overdose-prevention/overview/overdose-basics/recognizing-opioid-overdose/), the following are signs of an overdose:
 

@@ -19,7 +19,7 @@ output:
 
 <style>
 #TOC {
-  background: url("https://opencasestudies.github.io/img/logo.jpg");
+  background: url("https://opencasestudies.github.io/img/icon-bahi.png");
   background-size: contain;
   padding-top: 240px !important;
   background-repeat: no-repeat;
@@ -63,7 +63,7 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [
 
 To cite this case study please use:
 
-Wright, Carrie, and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban) Opioids in the United States (Version v1.0.0).
+Wright, Carrie and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban) Opioids in the United States (Version v1.0.0).
 
 ####
 
@@ -302,7 +302,8 @@ Opioids have continued to be used in the treatment of pain.
 
 ***
 
-## The Opioid Epidemic 
+## **The Opioid Epidemic**
+***
 
 The opioid epidemic began in the late 1990s. 
 
@@ -430,7 +431,8 @@ Importantly, the API also includes population estimates for the years (2006 to 2
 # **Data Import**
 *** 
 
-## Land Area
+## **Land Area**
+***
 
 We will need county land area data for our calculations of population density. 
 
@@ -473,7 +475,8 @@ save(land, file =  here::here("data", "land_area.rda"))
 ```
 
 
-## Accessing data with APIs
+## **Accessing data with APIs**
+***
 
 The `httr` package creates what are called "GET requests" so that we can make these requests inside of R. This allows for the data to be retrieved from the API within R.
 
@@ -484,7 +487,8 @@ APIs typically require a password or key to gain access or authenticate your dat
 In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed public, and currently "uO4EK6I" is publicly published as a key to use on the [github page](https://github.com/wpinvestigative/arcos) for the `arcos` package. We will use that here to access the API.
 
 
-## County Population Data
+## **County Population Data**
+***
 
 We are interested in the county level data. Conveniently, the API also includes county-level population data (the number of people per county in each state in the US from 2006 to 2014)
 
@@ -607,7 +611,8 @@ save(county_pop, file =  here::here("data", "county_pop_arcos.rda"))
 ```
 
 
-## Annual Shipment Data
+## **Annual Shipment Data**
+***
 
 We are also interested in the number of opioid pill shipped at the county level. 
 
@@ -850,7 +855,8 @@ land_area
 Thus, we still have state-level and full US measurements of land area in addition to the county data. But we will join this with our other datasets in a bit based on the county name/county FIPS code and thus only keep the county level data. 
 
 
-## Updating `countyfips`
+## **Updating `countyfips`**
+***
 
 We will use the `case_when()` function of the `dplyr` package recode the `NA` values for `countyfips` for the rows for the `MONGOMERY` county of `AR` to be `05097`. 
 
@@ -955,7 +961,8 @@ naniar:: vis_miss(annualDosage)
 Great! Now there is no missing data in our annual data.
 
 
-## Rural and Urban Counties
+## **Rural and Urban Counties**
+***
 
 Defining if a region is rural or urban is actually quite complicated as the overall population, the structure of our towns and cities, and the access between different locations all change over time. Please see this [report](https://www2.census.gov/geo/pdfs/reference/ua/Defining_Rural.pdf) form the US Census Bureau about the history of this definition. 
 
@@ -1305,7 +1312,8 @@ These will define what we are interested in illustrating using the data.
 
 ***
 
-## Population density
+## **Population density**
+***
 
 Let's make a plot to see how population density has changed over time in each state.
 
@@ -1463,7 +1471,8 @@ overall_density <-
 overall_density
 ```
 
-## Rural and Urban areas
+## **Rural and Urban areas**
+***
 
 How have the number of rural and urban areas changed over years?
 
@@ -1613,7 +1622,8 @@ formattable::formattable(R_U, list(`Percent Urban` =
 Nice, now we can see how much the percentage has changed over time. 
 
 
-## US shipments over time
+## **US shipments over time**
+***
 
 Now let's get a sense of how the shipments of [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) changed over time across all counties in the US.
 
@@ -1742,7 +1752,8 @@ raw_state_avg
 Again we see the same general overall trend, we also see that the spread was quite large with some states receiving many more pills than others. 
 
 
-## State Shipments over time
+## **State Shipments over time**
+***
 
 To get a better sense of how each state changed over time we can create a line plot instead.
 
@@ -1788,7 +1799,8 @@ In this plot, it appears that the largest number of pills were shipped to counti
 
 To account for this we will perform something called **normalization** (or in this case we will adjust for differences in population or population density across different states) to make a more fair comparison.
 
-## Normalization of number of shipped pills
+## **Normalization of number of shipped pills**
+***
 
 The term data [normalization](https://en.wikipedia.org/wiki/Normalization_(statistics)) actually has a variety of meanings. 
 
@@ -1961,7 +1973,8 @@ This dramatically changed the resulting plot!
 We can see that now Tennessee, Kentucky, and West Virginia were among the top to receive pills relative to their populations. California is no longer at the top of the plot.
 
 
-## Rural and Urban Differences
+## **Rural and Urban Differences**
+***
 
 OK, now that we can make fair comparisons between counties, we can now take a look at the differences between rural and urban counties.
 
@@ -2069,7 +2082,8 @@ theme_county <- function() {
 ```
 Now we simply need to type `county_theme()` instead to achieve the same style for our plot.
 
-## Greater granularity of density
+## **Greater granularity of density**
+***
 
 Recall that the [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) that surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html) found that
 
@@ -2267,8 +2281,8 @@ Annual %<>%
 ```
 
 
-## Student's t-test
-
+## **Student's t-test**
+***
 OK, we can tell that there appears to be a difference between small urban and rural counties compared to large urban counties by looking at this plot, however is the difference between these two categories of counties meaningful, or is it just due to random differences from sampling? To evaluate this we may consider employing a statistical test called the [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test), which can be used to determine if [two group means are different](http://onlinestatbook.com/2/estimation/difference_means.html){target="_blank"}.
 
 Let's remind ourselves of one of our original questions, 
@@ -2362,8 +2376,8 @@ Our samples are indeed quite large, thus it would probably be reasonable to cont
 However, our second option is to perform a test called the 
 [Mann Whitney U test](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test) also known as the Wilcoxon rank sum test or the two-sample Wilcox test or the Mann–Whitney–Wilcoxon (MWW) test. Importantly, this test does not rely on the assumption that the data are normally distributed and it is more robust than the t-test to [outliers](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm) (extreme values compared to the others). Given that the data appears to be quite different from the normal distribution, we will proceed using this test. 
 
-## Mann–Whitney–Wilcoxon (MWW) test (Wilcox test for short)
-
+## **Mann–Whitney–Wilcoxon (MWW) test (Wilcox test for short)**
+***
 In this test, the hypothesis is slightly different. Instead of comparing means, this test evaluates the following null hypothesis for comparing the two groups (adapted from Wikipedia):
 
 > the probability that a randomly selected value of the first group (X) is greater than a randomly selected value of the second group (Y) is equal to the probability that a randomly selected value of the second group (Y) is greater than a randomly selected value of the first group (X).
@@ -2578,7 +2592,8 @@ The main conclusion here is that we can see very different results depending on 
 # **Summary**
 *** 
 
-## Summary Plot
+## **Summary Plot**
+***
 
 Now, let's create a plot that summarizes our main findings.
 
@@ -2668,7 +2683,8 @@ knitr::include_graphics(here("img",
                              "mainplot.png"))
 ```
 
-## Synopsis
+## **Synopsis**
+***
 
 In this case study we evaluated the number of [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) pills shipped to pharmacies and practitioners at the county-level around the United States (US) from 2006 to 2014. This data comes form the [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) of the [DEA](https://www.dea.gov/) and was released by the [Washington Post](https://www.washingtonpost.com/). We compared counties based on the level of urbanicity using the fact that previous research suggests that regions of the country that are more rural may have communities that were more vulnerable to opioid abuse than those of large urban areas due to likely higher prescription rates for opioid pills in the time period that we evaluated. 
 
@@ -2685,7 +2701,8 @@ Students could focus on the counties of a particular state and perform the same 
 
 Note: Monthly data is also available within the `data` directory. This could be used for time series analysis. 
 
-## Helpful Links
+## **Helpful Links**
+***
 
 [RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}  
 [Cheatsheet on RStuido IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}  
@@ -2798,14 +2815,16 @@ knitr::include_graphics("https://miro.medium.com/max/700/1*CdiSAr3OomVFHC6_1E_XK
 
 ####
 
-## Session Info
+## **Session Info**
+***
 
 ```{r}
 sessionInfo()
 ```
 
 
-## Acknowledgements
+## **Acknowledgements**
+***
 
 We would like to acknowledge [Brendan Saloner](https://www.jhsph.edu/faculty/directory/profile/2929/brendan-saloner) for assisting in framing the major direction of the case study.
 
