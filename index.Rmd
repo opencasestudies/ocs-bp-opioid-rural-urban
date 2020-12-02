@@ -1,5 +1,5 @@
 ---
-title: "Opioids in United States"
+title: "Open Case Studies: Opioids in United States"
 css: style.css
 output:
   html_document:
@@ -49,7 +49,7 @@ knitr::include_graphics(here("img",
 
 #### {.disclaimer_block}
 
-**Disclaimer**: The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**. A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
+**Disclaimer**: The purpose of the [Open Case Studies](https://www.opencasestudies.org){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**. A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
 
 ####
 
@@ -66,6 +66,10 @@ To cite this case study please use:
 Wright, Carrie and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban) Opioids in the United States (Version v1.0.0).
 
 ####
+
+To access the GitHub Repository for this case study see here: https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/
+
+This case study is part of a series of public health case studies for the [Bloomberg American Health  Initiative](https://americanhealth.jhu.edu/open-case-studies).
 
 # **Motivation**
 *** 
@@ -810,7 +814,8 @@ load(here::here("data", "county_pop_arcos.rda"))
 load(here::here("data", "county_annual.rda"))
 ```
 
-## Cleaning land data
+## **Cleaning land data**
+***
 
 Recall that we want to use the `LND110210D` column which is the data from the year 2010.
 
