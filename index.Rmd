@@ -17,6 +17,16 @@ output:
 
 ---
 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D23TSPK2DS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D23TSPK2DS');
+</script>
+
 <style>
 #TOC {
   background: url("https://opencasestudies.github.io/img/icon-bahi.png");
@@ -75,7 +85,7 @@ This case study is part of a series of public health case studies for the [Bloom
 *** 
 
 
-In this case study we will be examining the number of opioid pills (specifically [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States), as they are the top two most abused opioids) shipped to pharmacies and practitioners at the county-level around the United States (US) from 2006 to 2014.
+In this case study we will be examining the number of opioid pills (specifically [oxycodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) and [hydrocodone](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States), as they are the top two most misused opioids) shipped to pharmacies and practitioners at the county-level around the United States (US) from 2006 to 2014.
 
 This data comes from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/) after legal action by the owner of the [Charleston Gazette-Mail](https://www.wvgazettemail.com/) in West Virginia and the [Washington Post](https://www.washingtonpost.com/).
 
@@ -99,7 +109,7 @@ The main takeaways from this article were:
 
 > Higher opioid prescribing rates put patients **at risk for addiction and overdose**.
 
-Indeed, this was confirmed by another [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575), which surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).
+Indeed, this was confirmed by another [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575), which surveyed people who use heroin in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).
 
 #### {.reference_block}
 
@@ -111,7 +121,7 @@ They found that:
 
 > Respondents who began using heroin in the 1960s were predominantly young men (82.8%; mean age, 16.5 years) whose first opioid of abuse was heroin (80%).
 
-Meaning that 80% of the heroin users who started using heroin in the 1960s, started with heroin directly, while  20% first used another opioid and then became heroin users. 
+Meaning that 80% of the people who use heroin who started using heroin in the 1960s, started with heroin directly, while  20% first used another opioid and then became people who use heroin. 
 
 > However, more **recent users** were older (mean age, 22.9 years) men and women **living in less urban areas (75.2%)** who were **introduced to opioids through prescription drugs (75.0%)**.
 
@@ -235,7 +245,7 @@ The first time we use a function, we will use the `::` to indicate which package
 
 According to the [DEA](https://www.dea.gov/taxonomy/term/331) and the [Alta Mira addiction treatment center](https://www.altamirarecovery.com/opiates/difference-opiates-opioids/):
 
-Opioids (also known as narcotics which comes from the Greek word for "stupor"), describes a class of drugs that contain [opium](https://en.wikipedia.org/wiki/Opium) (the poppy plant - [*Papaver somniferum*](https://en.wikipedia.org/wiki/Papaver_somniferum)), are derived from opium, or contain a semi-synthetic or synthetic substitute for opium.
+Opioids (also known as narcotics), describes a class of drugs that contain [opium](https://en.wikipedia.org/wiki/Opium) (the poppy plant - [*Papaver somniferum*](https://en.wikipedia.org/wiki/Papaver_somniferum)), are derived from opium, or contain a semi-synthetic or synthetic substitute for opium.
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img","ingo-doerrie-Ti6Sk5rZRP8-unsplash.jpg" ))
@@ -265,7 +275,7 @@ knitr::include_graphics("https://www.drugabuse.gov/sites/default/files/styles/co
 
 ***
 
-In general, opioid medications and drugs have been found to dull the senses, relieve pain, suppress cough, reduce respiration and heart rate, induce constipation, and induce feelings of euphoria. They have a high potential for abuse and addiction.
+In general, opioid drugs have been found to dull the senses, relieve pain, suppress cough, reduce respiration and heart rate, induce constipation, and induce feelings of euphoria. They have a high potential for abuse and addiction.
 
 Drugs within this class include (with prescription drug brand names are shown in parentheses): 
 
@@ -309,7 +319,7 @@ Opioids have continued to be used in the treatment of pain.
 ## **The Opioid Epidemic**
 ***
 
-The opioid epidemic began in the late 1990s. 
+The rate of opioid overdose deaths rapidly increased in the US in the 1990s. 
 
 According to the [US department of health and human services (HHS)](
 https://www.hhs.gov/opioids/about-the-epidemic/index.html):
@@ -320,7 +330,7 @@ https://www.hhs.gov/opioids/about-the-epidemic/index.html):
 
 > In 2017 the [HHS](https://www.hhs.gov) declared a public health emergency 
 
-See [here](https://en.wikipedia.org/wiki/Timeline_of_the_opioid_epidemic) for a timeline of the epidemic in the US and [here](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) for more details about the epidemic.
+See [here](https://en.wikipedia.org/wiki/Timeline_of_the_opioid_epidemic) for a time line of the epidemic in the US and [here](https://en.wikipedia.org/wiki/Opioid_epidemic_in_the_United_States) for more details about the epidemic.
 
 
 According to this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w) from the [Morbidity and Mortality Weekly Report (MMWR)](https://www.cdc.gov/mmwr/about.html) of the [Centers for Disease Control and Prevention (CDC)](https://en.wikipedia.org/wiki/Centers_for_Disease_Control_and_Prevention):
@@ -388,7 +398,7 @@ According to the [Washington Post database](https://www.washingtonpost.com/natio
 
 Furthermore, we will define counties as being rural or urban however there can be great variation within a county and we used land area values from only 2010 even though these can fluctuate. Therefore, the way we categorized counties should be seen as an approximation. Additionally, other aspects about a county besides population level and density can be influential for creating an environment that would increase the vulnerability of community members to drug abuse and addiction. These include socioeconomic factors among others. 
 
-Finally, overdose deaths are often due to the use of multiple substances. Simply because a county received more pills does not mean that people in that county would experience more drug overdoses. It is also important to remember that prescription opioids only account for a portion of the drug overdose deaths reported in this time period. However, according to this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575), 75% of heroin users surveyed were introduced to opioids through prescription drug use.
+Finally, overdose deaths are often due to the use of multiple substances. Simply because a county received more pills does not mean that people in that county would experience more drug overdoses. It is also important to remember that prescription opioids only account for a portion of the drug overdose deaths reported in this time period. However, according to this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575), 75% of people who use heroin surveyed were introduced to opioids through prescription drug use.
 
 The recent overdose deaths in the US opioid crisis are mostly due to synthetic opioids. Understanding what makes communities vulnerable to these types of opioids is an area of active research but not a focus of this case study.
 
@@ -1458,7 +1468,7 @@ How might you create this plot?
 overall_density <- 
   Annual %>% 
   group_by(year) %>%
-  summarise(total_population = sum(population)) %>%
+  summarize(total_population = sum(population)) %>%
   ggplot(aes(x = year, y = total_population)) + 
       geom_point() +
       geom_smooth() +
@@ -1743,7 +1753,7 @@ We can look a bit deeper if we only calculate a mean for each state. To make a v
 raw_state_avg <- 
   Annual %>% 
   group_by(BUYER_STATE, year) %>%
-  summarise( mean_DOSAGE = mean(Pills_in_millions)) %>% 
+  summarize( mean_DOSAGE = mean(Pills_in_millions)) %>% 
   ungroup() %>%
   ggplot(aes(x = year, y = (mean_DOSAGE))) + 
     ggpol::geom_boxjitter() +
@@ -1765,7 +1775,7 @@ To get a better sense of how each state changed over time we can create a line p
 ```{r}
 Annual %>% 
   group_by(BUYER_STATE, year) %>%
-  summarise(mean_DOSAGE = mean(Pills_in_millions)) %>%
+  summarize(mean_DOSAGE = mean(Pills_in_millions)) %>%
   ungroup() %>% 
   ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, 
              color = BUYER_STATE)) + 
@@ -1781,7 +1791,7 @@ Since we have so many states, the legend is not very useful. Instead we can use 
 g <- 
   Annual %>% 
   group_by(BUYER_STATE, year) %>%
-  summarise(mean_DOSAGE = mean(Pills_in_millions)) %>%
+  summarize(mean_DOSAGE = mean(Pills_in_millions)) %>%
   ungroup() %>% 
   ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE, 
              color = BUYER_STATE)) +
@@ -1905,7 +1915,7 @@ Do you recall how to do this? How would you combine the previous plot of the raw
 norm_state_avg <-
   Annual %>% 
   group_by(BUYER_STATE, year) %>%
-  summarise(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
+  summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
   ungroup() %>%
   ggplot(aes(x = year, y = (mean_DOSAGE))) + 
     geom_boxjitter() + 
@@ -1952,7 +1962,7 @@ Do you recall how to create the state specific and interactive plot?
 g2 <- 
   Annual %>% 
   group_by(BUYER_STATE,year) %>%
-  summarise(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
+  summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
   ungroup() %>%
   ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE,
              color = BUYER_STATE)) +
@@ -2090,7 +2100,7 @@ Now we simply need to type `county_theme()` instead to achieve the same style fo
 ## **Greater granularity of density**
 ***
 
-Recall that the [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) that surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html) found that
+Recall that the [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) that surveyed people who use heroin in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html) found that
 
 >A much greater percentage of heroin users completing the survey in the SKIP Program reported currently living in small urban or nonurban areas than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
 
@@ -2745,7 +2755,7 @@ Also see [here](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pd
 
 [Motivating report for this case study](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs/mm6802a1-H.pdf)  
 
-Also see this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).  
+Also see this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed people who use heroin in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).  
 
 
 The data for this case study is available at this [API](https://arcos-api.ext.nile.works/__swagger__/). 
@@ -2828,10 +2838,17 @@ sessionInfo()
 ```
 
 
-## **Acknowledgements**
+## **Acknowledgments**
 ***
 
 We would like to acknowledge [Brendan Saloner](https://www.jhsph.edu/faculty/directory/profile/2929/brendan-saloner) for assisting in framing the major direction of the case study.
 
 We would also like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
 
+
+
+
+
+
+
+<script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=080808&w=a&t=n&d=G9e5uaGLv_omCgMY3tVaNZ5dC48zriftXuj4U5vxCLc&co=ffffff&cmo=3acc3a&cmn=ff5353&ct=808080'></script>
