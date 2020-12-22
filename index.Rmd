@@ -3,6 +3,8 @@ title: "Open Case Studies: Opioids in United States"
 css: style.css
 output:
   html_document:
+    includes:
+       in_header: GA_Script.Rhtml
     self_contained: yes
     code_download: yes
     highlight: tango
@@ -17,15 +19,7 @@ output:
 
 ---
 
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-D23TSPK2DS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-D23TSPK2DS');
-</script>
 
 <style>
 #TOC {
