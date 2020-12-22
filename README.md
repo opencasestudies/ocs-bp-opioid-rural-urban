@@ -39,7 +39,7 @@ Hicks, Stephanie. (2020).
 [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban)
 Opioids in the United States (Version v1.0.0).
 
-### Acknowledgements
+### Acknowledgments
 
 We would like to acknowledge [Brendan
 Saloner](https://www.jhsph.edu/faculty/directory/profile/2929/brendan-saloner)
