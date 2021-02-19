@@ -439,6 +439,8 @@ Importantly, the API also includes population estimates for the years (2006 to 2
 # **Data Import**
 *** 
 
+Note that if you have trouble with the data import from the API, we have saved files after getting data from the API located in the data directory.
+
 ## **Land Area**
 ***
 
@@ -460,10 +462,35 @@ Let's break this down to understand the meaning of the column.
 - 10 = 2010 (based on the century)
 - D = Data
 
-We will use the `read_excel()` function of the `readxl` package to import the data. We will also convert the data into a [tibble](https://tibble.tidyverse.org/) (which is a the tidyverse version of a data frame) by using the `as_tibble()` function of the `tibble` package.
+We will use the `read_excel()` function of the `readxl` package to import the data. We will also convert the data into a [tibble](https://tibble.tidyverse.org/) (which is a the tidyverse version of a data frame) by using the `as_tibble()` function of the `tibble` package. 
+
+This data is within the "Raw" subdirectory of the "data" directory of our github repo. We will use the `here()` function of the `here` package to make the path for importing this data simpler. The `here` package automatically starts looking for files based on where you have a .Rporj file which is created when you start a new RStudio project. We can specify that we want to look for the "LND01.xls" file within the "Raw" directory within the "data" directory where our .Rproj file is located by separating the names of these directories using commas and listing "data" first. 
+
+***
+<details> <summary>Click here to see more about creating new projects in R </summary>
+
+You can create a project by going to the File menu of RStudio like so:
+
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "New_project.png"))
+```
+
+You can also do so my clicking the project button:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "project_button.png"))
+```
+
+
+See [here](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) to learn more about using RStudio projects. 
+
+</details>
+
+***
 
 ```{r}
-land <- readxl::read_excel(here::here("data", "LND01.xls"))
+land <- readxl::read_excel(here::here("data", "Raw", "LND01.xls"))
 land <- as_tibble(land)
 ```
 
@@ -477,9 +504,15 @@ Indeed, this looks as expected with both the US, state, and county level land ar
 
 Looks good!
 
-```{r, echo = FALSE, eval = FALSE}
-write.csv(land, file = here::here("data", "land_area.csv"))
-save(land, file =  here::here("data", "land_area.rda"))
+Now we save our data in the data directory within a subdirectory called "imported":
+
+```{r, eval = FALSE, echo = FALSE}
+# for instructors who want to do a simpler version of import
+write.csv(land, file = here::here("data", "simple_import", "land_area.csv"))
+```
+
+```{r, eval = FALSE}
+save(land, file =  here::here("data", "imported", "land_area.rda"))
 ```
 
 
@@ -612,10 +645,15 @@ dplyr::distinct(county_pop, year)
 
 It looks like we have the full data from 2006-2014.
 
+Now let's save this data:
 
 ```{r, eval = FALSE, echo = FALSE}
-write.csv(county_pop, file = here::here("data", "county_pop_arcos.csv"))
-save(county_pop, file =  here::here("data", "county_pop_arcos.rda"))
+# For instructors who want to do a simpler version of import
+write.csv(county_pop, file = here::here("data", "Simple_import", "county_pop_arcos.csv"))
+```
+
+```{r, eval = FALSE}
+save(county_pop, file =  here::here("data", "imported",  "county_pop_arcos.rda"))
 ```
 
 
@@ -668,13 +706,19 @@ annualDosage <-
 
 ***
 
+Now we will also save this data:
+
 ```{r, echo = FALSE, eval = FALSE}
-write.csv(annualDosage, file = here::here("data", "county_annual.csv"))
-save(annualDosage, file =  here::here("data", "county_annual.rda"))
+# for instructors who want to do a simpler version of import
+write.csv(annualDosage, file = here::here("data", "Simple_import", "county_annual.csv"))
+```
+
+```{r, eval = FALSE}
+save(annualDosage, file = here::here("data", "imported", "county_annual.rda"))
 ```
 
 ```{r, echo = FALSE}
-load(here::here("data", "county_annual.rda"))
+load(here::here("data", "imported", "county_annual.rda"))
 ```
 
 Now let's take a look at the data:
@@ -699,23 +743,24 @@ county <-
 monthlyDosage <- 
   tibble::as_tibble(county)
 
+# for instructors who want to do a simpler version of import
 write.csv(monthlyDosage, 
-          file = here::here("data", "county_monthly.csv"))
+          file = here::here("data","Simple_import", "county_monthly.csv"))
 
 save(monthlyDosage, 
-     file =  here::here("data", "county_monthly.rda"))
+     file =  here::here("data", "imported", "county_monthly.rda"))
 ```
 
 
 # **Data Exploration**
 ***
 
-```{r, echo = FALSE}
-# In case an instructor wants to start here we will load the data
+```{r}
+# In case an instructor or learner wants to start here we will load the imported data
 
-load(here::here("data", "land_area.rda"))
-load(here::here("data", "county_pop_arcos.rda"))
-load(here::here("data", "county_annual.rda"))
+load(here::here("data", "imported", "land_area.rda"))
+load(here::here("data", "imported", "county_pop_arcos.rda"))
+load(here::here("data", "imported", "county_annual.rda"))
 ```
 
 
@@ -810,12 +855,12 @@ We will update these values in the next section.
 # **Data Wrangling**
 ***
 
-```{r, echo = FALSE}
-# In case an instructor wants to start here we will load the data
+```{r}
+# In case an instructor or learner wants to start here we will load the data
 
-load(here::here("data", "land_area.rda"))
-load(here::here("data", "county_pop_arcos.rda"))
-load(here::here("data", "county_annual.rda"))
+load(here::here("data", "imported", "land_area.rda"))
+load(here::here("data", "imported", "county_pop_arcos.rda"))
+load(here::here("data", "imported", "county_annual.rda"))
 ```
 
 ## **Cleaning land data**
@@ -912,7 +957,6 @@ annualDosage %>%
 We can remove these rows from our data set using the `filter()` command along with the `!` (exclamation point) before the `is.na()` function.
 
 ```{r}
-
 annualDosage %<>% 
   filter(!is.na(BUYER_COUNTY))
 ```
@@ -1272,9 +1316,8 @@ save(county_info, file = here::here("data", "Wrangled", "county_info.rda"))
 # **Data Visualization**
 ***
 
-```{r,echo=FALSE, eval=TRUE}
-# In case instructors wish to start here, we will load the necessary data
-
+```{r}
+# In case instructors or learners wish to start here, we will load the necessary data
 load(file = here::here("data","Wrangled", "Annual_opioid_data.rda"))
 load(file = here::here("data", "Wrangled", "county_info.rda"))
 ```
@@ -1869,7 +1912,7 @@ norm_average <-
     stat_summary(fun = mean,
                  geom = "line") +
     labs(title = "Average Number of pills shipped per person for a given county",
-         y = "Normalized Number of pills") +
+         y = "Number of pills per capita") +
     theme_minimal()
 
 norm_average
@@ -2010,7 +2053,7 @@ Annual %>%
     stat_summary(fun.data = mean_cl_boot,
                  position = position_dodge(width = 0.5),
                  geom = "pointrange") +
-    stat_summary(fun.y = mean, geom = "line") +
+    stat_summary(fun = mean, geom = "line") +
     facet_wrap( ~ type, scales = "free", labeller = 
                   as_labeller(c(Pills_in_millions = "Raw Data", 
                                 pop_DOSAGE = "Normalized Data (pills per capita)"))) +
@@ -2076,7 +2119,7 @@ Raw_Data +
 
 We can see that without accounting for population, the urban counties received many more pills than the rural counties. In contrast, when population is taken into account, the rates appear to be very similar.
 
-We can also see that there appears to be much higher variability among the urban counties as compared to the rural counties. 
+We can also see that there appears to be much higher **variability** among the **urban** counties as compared to the rural counties. 
 
 Let's save our `theme()` function code as an actual theme to be used for our future plots so that they can be stylized similarly.
 
@@ -2094,19 +2137,30 @@ Now we simply need to type `county_theme()` instead to achieve the same style fo
 ## **Greater granularity of density**
 ***
 
-Recall that the [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) that surveyed people who use heroin in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html) found that
+Recall that the [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) that surveyed people who use heroin in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html) found that:
 
->A much greater percentage of heroin users completing the survey in the SKIP Program reported currently living in small urban or nonurban areas than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
+> A much greater percentage of heroin users completing the survey in the SKIP Program reported currently living in small urban or nonurban areas than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
 
 This survey used self-declared area of current residence (large urban, small urban, suburban, or rural).
+
+Given that we saw a large degree of variability among the urban counties, we will now parse this group further to see if examining counties that were either large urban or smaller (including small urban and rural) seems reasonable.
 
 According to the [Organization for Economic Co-operation and Development (OECD)](https://data.oecd.org/popregion/urban-population-by-city-size.htm#:~:text=their%20administrative%20boundaries.-,Urban%20areas%20in%20OECD%20countries%20are%20classified%20as%3A%20large%20metropolitan,areas%20if%20their%20population%20is):
 
 > Urban population by city size is determined by population density and commuting patterns; this better reflects the economic function of cities in addition to their administrative boundaries. Urban areas in OECD countries are classified as: large metropolitan areas if they have a population of 1.5 million or more; metropolitan areas if their population is between 500 000 and 1.5 million; medium-size urban areas if their population is between 200 000 and 500 000; and, small urban areas if their population is between 50 000 and 200 000. This indicator is measured as a percentage of the national population.
 
-Thus the small urban cutoff is populations less than 200,000.
+Thus we could try a cutoff for small urban populations as less than 200,000. Of note this is not as ideal as having commuting patterns etc, however it is a starting point.
 
-Given that we saw a large degree of variability among the urban counties, we will now parse this group further to see if examining counties that were either large urban or smaller (including small urban and rural) seems reasonable.
+According to the [Economic Reserach Service of the US department of Agriculture (USDA)](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural.aspx#:~:text=Small%20population%20size%20typically%20characterizes,50%2C000%2C%20depending%20on%20the%20definition):
+
+> Population thresholds used to differentiate rural and urban communities range from 2,500 up to 50,000, depending on the definition.
+
+To also use a population threshold to redefine the rural category (to be consistent with our other definitions of large and small urban populations) we will use a cutoff of less than 50,000.
+
+So now we will make a new variable with three categories of counties: large urban vs small urban vs rural. 
+
+Thus we will use the `&` operator to indicate that the small urban category is greater than 50,000 and also less than 200,000.
+
 
 ```{r}
 
@@ -2211,7 +2265,19 @@ Wow, we can see here that the two urban categories actually have larger differen
 
 Thus it seems reasonable to lump the rural and small urban categories together, rather than grouping large urban and small urban as we were doing.
 
-So now we will make a new variable based on being either large urban or small urban/rural:
+
+We will modify our original code with the population thresholds which was:
+
+```{r, eval = FALSE}
+Annual %<>% 
+  mutate(category = case_when(population >= 200000 ~ "Large Urban",
+                              population >= 50000 & 
+                              population < 200000 ~ "Small Urban",
+                              population < 50000 ~ "Rural"))
+
+```
+
+Now we will just replace the labels for the small urban and rural counties to be the same value "Small Urban or Rural" for this new variable called "large_urban":
 
 ```{r}
 
@@ -2222,6 +2288,7 @@ Annual %<>%
                                  population < 50000 ~ "Small Urban or Rural"))
 
 ```
+
 
 ```{r}
 plot_2cat_raw <-Annual %>%
@@ -2272,15 +2339,23 @@ Indeed when we evaluate the data in this way, we see that small urban and rural 
 # **Data Analysis**
 ***
 
-```{r,echo= FALSE, eval = TRUE}
+```{r}
 # In case instructors wish to start here, we will load the necessary data
 
 load(file =  here::here("data","Wrangled", "Annual_opioid_data.rda"))
 load( file = here::here("data", "Wrangled", "county_info.rda"))
 
+# We will also perform a few extra steps with the data that we did during the visualization section
+
+# We create a new variable called `pop_DOSAGE` that is the number of pills shipped per county divided by the population of that county
 Annual%<>%  mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
 
 
+# we create a new variable called `Pills_in_millions` that is the number of pills shiped per county divided by 1 million
+Annual %<>% 
+  mutate(Pills_in_millions = DOSAGE_UNIT/1000000)
+
+#We make a new variable based on being either large urban or small urban/rural based off a threshold of population because of our visualizations
 Annual %<>% 
   mutate(large_urban = case_when(population >= 200000 ~ "Large Urban",
                                  population >= 50000 & 
