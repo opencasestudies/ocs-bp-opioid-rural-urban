@@ -151,7 +151,9 @@ the end of this case study are:
 
 In this case study we demonstrate how to import data from an API,
 however we have also downloaded the data and saved it as an RDA and a
-CSV file if instructors choose to use the data for another purpose.
+CSV file if instructors choose to use the data for another purpose. See
+the `data/simpler_import` directory for CSV files and see
+`data/imported` for RDA versions.
 
 #### Data wrangling
 
@@ -408,20 +410,18 @@ There is a [`Makefile`](Makefile) in this folder that allows you to type
 `index.html` and it will also knit the [`README.Rmd`](README.Rmd) to a
 markdown file (`README.md`).
 
-Users can skip the Data Import and Data Wrangling sections to start with
-the Data Visualization or Data Analysis sections if they wish.
+The case study is designed to be modular, so for example if users wish
+to skip Data Import and start with the Data Wrangling section they can
+do so.
 
 #### For instructors
 
-Instructors can skip the Data Import and Data Wrangling sections to
-start with the Data Analysis section if they wish.
+The case study is designed to be modular, so for example, instructors
+can skip sections like the Data Import, Data Wrangling, and Data
+Visualization to start with the Data Analysis section if they wish.
 
-If instructors choose to only start with the Data Visualization or Data
-Analysis sections then the will want to suppress evaluation of the plots
-following this section.
-
-Note: Monthly data is also available within the `data` directory. This
-could be used for time series analysis.
+Note: Monthly data about opioid shipments is also available within the
+`data/extra` directory. This could be used for time series analysis.
 
 #### Target audience
 
