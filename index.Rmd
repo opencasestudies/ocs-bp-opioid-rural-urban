@@ -745,10 +745,10 @@ monthlyDosage <-
 
 # for instructors who want to do a simpler version of import
 write.csv(monthlyDosage, 
-          file = here::here("data","simpler_import", "county_monthly_not_used_in_case_study.csv"))
+          file = here::here("data","extra", "county_monthly.csv"))
 
 save(monthlyDosage, 
-     file =  here::here("data", "imported", "county_monthly_not_used_in_case_study.rda"))
+     file =  here::here("data", "extra", "county_monthly.rda"))
 ```
 
 
