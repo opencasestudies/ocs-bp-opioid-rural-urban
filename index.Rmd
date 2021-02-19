@@ -464,7 +464,7 @@ Let's break this down to understand the meaning of the column.
 
 We will use the `read_excel()` function of the `readxl` package to import the data. We will also convert the data into a [tibble](https://tibble.tidyverse.org/) (which is a the tidyverse version of a data frame) by using the `as_tibble()` function of the `tibble` package. 
 
-This data is within the "Raw" subdirectory of the "data" directory of our github repo. We will use the `here()` function of the `here` package to make the path for importing this data simpler. The `here` package automatically starts looking for files based on where you have a .Rporj file which is created when you start a new RStudio project. We can specify that we want to look for the "LND01.xls" file within the "Raw" directory within the "data" directory where our .Rproj file is located by separating the names of these directories using commas and listing "data" first. 
+This data is within the "raw" subdirectory of the "data" directory of our github repo. We will use the `here()` function of the `here` package to make the path for importing this data simpler. The `here` package automatically starts looking for files based on where you have a .Rporj file which is created when you start a new RStudio project. We can specify that we want to look for the "LND01.xls" file within the "raw" directory within the "data" directory where our .Rproj file is located by separating the names of these directories using commas and listing "data" first. 
 
 ***
 <details> <summary>Click here to see more about creating new projects in R </summary>
@@ -490,7 +490,7 @@ See [here](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Project
 ***
 
 ```{r}
-land <- readxl::read_excel(here::here("data", "Raw", "LND01.xls"))
+land <- readxl::read_excel(here::here("data", "raw", "LND01.xls"))
 land <- as_tibble(land)
 ```
 
@@ -508,7 +508,7 @@ Now we save our data in the data directory within a subdirectory called "importe
 
 ```{r, eval = FALSE, echo = FALSE}
 # for instructors who want to do a simpler version of import
-write.csv(land, file = here::here("data", "simple_import", "land_area.csv"))
+write.csv(land, file = here::here("data", "simpler_import", "land_area.csv"))
 ```
 
 ```{r, eval = FALSE}
@@ -649,7 +649,7 @@ Now let's save this data:
 
 ```{r, eval = FALSE, echo = FALSE}
 # For instructors who want to do a simpler version of import
-write.csv(county_pop, file = here::here("data", "Simple_import", "county_pop_arcos.csv"))
+write.csv(county_pop, file = here::here("data", "simpler_import", "county_pop_arcos.csv"))
 ```
 
 ```{r, eval = FALSE}
@@ -710,7 +710,7 @@ Now we will also save this data:
 
 ```{r, echo = FALSE, eval = FALSE}
 # for instructors who want to do a simpler version of import
-write.csv(annualDosage, file = here::here("data", "Simple_import", "county_annual.csv"))
+write.csv(annualDosage, file = here::here("data", "simpler_import", "county_annual.csv"))
 ```
 
 ```{r, eval = FALSE}
@@ -745,10 +745,10 @@ monthlyDosage <-
 
 # for instructors who want to do a simpler version of import
 write.csv(monthlyDosage, 
-          file = here::here("data","Simple_import", "county_monthly.csv"))
+          file = here::here("data","simpler_import", "county_monthly_not_used_in_case_study.csv"))
 
 save(monthlyDosage, 
-     file =  here::here("data", "imported", "county_monthly.rda"))
+     file =  here::here("data", "imported", "county_monthly_not_used_in_case_study.rda"))
 ```
 
 
@@ -1306,11 +1306,13 @@ It is unclear why these counties are not included. A Google search of some of th
 
 Thus, it is important to keep in mind as we continue to analyze this data, that the ARCOS data from the DEA released by the Washington Post **does not include pill shipment information for all US counties**. 
 
-```{r,echo= FALSE, eval = TRUE}
-write.csv(Annual, file = here::here("data","Wrangled", "Annual_opioid_data.csv"))
-save(Annual, file =  here::here("data","Wrangled", "Annual_opioid_data.rda"))
-write.csv(county_info, file = here::here("data", "Wrangled", "county_info.csv"))
-save(county_info, file = here::here("data", "Wrangled", "county_info.rda"))
+Let's save this data now in a directory called "wrangled" within the "data" directory. We will also write csv file versions which could be useful to give to a collaborator for example.
+
+```{r}
+write.csv(Annual, file = here::here("data","wrangled", "Annual_opioid_data.csv"))
+save(Annual, file =  here::here("data","wrangled", "Annual_opioid_data.rda"))
+write.csv(county_info, file = here::here("data", "wrangled", "county_info.csv"))
+save(county_info, file = here::here("data", "wrangled", "county_info.rda"))
 ```
 
 # **Data Visualization**
@@ -1318,8 +1320,8 @@ save(county_info, file = here::here("data", "Wrangled", "county_info.rda"))
 
 ```{r}
 # In case instructors or learners wish to start here, we will load the necessary data
-load(file = here::here("data","Wrangled", "Annual_opioid_data.rda"))
-load(file = here::here("data", "Wrangled", "county_info.rda"))
+load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("data", "wrangled", "county_info.rda"))
 ```
 
 We will begin by taking a deeper look at our data with some visualizations. We will use the `ggplot2` package to create these visualizations.
@@ -2342,8 +2344,8 @@ Indeed when we evaluate the data in this way, we see that small urban and rural 
 ```{r}
 # In case instructors wish to start here, we will load the necessary data
 
-load(file =  here::here("data","Wrangled", "Annual_opioid_data.rda"))
-load( file = here::here("data", "Wrangled", "county_info.rda"))
+load(file =  here::here("data","wrangled", "Annual_opioid_data.rda"))
+load( file = here::here("data", "wrangled", "county_info.rda"))
 
 # We will also perform a few extra steps with the data that we did during the visualization section
 
