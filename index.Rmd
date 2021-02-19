@@ -439,7 +439,7 @@ Importantly, the API also includes population estimates for the years (2006 to 2
 # **Data Import**
 *** 
 
-Note that if you have trouble with the data import from the API, we have saved files after getting data from the API located in the data directory.
+Note that if you have trouble with the data import from the API, we have saved files after getting the data from the API located in the `data/imported` directory of our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/).
 
 ## **Land Area**
 ***
@@ -464,7 +464,7 @@ Let's break this down to understand the meaning of the column.
 
 We will use the `read_excel()` function of the `readxl` package to import the data. We will also convert the data into a [tibble](https://tibble.tidyverse.org/) (which is a the tidyverse version of a data frame) by using the `as_tibble()` function of the `tibble` package. 
 
-This data is within the "raw" subdirectory of the "data" directory of our github repo. We will use the `here()` function of the `here` package to make the path for importing this data simpler. The `here` package automatically starts looking for files based on where you have a .Rporj file which is created when you start a new RStudio project. We can specify that we want to look for the "LND01.xls" file within the "raw" directory within the "data" directory where our .Rproj file is located by separating the names of these directories using commas and listing "data" first. 
+In our case, we downloaded this data and put it within a "raw" subdirectory of a "data" directory for our project. If you use an RStudio project, then you can use the `here()` function of the `here` package to make the path for importing this data simpler. The `here` package automatically starts looking for files based on where you have a `.Rproj` file which is created when you start a new RStudio project. We can specify that we want to look for the "LND01.xls" file within the "raw" directory within the "data" directory where our `.Rproj` file is located by separating the names of these directories using commas and listing "data" first. 
 
 ***
 <details> <summary>Click here to see more about creating new projects in R </summary>
@@ -476,7 +476,7 @@ You can create a project by going to the File menu of RStudio like so:
 knitr::include_graphics(here::here("img", "New_project.png"))
 ```
 
-You can also do so my clicking the project button:
+You can also do so by clicking the project button:
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "project_button.png"))
@@ -504,7 +504,7 @@ Indeed, this looks as expected with both the US, state, and county level land ar
 
 Looks good!
 
-Now we save our data in the data directory within a subdirectory called "imported":
+Now we will save our data in the data directory within a subdirectory called "imported":
 
 ```{r, eval = FALSE, echo = FALSE}
 # for instructors who want to do a simpler version of import
@@ -755,9 +755,9 @@ save(monthlyDosage,
 # **Data Exploration**
 ***
 
-```{r}
-# In case an instructor or learner wants to start here we will load the imported data
+In case an instructor or learner wants to start here we will load the imported data. You can find these files on our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/) with the same file structure as we demonstrated above.
 
+```{r}
 load(here::here("data", "imported", "land_area.rda"))
 load(here::here("data", "imported", "county_pop_arcos.rda"))
 load(here::here("data", "imported", "county_annual.rda"))
@@ -854,10 +854,9 @@ We will update these values in the next section.
 
 # **Data Wrangling**
 ***
+In case an instructor or learner wants to start here we will load the imported data. You can find these files on our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/) with the same file structure as we demonstrated above.
 
 ```{r}
-# In case an instructor or learner wants to start here we will load the data
-
 load(here::here("data", "imported", "land_area.rda"))
 load(here::here("data", "imported", "county_pop_arcos.rda"))
 load(here::here("data", "imported", "county_annual.rda"))
@@ -1318,8 +1317,9 @@ save(county_info, file = here::here("data", "wrangled", "county_info.rda"))
 # **Data Visualization**
 ***
 
+In case an instructor or learner wants to start here we will load the wrangled data. You can find these files on our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/) with the same file structure as we demonstrated above.
+
 ```{r}
-# In case instructors or learners wish to start here, we will load the necessary data
 load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
 load(file = here::here("data", "wrangled", "county_info.rda"))
 ```
@@ -2340,15 +2340,18 @@ Indeed when we evaluate the data in this way, we see that small urban and rural 
 
 # **Data Analysis**
 ***
+In case an instructor or learner wants to start here we will load the wrangled data. You can find these files on our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/) with the same file structure as we demonstrated above.
 
 ```{r}
-# In case instructors wish to start here, we will load the necessary data
-
 load(file =  here::here("data","wrangled", "Annual_opioid_data.rda"))
 load( file = here::here("data", "wrangled", "county_info.rda"))
+```
 
-# We will also perform a few extra steps with the data that we did during the visualization section
 
+
+If you are starting here, we will also perform a few extra steps with the data that we did during the visualization section:
+
+```{r}
 # We create a new variable called `pop_DOSAGE` that is the number of pills shipped per county divided by the population of that county
 Annual%<>%  mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
 
