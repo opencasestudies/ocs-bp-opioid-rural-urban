@@ -169,7 +169,7 @@ The skills, methods, and concepts that students will be familiar with by the end
 
 <u>**Data Science Learning Objectives:**</u>  
   
-1. Importing data from an [API](https://en.wikipedia.org/wiki/API) (`httr` and `jasonlite`)  
+1. Importing data from an [API](https://en.wikipedia.org/wiki/API) (`httr` and `jsonlite`)  
 2. How to join data with `dplyr`
 3. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`)  
 4. How to create formatted tables of data with `formattable`  
