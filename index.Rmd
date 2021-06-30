@@ -1,10 +1,12 @@
 ---
-title: "Open Case Studies: Opioids in United States"
-css: style.css
+title: |
+  ![](www/img/interactive_logo.png){width=120px align=left style="padding-right: 20px"}
+  Opioids in United States
+css: www/style.css
 output:
   html_document:
     includes:
-      in_header: GA_Script.Rhtml
+       in_header: www/GA_Script.Rhtml
     self_contained: yes
     code_download: yes
     highlight: tango
@@ -16,24 +18,13 @@ output:
     toc: yes
   word_document:
     toc: yes
-
+runtime: shiny_prerendered
 ---
-
-
-
-<style>
-#TOC {
-  background: url("https://opencasestudies.github.io/img/icon-bahi.png");
-  background-size: contain;
-  padding-top: 240px !important;
-  background-repeat: no-repeat;
-}
-</style>
-
 
 <!-- Open all links in new tab-->  
 <base target="_blank"/>  
-<div id="google_translate_element"></div>
+
+<div align="left" id="google_translate_element",></div>
 
 <script type="text/javascript" src='//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'></script>
 
@@ -51,11 +42,15 @@ knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
 library(here)
 library(knitr)
 library(readr)
+
+library(learnr)
+library(gradethis)
+gradethis::gradethis_setup()
 ```
 
 #### {.outline }
 ```{r, echo=FALSE}
-knitr::include_graphics(here("img",
+knitr::include_graphics(here("www", "img",
                              "mainplot.png"))
 ```
 
@@ -136,7 +131,7 @@ Meaning that 80% of the people who use heroin who started using heroin in the 19
 > However, more **recent users** were older (mean age, 22.9 years) men and women **living in less urban areas (75.2%)** who were **introduced to opioids through prescription drugs (75.0%)**.
 
 ```{r, out.width = "80%", echo = FALSE, fig.align ="center"}
-include_graphics(here::here("img", "introducedbyprescription.png"))
+include_graphics(here::here("www", "img", "introducedbyprescription.png"))
 ```
 
 ##### [[source]]((https://doi.org/10.1001/jamapsychiatry.2014.366))
@@ -144,7 +139,7 @@ include_graphics(here::here("img", "introducedbyprescription.png"))
 > Heroin use has **changed from an inner-city**, minority-centered problem to one that has a more widespread geographical distribution, involving primarily white men and women in their late 20s living **outside of large urban areas**.
 
 ```{r, out.width = "50%", echo = FALSE, fig.align ="center"}
-include_graphics(here::here("img", "james-yarema-5tyMgag0wRo-unsplash.jpg"))
+include_graphics(here::here("www", "img", "james-yarema-5tyMgag0wRo-unsplash.jpg"))
 ```
 
 <span>Photo by <a href="https://unsplash.com/@jamesyarema?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">James Yarema</a> on <a href="https://unsplash.com/s/photos/pills?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
@@ -258,7 +253,7 @@ According to the [DEA](https://www.dea.gov/taxonomy/term/331) and the [Alta Mira
 Opioids (also known as narcotics), describes a class of drugs that contain [opium](https://en.wikipedia.org/wiki/Opium) (the poppy plant - [*Papaver somniferum*](https://en.wikipedia.org/wiki/Papaver_somniferum)), are derived from opium, or contain a semi-synthetic or synthetic substitute for opium.
 
 ```{r, echo = FALSE}
-knitr::include_graphics(here::here("img","ingo-doerrie-Ti6Sk5rZRP8-unsplash.jpg" ))
+knitr::include_graphics(here::here("www", "img","ingo-doerrie-Ti6Sk5rZRP8-unsplash.jpg" ))
 
 ```
 
@@ -295,7 +290,7 @@ Drugs within this class include (with prescription drug brand names are shown in
 
 
 ```{r, echo = FALSE, out.width="40%"}
-knitr::include_graphics(here::here("img","Opium_pod_cut_to_demonstrate_fluid_extraction1.jpg" ))
+knitr::include_graphics(here::here("www", "img","Opium_pod_cut_to_demonstrate_fluid_extraction1.jpg" ))
 
 ```
 
@@ -348,7 +343,7 @@ According to this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?
 > Drug overdose is the **leading cause** of unintentional injury-associated death in the United States.
 
 ```{r, echo = FALSE}
-knitr::include_graphics(here::here("img", "Opioids_Infographic.png"))
+knitr::include_graphics(here::here("www", "img", "Opioids_Infographic.png"))
 ```
 
 ##### [[source]](https://www.hhs.gov/opioids/sites/default/files/2019-11/Opioids%20Infographic_letterSizePDF_10-02-19.pdf)
@@ -357,7 +352,7 @@ knitr::include_graphics(here::here("img", "Opioids_Infographic.png"))
 According to the [CDC](https://www.cdc.gov/drugoverdose/epidemic/index.html), there were 3 waves of the epidemic:
 
 ```{r, echo = FALSE}
-knitr::include_graphics(here::here("img", "2018-3-Wave-Lines-Mortality.png"))
+knitr::include_graphics(here::here("www", "img", "2018-3-Wave-Lines-Mortality.png"))
 
 ```
 
@@ -386,7 +381,7 @@ According to the [motivating report](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs
 Prescription rates are now declining, however, prescription of opioids was found to be higher in rural areas rather than urban ares. 
 
 ```{r, echo = FALSE}
-knitr::include_graphics(here::here("img", "context.png"))
+knitr::include_graphics(here::here("www", "img", "context.png"))
 
 ```
 
@@ -489,13 +484,13 @@ You can create a project by going to the File menu of RStudio like so:
 
 
 ```{r, echo = FALSE}
-knitr::include_graphics(here::here("img", "New_project.png"))
+knitr::include_graphics(here::here("www", "img", "New_project.png"))
 ```
 
 You can also do so by clicking the project button:
 
 ```{r, echo = FALSE}
-knitr::include_graphics(here::here("img", "project_button.png"))
+knitr::include_graphics(here::here("www", "img", "project_button.png"))
 ```
 
 
@@ -505,8 +500,13 @@ See [here](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Project
 
 ***
 
-```{r}
+```{r, eval=FALSE}
 land <- readxl::read_excel(here::here("data", "raw", "LND01.xls"))
+land <- as_tibble(land)
+```
+
+```{r, echo=FALSE}
+land <- readxl::read_excel(here::here("www", "data", "raw", "LND01.xls"))
 land <- as_tibble(land)
 ```
 
@@ -554,26 +554,26 @@ We can access it from the API by:
 1. Pressing the `GET` button on the API.
 
 ```{r, echo=FALSE}
-knitr::include_graphics(here::here("img", "get.png"))
+knitr::include_graphics(here::here("www", "img", "get.png"))
 
 ```
 
 2. Pressing the "Try it out" button.
 
 ```{r, echo=FALSE}
-knitr::include_graphics(here::here("img", "tryitout.png"))
+knitr::include_graphics(here::here("www", "img", "tryitout.png"))
 ```
 
 3. Entering the key (which we got from [here]([github page](https://github.com/wpinvestigative/arcos))).
 
 ```{r, echo=FALSE}
-knitr::include_graphics(here::here("img", "key.png"))
+knitr::include_graphics(here::here("www", "img", "key.png"))
 ```
 
 4. Clicking the "Execute" button.
 
 ```{r, echo=FALSE}
-knitr::include_graphics(here::here("img", "execute.png"))
+knitr::include_graphics(here::here("www", "img", "execute.png"))
 ```
 
 This gives us the following output:
@@ -734,7 +734,7 @@ save(annualDosage, file = here::here("data", "imported", "county_annual.rda"))
 ```
 
 ```{r, echo = FALSE}
-load(here::here("data", "imported", "county_annual.rda"))
+load(here::here("www", "data", "imported", "county_annual.rda"))
 ```
 
 Now let's take a look at the data:
@@ -773,12 +773,17 @@ save(monthlyDosage,
 
 In case an instructor or learner wants to start here we will load the imported data. You can find these files on our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/) with the same file structure as we demonstrated above.
 
-```{r}
+```{r, eval=FALSE}
 load(here::here("data", "imported", "land_area.rda"))
 load(here::here("data", "imported", "county_pop_arcos.rda"))
 load(here::here("data", "imported", "county_annual.rda"))
 ```
 
+```{r, echo=FALSE}
+load(here::here("www", "data", "imported", "land_area.rda"))
+load(here::here("www", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("www", "data", "imported", "county_annual.rda"))
+```
 
 Now let's take a deeper look at the data to see if we have any missing data using the `naniar` package.
 
@@ -872,10 +877,16 @@ We will update these values in the next section.
 ***
 In case an instructor or learner wants to start here we will load the imported data. You can find these files on our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/) with the same file structure as we demonstrated above.
 
-```{r}
+```{r, eval=FALSE}
 load(here::here("data", "imported", "land_area.rda"))
 load(here::here("data", "imported", "county_pop_arcos.rda"))
 load(here::here("data", "imported", "county_annual.rda"))
+```
+
+```{r, echo=FALSE}
+load(here::here("www", "data", "imported", "land_area.rda"))
+load(here::here("www", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("www", "data", "imported", "county_annual.rda"))
 ```
 
 ## **Cleaning land data**
@@ -1093,7 +1104,7 @@ There are several ways to join data using the `dplyr` package.
 
 
 ```{r, echo = FALSE, outwidth = "50%"}
-knitr::include_graphics(here::here("img", "join.png"))
+knitr::include_graphics(here::here("www", "img", "join.png"))
 ```
 
 ##### [[source]](https://dplyr.tidyverse.org/reference/join.html)
@@ -1101,7 +1112,7 @@ knitr::include_graphics(here::here("img", "join.png"))
 Here is a visualization of these options:
 
 ```{r, echo = FALSE, outwidth = "30%"}
-knitr::include_graphics(here::here("img", "join_image.png"))
+knitr::include_graphics(here::here("www", "img", "join_image.png"))
 ```
 
 ##### [[source]](https://rstudio.com/resources/cheatsheets/)
@@ -1323,11 +1334,18 @@ Thus, it is important to keep in mind as we continue to analyze this data, that 
 
 Let's save this data now in a directory called "wrangled" within the "data" directory. We will also write csv file versions which could be useful to give to a collaborator for example.
 
-```{r}
+```{r, eval=FALSE}
 write.csv(Annual, file = here::here("data","wrangled", "Annual_opioid_data.csv"))
 save(Annual, file =  here::here("data","wrangled", "Annual_opioid_data.rda"))
 write.csv(county_info, file = here::here("data", "wrangled", "county_info.csv"))
 save(county_info, file = here::here("data", "wrangled", "county_info.rda"))
+```
+
+```{r, echo=FALSE}
+write.csv(Annual, file = here::here("www", "data","wrangled", "Annual_opioid_data.csv"))
+save(Annual, file =  here::here("www", "data","wrangled", "Annual_opioid_data.rda"))
+write.csv(county_info, file = here::here("www", "data", "wrangled", "county_info.csv"))
+save(county_info, file = here::here("www", "data", "wrangled", "county_info.rda"))
 ```
 
 # **Data Visualization**
@@ -1335,9 +1353,14 @@ save(county_info, file = here::here("data", "wrangled", "county_info.rda"))
 
 In case an instructor or learner wants to start here we will load the wrangled data. You can find these files on our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/) with the same file structure as we demonstrated above.
 
-```{r}
+```{r, eval=FALSE}
 load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
 load(file = here::here("data", "wrangled", "county_info.rda"))
+```
+
+```{r, echo=FALSE}
+load(file = here::here("www", "data","wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("www", "data", "wrangled", "county_info.rda"))
 ```
 
 We will begin by taking a deeper look at our data with some visualizations. We will use the `ggplot2` package to create these visualizations.
@@ -1431,7 +1454,7 @@ We need to use a `geom_*` function to specify what type of plot we would like to
 If you type `geom_` into the console of RStudio, you will see a list of options. 
 
 ```{r, echo = FALSE, out.width = "60%"}
-knitr::include_graphics(here::here("img", "geom.png"))
+knitr::include_graphics(here::here("www", "img", "geom.png"))
 ```
 
 We will create a scatter plot using the `geom_point()` function. We will also use the `theme_minimal()` function to change the overall aesthetics of the plot. See [here](https://ggplot2.tidyverse.org/reference/ggtheme.html) for a list of options.
@@ -1441,7 +1464,7 @@ We will also use the `theme()` function to further specify how we want the plot 
 You can type `theme()` in the RStudio console and press tab to see a list of argument options for things that you can change in your plot. 
 
 ```{r, echo = FALSE, out.width = "60%"}
-knitr::include_graphics(here::here("img", "theme.png"))
+knitr::include_graphics(here::here("www", "img", "theme.png"))
 ```
 Finally, we can use the `labs()` function of the `ggplot2` package to specify the labels of the plot. 
 
@@ -2358,12 +2381,15 @@ Indeed when we evaluate the data in this way, we see that small urban and rural 
 ***
 In case an instructor or learner wants to start here we will load the wrangled data. You can find these files on our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/) with the same file structure as we demonstrated above.
 
-```{r}
+```{r, eval=FALSE}
 load(file =  here::here("data","wrangled", "Annual_opioid_data.rda"))
 load( file = here::here("data", "wrangled", "county_info.rda"))
 ```
 
-
+```{r, echo=FALSE}
+load(file =  here::here("www", "data","wrangled", "Annual_opioid_data.rda"))
+load( file = here::here("www", "data", "wrangled", "county_info.rda"))
+```
 
 If you are starting here, we will also perform a few extra steps with the data that we did during the visualization section:
 
@@ -2495,8 +2521,8 @@ Another way of describing this null hypothesis is that the distributions of the 
 
 Here you can see an illustration of the null hypothesis on the left and a one-sided alternative hypothesis on the right:
 
-```{r}
-include_graphics(here::here("img", "null.png"))
+```{r, echo=FALSE}
+include_graphics(here::here("www", "img", "null.png"))
 ```
 
 ##### [[source]](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pdf)
@@ -2777,14 +2803,14 @@ Now we can see the steps that we went through, from our raw data through to our 
 
 
 ```{r, echo= FALSE}
-png(filename = here::here("img", "mainplot.png"), 
+png(filename = here::here("www", "img", "mainplot.png"), 
          res = 300, width = 10, height = 6, units = "in")
 main_plot
 dev.off()
 ```
 
 ```{r, echo=FALSE}
-knitr::include_graphics(here("img",
+knitr::include_graphics(here("www", "img",
                              "mainplot.png"))
 ```
 
