@@ -1,0 +1,44 @@
+Description: Open Case Studies: Opioids in United States
+License: CC BY-NC 3.0
+Authors@R: c(
+    person(c("Stephanie", "C."), "Hicks", role = c("aut", "cre"),
+    email = "shicks19@jhu.edu",
+    comment = c(ORCID = "0000-0002-7858-0231")),
+    person("Carrie", "Wright", role = "aut"))
+Package: ocsbpopioidruralurban
+Type: package
+Title: Opioids in United States
+Version: 0.99.0
+Depends: R (>= 4.0)
+Imports:
+    here,
+    qpdf,
+    Rcpp,
+    jpeg, 
+    png, 
+    testthat, 
+    rmarkdown,
+    knitr
+    readxl,
+    readr,
+    magrittr,
+    stringr,
+    dplyr,
+    purrr,
+    stringr,
+    tidyr,
+    ggplot2,
+    scales,
+    viridis,
+    naniar,
+    tibble,
+    patchwork,
+    httr,
+    jsonlite,
+    formattable,
+    forcats,
+    ggpol,
+    ggiraph,
+    directlabels,
+    usdata
+VignetteBuilder: knitr
