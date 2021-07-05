@@ -453,7 +453,7 @@ An API is a computational interface that simplifies interactions with a data or 
 
 This YouTube video gives an overview of what an API is.
 
-<p align ="center"><iframe width="560" height="315" src="https://www.youtube.com/watch?v=s7wmiS2mSXY" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> </p>
+<p align ="center"><iframe width="560" height="315" src="https://www.youtube.com/embed/s7wmiS2mSXY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> </p>
 
 ##### [[source]](https://www.youtube.com/watch?v=s7wmiS2mSXY)
 
