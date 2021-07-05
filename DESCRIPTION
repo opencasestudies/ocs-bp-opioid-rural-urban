@@ -40,5 +40,6 @@ Imports:
     ggpol,
     ggiraph,
     directlabels,
-    usdata
+    usdata,
+    Hmisc
 VignetteBuilder: knitr
