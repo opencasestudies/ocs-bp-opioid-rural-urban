@@ -451,6 +451,12 @@ As this is a very large dataset, thus the Washington Post created an [applicatio
 
 An API is a computational interface that simplifies interactions with a data or file system for a user. It is similar to a [Graphical User Interface (GUI)](https://en.wikipedia.org/wiki/Graphical_user_interface), yet it allows the user some more flexibility/functionality.
 
+This YouTube video gives an overview of what an API is.
+
+<p align ="center"><iframe width="560" height="315" src="https://www.youtube.com/watch?v=s7wmiS2mSXY" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> </p>
+
+##### [[source]](https://www.youtube.com/watch?v=s7wmiS2mSXY)
+
 This [link](https://arcos-api.ext.nile.works/__swagger__/) takes you to the Washington Post ARCOS API. 
 
 There was also an R package on cran called [arcos](https://cran.r-project.org/package=arcos) for interacting with the API, but this has been archived.  This package is however still available [here](https://github.com/wpinvestigative/arcos) on GitHub.
