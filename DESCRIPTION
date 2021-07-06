@@ -41,5 +41,8 @@ Imports:
     ggiraph,
     directlabels,
     usdata,
-    Hmisc
+    Hmisc,
+    OCSdata
+Remotes: 
+    opencasestudies/OCSdata
 VignetteBuilder: knitr

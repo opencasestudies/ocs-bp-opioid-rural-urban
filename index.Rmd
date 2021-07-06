@@ -227,6 +227,8 @@ library(ggiraph)
 library(patchwork)
 library(directlabels)
 library(usdata)
+# if you are not using the OCSdata package to download data you do not need to load it
+library(OCSdata)
 ```
 
 
@@ -252,6 +254,7 @@ Package   | Use in this case study
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
 [usdata](https://cran.r-project.org/web/packages/usdata/usdata.pdf) | to add full state names to plots based on the state abbreviations
+[OCSdata](https://github.com/opencasestudies/OCSdata) | to access and download the data used in this case study
 
 The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
 
@@ -473,6 +476,7 @@ Note that if you have trouble with the data import from the API, we have saved f
 ```{r, eval=FALSE}
 # install.packages("devtools")
 # devtools::install_github("opencasestudies/OCSdata")
+# library(OCSdata)
 load_imported_data("ocs-bp-opioid-rural-urban")
 ```
 
@@ -506,6 +510,7 @@ If you did not clone our github repository or do not have this data already, you
 ```{r, eval=FALSE}
 # install.packages("devtools")
 # devtools::install_github("opencasestudies/OCSdata")
+# library(OCSdata)
 
 load_raw_data("ocs-bp-opioid-rural-urban", outpath = getwd())
 # This function creates a "data" sub-directory in your current working directory.
@@ -808,6 +813,7 @@ If you have been following along but stopped, we could load our imported data us
 ```{r, eval=FALSE}
 # install.packages("devtools")
 # devtools::install_github("opencasestudies/OCSdata")
+# library(OCSdata)
 load_imported_data("ocs-bp-opioid-rural-urban")
 ```
 
@@ -827,6 +833,7 @@ First you need to install the `OCSdata` package:
 ```{r, eval=FALSE}
 # install.packages("devtools")
 devtools::install_github("opencasestudies/OCSdata")
+library(OCSdata)
 ```
 
 Then, you may load the imported data into your R environment using the following function:
@@ -969,6 +976,7 @@ If you have been following along but stopped, we could load our imported data us
 ```{r, eval=FALSE}
 # install.packages("devtools")
 # devtools::install_github("opencasestudies/OCSdata")
+# library(OCSdata)
 load_imported_data("ocs-bp-opioid-rural-urban")
 ```
 
@@ -988,6 +996,7 @@ First you need to install the `OCSdata` package:
 ```{r, eval=FALSE}
 # install.packages("devtools")
 devtools::install_github("opencasestudies/OCSdata")
+library(OCSdata)
 ```
 
 Then, you may load the imported data into your R environment using the following function:
@@ -1494,6 +1503,7 @@ If you have been following along but stopped, we could load our wrangled data us
 ```{r, eval=FALSE}
 # install.packages("devtools")
 # devtools::install_github("opencasestudies/OCSdata")
+# library(OCSdata)
 load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
 ```
 
@@ -1512,6 +1522,7 @@ First you need to install the `OCSdata` package:
 ```{r, eval=FALSE}
 # install.packages("devtools")
 devtools::install_github("opencasestudies/OCSdata")
+library(OCSdata)
 ```
 
 Then, you may download and load the wrangled data into your R environment using the following function:
@@ -2573,6 +2584,7 @@ If you have been following along but stopped, we could load our wrangled data us
 ```{r, eval=FALSE}
 # install.packages("devtools")
 # devtools::install_github("opencasestudies/OCSdata")
+# library(OCSdata)
 load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
 ```
 
@@ -2591,6 +2603,7 @@ First you need to install the `OCSdata` package:
 ```{r, eval=FALSE}
 # install.packages("devtools")
 devtools::install_github("opencasestudies/OCSdata")
+library(OCSdata)
 ```
 
 Then, you may download and load the wrangled data into your R environment using the following function:
