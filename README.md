@@ -3,6 +3,12 @@
 OpenCaseStudies
 ===============
 
+<!-- badges: start -->
+
+[![render-README](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/workflows/render-README/badge.svg)](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/actions)
+[![render-index](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/workflows/render-index/badge.svg)](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/actions)
+<!-- badges: end -->
+
 ### Important links
 
 -   HTML:
