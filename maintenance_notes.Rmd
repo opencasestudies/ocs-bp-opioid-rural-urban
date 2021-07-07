@@ -8,21 +8,20 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Exercise chunks
+## Data Import
+
+* `di_code1`
+
+## Date Exploration
+
+* `de_exercise` - Missing data [naniar::vis_miss()]
+
 ## Data Wrangling
 
 * `dw_code1`
 * `dw_code2`
-* `dw_quiz`
-* `dw_exercise`
-
-## Date Exploration
-
-* `de_code`
-* `de_quiz`
-* `de_exercise`
-
-## Data Analysis
-
-* `da_quiz`
+* `dw_code3`
+* `dw_quiz` - pipe operators, `mutate` function, join, logical operators
+* `dw_exercise1` - rownames_to_column, select, case_when
 
 # Other Notes

@@ -736,6 +736,62 @@ See if you can modify the import code without looking at the code for the popula
 
 ####
 
+```{r di_code1-setup}
+library(httr)
+library(jsonlite)
+library(tibble)
+
+annual_url <- "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
+```
+
+```{r di_code1, exercise = TRUE}
+county_annual_json <-
+
+county_annual_json_text <- 
+
+county_annual <-
+
+annualDosage <-
+```
+
+```{r di_code1-hint-1}
+county_annual_json <- 
+  httr::GET(url = annual_url)
+```
+
+```{r di_code1-hint-2}
+county_annual_json <- 
+  httr::GET(url = annual_url)
+
+county_annual_json_text <- 
+  httr::content(county_annual_json, "text")
+```
+
+```{r di_code1-hint-3}
+county_annual_json <- 
+  httr::GET(url = annual_url)
+
+county_annual_json_text <- 
+  httr::content(county_annual_json, "text")
+
+county_annual <- 
+  jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
+```
+
+```{r di_code1-solution}
+county_annual_json <- 
+  httr::GET(url = annual_url)
+
+county_annual_json_text <- 
+  httr::content(county_annual_json, "text")
+
+county_annual <- 
+  jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
+
+annualDosage <- 
+  tibble::as_tibble(county_annual)
+```
+
 ***
 
 <details> <summary> Click here to reveal the code. </summary>
@@ -978,6 +1034,37 @@ According to this [website](https://www.nrcs.usda.gov/wps/portal/nrcs/detail/nat
 
 We will update these values in the next section.
 
+## **Exercise**
+***
+
+Suppose we have a data set called `mydata`. Using functions that we talked about earlier, check if there are missing data for the variables. If so, which observation(s) have missing value(s)?
+
+```{r de_exercise-setup}
+library(tidyverse)
+library(naniar)
+
+set.seed(100)
+ID <- seq.int(1, 100)
+Var1 <- rnorm(100, 3, 1)
+Var2 <- rnorm(100, 50, 10)
+Var3 <- rnorm(100, -6, 2)
+Var2[85] <- NA
+mydata <- data.frame(ID, Var1, Var2, Var3)
+```
+
+```{r de_exercise, exercise = TRUE}
+# check for missing data
+mydata %>%
+```
+
+```{r de_exercise-solution}
+mydata %>%
+  naniar::vis_miss()
+# So there is missing data in "Var2"
+
+mydata %>% 
+  filter(is.na(Var2))
+```
 
 # **Data Wrangling**
 ***
@@ -1199,6 +1286,26 @@ Do you recall how to do this?
 
 ####
 
+```{r, echo=FALSE}
+save(annualDosage, file = here("www", "exercise", "dw_code1.rda"))
+```
+
+```{r dw_code1-setup}
+library(tidyverse)
+library(magrittr)
+
+load(here("www", "exercise", "dw_code1.rda"))
+```
+
+```{r dw_code1, exercise=TRUE}
+annualDosage %<>%
+```
+
+```{r dw_code1-solution}
+annualDosage %<>% 
+  filter(!is.na(countyfips))
+```
+
 ***
 
 <details> <summary> Click here to reveal the code. </summary>
@@ -1361,6 +1468,42 @@ How might we do this?
 
 ####
 
+```{r, echo=FALSE}
+save(annualDosage, county_info, file = here("www", "exercise", "dw_code2.rda"))
+```
+
+```{r dw_code2-setup}
+library(tidyverse)
+library(magrittr)
+
+load(here("www", "exercise", "dw_code2.rda"))
+```
+
+```{r dw_code2, exercise=TRUE}
+annualDosage %<>%
+  
+Annual <- 
+  
+glimpse(Annual)
+```
+
+```{r dw_code2-hint}
+annualDosage %<>%
+  mutate(countyfips = as.factor(countyfips),
+         year = as.factor(year))
+```
+
+```{r dw_code2-solution}
+annualDosage %<>%
+  mutate(countyfips = as.factor(countyfips),
+         year = as.factor(year))
+
+Annual <- 
+  left_join(annualDosage, county_info)
+
+glimpse(Annual)
+```
+
 ***
 
 <details> <summary> Click here to reveal the code. </summary>
@@ -1463,6 +1606,26 @@ Do you recall how you would do this?
 
 ####
 
+```{r, echo=FALSE}
+save(Annual, file = here("www", "exercise", "dw_code3.rda"))
+```
+
+```{r dw_code3-setup}
+library(tidyverse)
+library(magrittr)
+
+load(here("www", "exercise", "dw_code3.rda"))
+```
+
+```{r dw_code3, exercise=TRUE}
+Annual %<>%
+```
+
+```{r dw_code3-solution}
+Annual %<>% 
+  filter(!is.na(STATE))
+```
+
 ***
 
 <details> <summary> Click here to reveal the code. </summary>
@@ -1523,6 +1686,115 @@ write.csv(Annual, file = here::here("www", "data","wrangled", "Annual_opioid_dat
 save(Annual, file =  here::here("www", "data","wrangled", "Annual_opioid_data.rda"))
 write.csv(county_info, file = here::here("www", "data", "wrangled", "county_info.csv"))
 save(county_info, file = here::here("www", "data", "wrangled", "county_info.rda"))
+```
+
+## **Exercise**
+***
+``` {r dw_quiz, echo = FALSE}
+quiz(caption = "",
+  question("Which one of the pipe operators (from the `magrittr` package) should be used right after a variable name if we want to perform a sequence of operations on that variable, and meanwhile, assign the final output to that variable (without redefining that variable using `<-` or `=`)?",
+    answer("`%>%`", message = "This operator cannot assign the final output to that variable."),
+    answer("`%<%`", message = "This is not a valie pipe operator."),
+    answer("`%T>%`", message = "This is the [side-effects operator] (https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html#additional-pipe-operators)."),
+    answer("`%<>%`", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question("Which of the following can the `mutate()` function in the `dplyr` package do? (more than one correct answers)",
+    answer("Select certain variables(columns) of the data.", message = "Selecting certain variables(columns) of the data is the function of the `select()` function."),
+    answer("Rename a variable.", message = "Renaming a variable is the function of the `rename()` function."),
+    answer("Create a new variable.", correct = TRUE),
+    answer("Modify an existing variable.", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question("Suppose we have two data sets `a` and `b` from a study. Both `a` and `b` have variable `ID` which identifies subjects in this study. We want to join these data sets based on the `ID` variable. We also want to keep all rows in `b` and only the matching rows in `a`. Which of the following commands should we use?",
+    answer("`left_join(a, b, by = \"ID\")`", message = "This is keeping all rows in `a` and only the matching rows in `b`."),
+    answer("`inner_join(a, b, by = \"ID\")`", message = "This is only keeping rows in both sets."),
+    answer("`full_join(a, b, by = \"ID\")`", message = "This is keeping all rows from both sets."),
+    answer("`right_join(a, b, by = \"ID\")`", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question("Which of the following logical operators indicate logical OR in R?",
+    answer("`&`", message = "`&` is the logical AND operator."),
+    answer("`!`", message = "`!` is the logical NOT operator."),
+    answer("`|`", correct = TRUE, message = "Note both `|` and `||` are logical OR operators, but they are different. See the [documentation](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/Logic) for details."),
+    answer("`||`", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
+
+Use the R built-in dataset `mtcars` to complete the following exercise.
+
+```{r}
+head(mtcars)
+```
+
+Write some code that will:
+
+1. Convert row names to a column called `car`. (The code is given in the first hint.) 
+2. Only keep the `car`, `mpg`, and `cyl` variables of the data.
+3. Create a new variable called `mpg_group`, whose value is "low" when `mpg` is lower than or equal to the first tercile (3-quantile) of the data, "middle" when it is greater than the first and and less than or equal to the second tercile, and "high" when it is greater than the second tercile. (The second hint shows you how to find the terciles.)
+
+*Note: replace the underscores("\_") with your code with one character per "\_". Click "Submit Answer" to check your answer. *
+
+```{r dw_exercise1-setup}
+library(tidyverse)
+```
+
+```{r dw_exercise1, exercise=TRUE, eval=FALSE}
+# Note there might be other ways to do this that give us the same results 
+# For practice purposes try to fill in the blanks
+mtcars %>%
+  # step 1
+  tibble::rownames_to_column("___") %>%
+  # step 2
+  dplyr::______(___, ___, ___) %>%
+  # step 3
+  dplyr::mutate(mpg_group = _________(________________________________________ ~ "___", 
+                                      _______________________________________ & 
+                                        _________________________________________ ~ "______",
+                                      ________________________________________ ~ "____"))
+```
+
+```{r dw_exercise1-hint-1}
+mtcars %>%
+  tibble::rownames_to_column("car")
+```
+
+```{r dw_exercise1-hint-2}
+# first tercile is
+quantile(mtcars$mpg, probs = 1/3)
+
+# second tercile is
+quantile(mtcars$mpg, probs = 2/3)
+```
+
+```{r dw_exercise1-hint-3}
+# The next hint will show you the solution
+```
+
+```{r dw_exercise1-solution}
+mtcars %>%
+  # step 1
+  tibble::rownames_to_column("car") %>%
+  # step 1
+  dplyr::select(car, mpg, cyl) %>%
+  # step 2
+  dplyr::mutate(mpg_group = case_when(mpg <= quantile(mtcars$mpg, probs = 1/3) ~ "low", 
+                                      mpg > quantile(mtcars$mpg, probs = 1/3) & 
+                                        mpg <=  quantile(mtcars$mpg, probs = 2/3) ~ "middle",
+                                      mpg >  quantile(mtcars$mpg, probs = 2/3) ~ "high"))
+  
+# you need to write your own code for submission 
+# If you copy and paste the solution here and submit it, there may be an error where R does not recognize the pipe operator
+```
+
+```{r dw_exercise1-check, eval=FALSE}
+grade_code()
 ```
 
 # **Data Visualization**
