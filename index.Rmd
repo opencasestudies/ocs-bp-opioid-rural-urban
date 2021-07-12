@@ -1037,7 +1037,7 @@ We will update these values in the next section.
 ## **Exercise**
 ***
 
-Suppose we have a data set called `mydata`. Using functions that we talked about earlier, check if there are missing data for the variables. If so, which observation(s) have missing value(s)?
+Suppose we have a data set called `mydata`. Using functions that we talked about earlier, check if there are missing data for the variables. If so, how would you check which data are missing?
 
 ```{r de_exercise-setup}
 library(tidyverse)
@@ -2006,6 +2006,35 @@ How might you create this plot?
 
 ####
 
+```{r, echo=FALSE}
+# this rda file can be used in data visualization coding exercises 1, 2, 4, and 5
+save(Annual, file = here("www", "exercise", "dv_code1245.rda"))
+```
+
+```{r dv_code1-setup}
+library(tidyverse)
+library(magrittr)
+
+load(here("www", "exercise", "dv_code1245.rda"))
+```
+
+```{r dv_code1, exercise=TRUE, exercise.lines = 10}
+Annual %>%
+```
+
+```{r dv_code1-solution}
+Annual %>% 
+  group_by(year) %>%
+  summarize(mean_DENS = mean(density)) %>%
+  ggplot(aes(x = year, y = mean_DENS)) + 
+    geom_point() +
+    theme_minimal() +
+    theme(axis.title.x=element_blank()) +
+    labs(title = "US mean population density",
+         x = "year",
+         y = "population density (people per square mile)")
+```
+
 ***
 
 <details> <summary> Click here to reveal the code. </summary>
@@ -2048,6 +2077,31 @@ How might you create this plot?
 
 ####
 
+```{r dv_code2-setup}
+library(tidyverse)
+library(magrittr)
+
+load(here("www", "exercise", "dv_code1245.rda"))
+```
+
+```{r dv_code2, exercise=TRUE, exercise.lines = 10}
+Annual %>%
+```
+
+```{r dv_code2-solution}
+Annual %>% 
+  group_by(year) %>%
+  summarize(total_population = sum(population)) %>%
+  ggplot(aes(x = year, y = total_population)) + 
+      geom_point() +
+      geom_smooth() +
+      theme_minimal() +
+      theme(axis.title.x = element_blank()) +
+      labs(title = "US Population from 2006-2014",
+           x = "year",
+           y = "US total population")
+```
+
 ***
 
 <details> <summary> Click here to reveal the code. </summary>
@@ -2070,6 +2124,8 @@ overall_density <-
 ```
 
 </details>
+
+***
 
 ```{r}
 overall_density
@@ -2495,6 +2551,65 @@ Do you recall how to do this? How would you combine the previous plot of the raw
 
 ####
 
+```{r, echo=FALSE}
+save(Annual, raw_state_avg, file = here("www", "exercise", "dv_code3.rda"))
+```
+
+```{r dv_code3-setup}
+library(tidyverse)
+library(magrittr)
+library(patchwork)
+
+load(here("www", "exercise", "dv_code3.rda"))
+```
+
+```{r dv_code3, exercise=TRUE, exercise.lines = 10}
+norm_state_avg <-
+  Annual %>% 
+  
+together <- 
+```
+
+```{r dv_code3-hint-1}
+norm_state_avg <-
+  Annual %>% 
+  group_by(BUYER_STATE, year) %>%
+  summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
+  ungroup() %>%
+  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
+    geom_boxjitter() + 
+    labs(title = "Average number of opioid pills shipped to a given county for each state",
+         y = "Number of Pills Per Capita")+
+    theme_minimal()
+
+norm_state_avg 
+```
+
+```{r dv_code3-solution}
+norm_state_avg <-
+  Annual %>% 
+  group_by(BUYER_STATE, year) %>%
+  summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
+  ungroup() %>%
+  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
+    geom_boxjitter() + 
+    labs(title = "Average number of opioid pills shipped to a given county for each state",
+         y = "Number of Pills Per Capita")+
+    theme_minimal()
+
+norm_state_avg 
+
+together <- 
+  raw_state_avg + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  norm_state_avg + 
+  theme(plot.title = element_blank(), 
+        axis.text.x = element_text(angle = 90)) +
+  plot_annotation(title = "Raw vs Normalized Data")
+
+together
+```
+
 ***
 
 <details> <summary> Click here to reveal the code. </summary>
@@ -2541,6 +2656,37 @@ Now, let's see how normalization changes the state specific data.
 Do you recall how to create the state specific and interactive plot?
 
 ####
+
+```{r dv_code4-setup}
+library(tidyverse)
+library(magrittr)
+library(ggiraph)
+
+load(here("www", "exercise", "dv_code1245.rda"))
+```
+
+```{r dv_code4, exercise=TRUE, exercise.lines = 10}
+# Try this out
+```
+
+```{r dv_code4-solution}
+g2 <- 
+  Annual %>% 
+  group_by(BUYER_STATE,year) %>%
+  summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
+  ungroup() %>%
+  ggplot(aes(x = year, y = mean_DOSAGE, group = BUYER_STATE,
+             color = BUYER_STATE)) +
+    geom_line()
+
+g2 <- 
+  g2 + geom_point_interactive(aes(color = BUYER_STATE, 
+                                  tooltip = usdata::abbr2state(BUYER_STATE)), 
+                              size = 2, alpha = 3/10) + 
+  theme(legend.position = "none")
+
+g2
+```
 
 ***
 
@@ -2734,6 +2880,41 @@ Do you recall how we might do this?
 
 ####
 
+```{r dv_code5-setup}
+library(tidyverse)
+library(magrittr)
+library(formattable)
+
+load(here("www", "exercise", "dv_code1245.rda"))
+```
+
+```{r dv_code5, exercise=TRUE, exercise.lines = 10}
+# Try this out
+```
+
+```{r dv_code5-solution}
+R_U <-Annual%>% 
+  group_by(year) %>%
+  count(category) %>%
+  tidyr::pivot_wider(names_from = category,
+                     values_from = n) %>%
+  ungroup() %>% 
+  mutate("Rural Change" = Rural - lag(Rural), 
+         "Small Urban Change" = `Small Urban` - lag(`Small Urban`),
+         "Large Urban Change" = `Large Urban` - lag(`Large Urban`),
+        "Percent Large Urban" = 
+  round((`Large Urban`/(`Large Urban` + `Small Urban` + Rural))*100, digits = 2)) %>%
+  rename("Year" = "year")
+
+R_U
+
+table_cat <- formattable::formattable(R_U, list(`Percent Large Urban` = 
+                                     formattable::color_bar("#FA614B")))
+
+table_cat
+```
+
+***
 
 <details> <summary> Click here to reveal the code. </summary>
 
@@ -2759,6 +2940,8 @@ table_cat <- formattable::formattable(R_U, list(`Percent Large Urban` =
                                      formattable::color_bar("#FA614B")))
 ```
 </details> 
+
+***
 
 ```{r}
 table_cat
@@ -2887,6 +3070,43 @@ plot_2cat_raw +plot_2cat_norm + plot_annotation(
 
                                                    
 Indeed when we evaluate the data in this way, we see that small urban and rural counties received higher numbers of pills per person than large urban counties.
+
+## **Exercise**
+***
+
+```{r dv_quiz1, echo=FALSE}
+question("Which of the following is the long format of the data?",
+    answer("A", message = "This is the wide format."),
+    answer("B", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+```
+
+**A**
+
+```{r, echo=FALSE}
+exercise_dv1 <- data.frame(ID = c(1, 2), Year = c(2015, 2018), Length = c(20, 21.5))
+exercise_dv1
+```
+
+**B**
+
+```{r, echo=FALSE}
+exercise_dv1 %>%
+  pivot_longer(cols = -ID, names_to = "Variable", values_to = "Value")
+```
+
+```{r dv_quiz2, echo=FALSE}
+question("Which one of the following inside the `ggplot()` function can be used to define the shape, transparency, color, fill, and line types of the plot?",
+    answer("geom", message = "Geoms define geometric objects. This can define the type of plot that is being plotted."),
+    answer("scale", message = "Scales define how your data will be plotted. For example, continuous, discrete, etc."),
+    answer("labs", message = "`labs()` function defines title, caption, and the axis labels."),
+    answer("aes", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+```
 
 # **Data Analysis**
 ***

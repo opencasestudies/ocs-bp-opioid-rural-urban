@@ -24,4 +24,14 @@ knitr::opts_chunk$set(echo = TRUE)
 * `dw_quiz` - pipe operators, `mutate` function, join, logical operators
 * `dw_exercise1` - rownames_to_column, select, case_when
 
+## Data Visualization
+
+* `dv_code1`
+* `dv_code2`
+* `dv_code3`
+* `dv_code4`
+* `dv_code5`
+* `dv_quiz1` - long/wide format
+* `dv_quiz2` - ggplot terminology
+
 # Other Notes
