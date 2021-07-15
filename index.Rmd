@@ -1265,11 +1265,34 @@ knitr::include_graphics(here::here("img", "join.png"))
 
 Here is a visualization of these options:
 
-```{r, echo = FALSE, outwidth = "30%"}
-knitr::include_graphics(here::here("img", "join_image.png"))
+```{r, echo = FALSE, outwidth = "50%"}
+# inner_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/inner-join.gif")
 ```
 
-##### [[source]](https://rstudio.com/resources/cheatsheets/)
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/inner-join.gif)
+
+```{r, echo = FALSE, outwidth = "50%"}
+# left_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/left-join.gif")
+```
+
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/left-join.gif)
+
+```{r, echo = FALSE, outwidth = "50%"}
+# right_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/right-join.gif")
+```
+
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/right-join.gif)
+
+
+```{r, echo = FALSE, outwidth = "50%"}
+# full_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/full-join.gif")
+```
+
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/full-join.gif)
 
 See [here](https://dplyr.tidyverse.org/reference/join.html) for more details about joining data.
 
