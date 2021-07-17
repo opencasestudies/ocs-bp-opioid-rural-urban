@@ -42,6 +42,9 @@ Imports:
     directlabels,
     usdata,
     Hmisc,
+    lattice,
+    survival,
+    Formula,
     OCSdata
 Remotes: 
     opencasestudies/OCSdata
