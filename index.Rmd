@@ -647,7 +647,7 @@ Now that we have used the `GET` function, let's see what the data are.
 county_pop_json
 ```
 
-Here we can see that the object called `countyjson` is a `json` object. 
+Here we can see that the object called `county_pop_json` is a `json` object. 
 A [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) object (or file format) is [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that it does not take up much memory and they are human readable files to make transmitting data from websites easier.
 
 You will also see that the `Status` is `200`, which means that we were successful in retrieving the data from the API.
