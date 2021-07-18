@@ -747,12 +747,16 @@ annual_url <- "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO
 ```
 
 ```{r di_code1, exercise = TRUE}
+# create a json object
 county_annual_json <-
 
+# extract the text
 county_annual_json_text <- 
 
+# put the data into a more readable format
 county_annual <-
 
+# create a tibble of the data
 annualDosage <-
 ```
 
@@ -1484,7 +1488,7 @@ We can use the `count()` function of the `dplyr` package to see how many of each
 count(county_info, rural_urban)
 ```
 
-We will now combine the `annualDosage` data with the `count_info` tibble.
+We will now combine the `annualDosage` data with the `county_info` tibble.
 
 #### {.think_question_block}
 <b><u> Question Opportunity </u></b>
@@ -1505,8 +1509,10 @@ load(here("www", "exercise", "dw_code2.rda"))
 ```
 
 ```{r dw_code2, exercise=TRUE}
+# To do so, we first need to make the "year" variable a factor as it is in the `county_info` tibble
 annualDosage %<>%
-  
+
+# Then, we join the data
 Annual <- 
   
 glimpse(Annual)
@@ -1514,14 +1520,12 @@ glimpse(Annual)
 
 ```{r dw_code2-hint}
 annualDosage %<>%
-  mutate(countyfips = as.factor(countyfips),
-         year = as.factor(year))
+  mutate(year = as.factor(year))
 ```
 
 ```{r dw_code2-solution}
 annualDosage %<>%
-  mutate(countyfips = as.factor(countyfips),
-         year = as.factor(year))
+  mutate(year = as.factor(year))
 
 Annual <- 
   left_join(annualDosage, county_info)
@@ -1535,8 +1539,7 @@ glimpse(Annual)
 
 ```{r}
 annualDosage %<>%
-  mutate(countyfips = as.factor(countyfips),
-         year = as.factor(year))
+  mutate(year = as.factor(year))
   
 Annual <- 
   left_join(annualDosage, county_info)
@@ -1544,6 +1547,8 @@ Annual <-
 </details>
 
 ***
+
+If you completed the exercise, you would get an output like this: 
 
 ```{r}
 glimpse(Annual)
@@ -1741,11 +1746,10 @@ quiz(caption = "",
     allow_retry = TRUE,
     random_answer_order = TRUE
   ),
-  question("Which of the following logical operators indicate logical OR in R?",
+  question("Which of the following logical operators indicates logical OR in R?",
     answer("`&`", message = "`&` is the logical AND operator."),
     answer("`!`", message = "`!` is the logical NOT operator."),
     answer("`|`", correct = TRUE, message = "Note both `|` and `||` are logical OR operators, but they are different. See the [documentation](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/Logic) for details."),
-    answer("`||`", correct = TRUE),
     allow_retry = TRUE,
     random_answer_order = TRUE
   )
@@ -1762,7 +1766,13 @@ Write some code that will:
 
 1. Convert row names to a column called `car`. (The code is given in the first hint.) 
 2. Only keep the `car`, `mpg`, and `cyl` variables of the data.
-3. Create a new variable called `mpg_group`, whose value is "low" when `mpg` is lower than or equal to the first tercile (3-quantile) of the data, "middle" when it is greater than the first and and less than or equal to the second tercile, and "high" when it is greater than the second tercile. (The second hint shows you how to find the terciles.)
+3. Create a new variable called `mpg_group`, whose value is "low" when `mpg` is lower than or equal to 16.7 (the first tercile of the data), "middle" when it is greater than 16.7 (the first tercile) and less than or equal to 21.4 (the second tercile), and "high" when it is greater than 21.4 (the second tercile).
+
+The terciles are found using the following command:
+
+```{r}
+quantile(mtcars$mpg, probs = seq(0, 1, 1/3))
+```
 
 *Note: replace the underscores("\_") with your code with one character per "\_". Click "Submit Answer" to check your answer. *
 
@@ -1779,23 +1789,23 @@ mtcars %>%
   # step 2
   dplyr::______(___, ___, ___) %>%
   # step 3
-  dplyr::mutate(mpg_group = _________(________________________________________ ~ "___", 
-                                      _______________________________________ & 
-                                        _________________________________________ ~ "______",
-                                      ________________________________________ ~ "____"))
+  dplyr::mutate(mpg_group = _________(___ __ 16.7 ~ "___", 
+                                      ___ _ 16.7 _ ___ __  21.4  ~ "______",
+                                      ___ _ 21.4 ~ "____"))
 ```
 
 ```{r dw_exercise1-hint-1}
 mtcars %>%
+  # step 1
   tibble::rownames_to_column("car")
 ```
 
 ```{r dw_exercise1-hint-2}
-# first tercile is
-quantile(mtcars$mpg, probs = 1/3)
-
-# second tercile is
-quantile(mtcars$mpg, probs = 2/3)
+mtcars %>%
+  # step 1
+  tibble::rownames_to_column("car") %>%
+  # step 2
+  dplyr::select(car, mpg, cyl)
 ```
 
 ```{r dw_exercise1-hint-3}
@@ -1806,13 +1816,18 @@ quantile(mtcars$mpg, probs = 2/3)
 mtcars %>%
   # step 1
   tibble::rownames_to_column("car") %>%
-  # step 1
-  dplyr::select(car, mpg, cyl) %>%
   # step 2
-  dplyr::mutate(mpg_group = case_when(mpg <= quantile(mtcars$mpg, probs = 1/3) ~ "low", 
-                                      mpg > quantile(mtcars$mpg, probs = 1/3) & 
-                                        mpg <=  quantile(mtcars$mpg, probs = 2/3) ~ "middle",
-                                      mpg >  quantile(mtcars$mpg, probs = 2/3) ~ "high"))
+  dplyr::select(car, mpg, cyl) %>%
+  # step 3
+  dplyr::mutate(mpg_group = case_when(mpg <= 16.7 ~ "low", 
+                                      mpg > 16.7 & mpg <=  21.4  ~ "middle",
+                                      mpg >  21.4 ~ "high"))
+  
+# an alternative way for step 3 by directly using the quantile function
+  # dplyr::mutate(mpg_group = case_when(mpg <= quantile(mtcars$mpg, probs = 1/3) ~ "low", 
+  #                                     mpg > quantile(mtcars$mpg, probs = 1/3) & 
+  #                                       mpg <=  quantile(mtcars$mpg, probs = 2/3) ~ "middle",
+  #                                     mpg >  quantile(mtcars$mpg, probs = 2/3) ~ "high"))
   
 # you need to write your own code for submission 
 # If you copy and paste the solution here and submit it, there may be an error where R does not recognize the pipe operator
@@ -2040,18 +2055,17 @@ How might you create this plot?
 ####
 
 ```{r, echo=FALSE}
-# this rda file can be used in data visualization coding exercises 1, 2, 4, and 5
-save(Annual, file = here("www", "exercise", "dv_code1245.rda"))
+save(Annual, file = here("www", "exercise", "dv_code1.rda"))
 ```
 
 ```{r dv_code1-setup}
 library(tidyverse)
 library(magrittr)
 
-load(here("www", "exercise", "dv_code1245.rda"))
+load(here("www", "exercise", "dv_code1.rda"))
 ```
 
-```{r dv_code1, exercise=TRUE, exercise.lines = 10}
+```{r dv_code1, exercise=TRUE, exercise.lines = 15}
 Annual %>%
 ```
 
@@ -2091,6 +2105,7 @@ In this case we saved the plot to an object called `USavg_dens`.
 </details>
 ***
 
+If you completed the exercise, you would get a plot like this:
 
 ```{r}
 USavg_dens
@@ -2110,14 +2125,18 @@ How might you create this plot?
 
 ####
 
+```{r, echo=FALSE}
+save(Annual, file = here("www", "exercise", "dv_code2.rda"))
+```
+
 ```{r dv_code2-setup}
 library(tidyverse)
 library(magrittr)
 
-load(here("www", "exercise", "dv_code1245.rda"))
+load(here("www", "exercise", "dv_code2.rda"))
 ```
 
-```{r dv_code2, exercise=TRUE, exercise.lines = 10}
+```{r dv_code2, exercise=TRUE, exercise.lines = 15}
 Annual %>%
 ```
 
@@ -2159,6 +2178,8 @@ overall_density <-
 </details>
 
 ***
+
+If you completed the exercise, you would get a plot like this:
 
 ```{r}
 overall_density
@@ -2592,18 +2613,22 @@ save(Annual, raw_state_avg, file = here("www", "exercise", "dv_code3.rda"))
 library(tidyverse)
 library(magrittr)
 library(patchwork)
+library(ggpol)
 
 load(here("www", "exercise", "dv_code3.rda"))
 ```
 
-```{r dv_code3, exercise=TRUE, exercise.lines = 10}
+```{r dv_code3, exercise=TRUE, exercise.lines = 25}
+# create a plot of the average for normalized data
 norm_state_avg <-
   Annual %>% 
-  
+
+# combine the two plots
 together <- 
 ```
 
 ```{r dv_code3-hint-1}
+# create a plot of the average for normalized data
 norm_state_avg <-
   Annual %>% 
   group_by(BUYER_STATE, year) %>%
@@ -2619,6 +2644,7 @@ norm_state_avg
 ```
 
 ```{r dv_code3-solution}
+# create a plot of the average for normalized data
 norm_state_avg <-
   Annual %>% 
   group_by(BUYER_STATE, year) %>%
@@ -2632,6 +2658,7 @@ norm_state_avg <-
 
 norm_state_avg 
 
+# combine the two plots
 together <- 
   raw_state_avg + 
   theme(axis.text.x = element_text(angle = 90)) +
@@ -2675,6 +2702,8 @@ together <-
 
 *** 
 
+If you completed the exercise, you would get a plot like this:
+
 ```{r}
 together
 ```
@@ -2690,15 +2719,19 @@ Do you recall how to create the state specific and interactive plot?
 
 ####
 
+```{r, echo=FALSE}
+save(Annual, file = here("www", "exercise", "dv_code4.rda"))
+```
+
 ```{r dv_code4-setup}
 library(tidyverse)
 library(magrittr)
 library(ggiraph)
 
-load(here("www", "exercise", "dv_code1245.rda"))
+load(here("www", "exercise", "dv_code4.rda"))
 ```
 
-```{r dv_code4, exercise=TRUE, exercise.lines = 10}
+```{r dv_code4, exercise=TRUE, exercise.lines = 20}
 # Try this out
 ```
 
@@ -2718,7 +2751,7 @@ g2 <-
                               size = 2, alpha = 3/10) + 
   theme(legend.position = "none")
 
-g2
+girafe(code = print(g2))
 ```
 
 ***
@@ -2746,6 +2779,8 @@ g2 <-
 </details> 
 
 *** 
+
+If you completed the exercise, you would get a plot like this:
 
 ```{r}
 girafe(code = print(g2))
@@ -2913,19 +2948,24 @@ Do you recall how we might do this?
 
 ####
 
+```{r, echo=FALSE}
+save(Annual, file = here("www", "exercise", "dv_code5.rda"))
+```
+
 ```{r dv_code5-setup}
 library(tidyverse)
 library(magrittr)
 library(formattable)
 
-load(here("www", "exercise", "dv_code1245.rda"))
+load(here("www", "exercise", "dv_code5.rda"))
 ```
 
-```{r dv_code5, exercise=TRUE, exercise.lines = 10}
+```{r dv_code5, exercise=TRUE, exercise.lines = 20}
 # Try this out
 ```
 
 ```{r dv_code5-solution}
+# make the table
 R_U <-Annual%>% 
   group_by(year) %>%
   count(category) %>%
@@ -2941,6 +2981,7 @@ R_U <-Annual%>%
 
 R_U
 
+# create the formatted table
 table_cat <- formattable::formattable(R_U, list(`Percent Large Urban` = 
                                      formattable::color_bar("#FA614B")))
 
@@ -2975,6 +3016,8 @@ table_cat <- formattable::formattable(R_U, list(`Percent Large Urban` =
 </details> 
 
 ***
+
+If you completed the exercise, you would get a table like this:
 
 ```{r}
 table_cat
@@ -3109,7 +3152,7 @@ Indeed when we evaluate the data in this way, we see that small urban and rural 
 
 ```{r dv_quiz1, echo=FALSE}
 question("Which of the following is the long format of the data?",
-    answer("A", message = "This is the wide format."),
+    answer("A", message = "This is the wide format because each variable has its own column."),
     answer("B", correct = TRUE),
     allow_retry = TRUE,
     random_answer_order = TRUE

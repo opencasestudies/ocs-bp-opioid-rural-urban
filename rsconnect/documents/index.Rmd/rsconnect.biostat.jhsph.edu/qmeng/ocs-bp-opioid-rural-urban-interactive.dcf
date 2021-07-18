@@ -5,9 +5,10 @@ account: qmeng
 server: rsconnect.biostat.jhsph.edu
 hostUrl: https://rsconnect.biostat.jhsph.edu/__api__
 appId: 90
-bundleId: 352
-url: https://rsconnect.biostat.jhsph.edu/content/90/
-when: 1625689586.78365
+bundleId: 353
+url: https://rsconnect.biostat.jhsph.edu/ocs-bp-opioid-rural-urban-interactive/
+when: 1626615222.52858
+lastSyncTime: 1626615222.52859
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: DESCRIPTION|index.html|maintenance_notes.html|maintenance_notes.Rmd|README.md|README.Rmd|.github/workflows/render-index.yaml|.github/workflows/render-readme.yaml|index_files
+ignoredFiles: .github/workflows/render-index.yaml|.github/workflows/render-readme.yaml|DESCRIPTION|maintenance_notes.html|maintenance_notes.Rmd|README.md|README.Rmd
