@@ -13,7 +13,8 @@ output: md_document
 
 ### Important links 
 
-- HTML: https://www.opencasestudies.org/ocs-bp-opioid-rural-urban/
+- Static version: https://www.opencasestudies.org/ocs-bp-opioid-rural-urban/
+- Interactive version: https://rsconnect.biostat.jhsph.edu/ocs-bp-opioid-rural-urban-interactive/
 - GitHub: https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/
 - Bloomberg American Health Initiative: https://americanhealth.jhu.edu/open-case-studies
 

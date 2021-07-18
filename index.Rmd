@@ -217,6 +217,7 @@ library(naniar)
 library(ggplot2)
 library(formattable)
 library(forcats)
+library(Hmisc)
 library(ggpol)
 library(ggiraph)
 library(patchwork)
@@ -244,7 +245,8 @@ Package   | Use in this case study
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
 [formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
-[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that are have jitter and half boxplots   
+[Hmisc](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) | to calculate different features about the data
+[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that have jitter and half boxplots   
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
@@ -644,7 +646,7 @@ Now that we have used the `GET` function, let's see what the data are.
 county_pop_json
 ```
 
-Here we can see that the object called `countyjson` is a `json` object. 
+Here we can see that the object called `county_pop_json` is a `json` object. 
 A [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) object (or file format) is [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that it does not take up much memory and they are human readable files to make transmitting data from websites easier.
 
 You will also see that the `Status` is `200`, which means that we were successful in retrieving the data from the API.
@@ -1395,11 +1397,34 @@ knitr::include_graphics(here::here("www", "img", "join.png"))
 
 Here is a visualization of these options:
 
-```{r, echo = FALSE, outwidth = "30%"}
-knitr::include_graphics(here::here("www", "img", "join_image.png"))
+```{r, echo = FALSE, outwidth = "10%"}
+# inner_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/inner-join.gif")
 ```
 
-##### [[source]](https://rstudio.com/resources/cheatsheets/)
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/inner-join.gif)
+
+```{r, echo = FALSE, outwidth = "10%"}
+# left_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/left-join.gif")
+```
+
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/left-join.gif)
+
+```{r, echo = FALSE, outwidth = "10%"}
+# right_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/right-join.gif")
+```
+
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/right-join.gif)
+
+
+```{r, echo = FALSE, outwidth = "10%"}
+# full_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/full-join.gif")
+```
+
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/full-join.gif)
 
 See [here](https://dplyr.tidyverse.org/reference/join.html) for more details about joining data.
 
@@ -1948,7 +1973,15 @@ Annual %>%
 
 We can see that this results in 459 groups. This makes sense because 51 groups over 9 years is 51 multiplied by 9, which equals 459. 
 
-We can use the `summarize()` function to create a new variable called `mean_DENS`, which will be equal to the mean of the population `density` variable for all the counties within each of the 449 groups. If we had missing values we would need to use the `na.rm = TRUE` argument to remove any missing values in our calculation.
+Next, we will need to use the `summarize()` function of the `dplyr` package. Notice that the `Hmisc` package that we loaded at the beginning of this case study also has a function called `summarize()`, and therefore, creating a conflict. Since we loaded `Hmisc` after we loaded `dplyr`, the `summarize()` function of the `dplyr` package is masked by the `summarize()` function of the `Hmisc` package, meaning that if we do not specify which package we want to use, R will use the `summarize()` function of the `Hmisc` package by default. To deal with this, we can use `dplyr::summarize()` to specify that we want to use the function of the `dplyr` package. However, since we will be using this function several times later in the case study, we might want to tell R that when we use the `summarize()` function, we want to use the function of the `dplyr` package. We can do this like so:
+
+```{r}
+summarize <- dplyr::summarize
+```
+
+You may also follow this [link](https://www.tidyverse.org/blog/2018/06/conflicted/) to learn about the `conflicted` package.
+
+We can use the `summarize()` function of the `dplyr` package to create a new variable called `mean_DENS`, which will be equal to the mean of the population `density` variable for all the counties within each of the 449 groups. If we had missing values we would need to use the `na.rm = TRUE` argument to remove any missing values in our calculation.
 
 ```{r}
 Annual %>% 
