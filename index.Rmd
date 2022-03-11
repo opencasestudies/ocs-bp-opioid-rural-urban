@@ -51,6 +51,11 @@ knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
 library(here)
 library(knitr)
 library(readr)
+library(wordcountaddin)
+library(magrittr)
+
+rmarkdown:::perf_timer_reset_all()
+rmarkdown:::perf_timer_start("render")
 ```
 
 #### {.outline }
@@ -86,11 +91,40 @@ To access the GitHub Repository for this case study see here: https://github.com
 You may also access and download the data using our `OCSdata` package. To learn more about this package including examples, see this [link](https://github.com/opencasestudies/OCSdata). Here is how you would install this package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 ```
 
 This case study is part of a series of public health case studies for the [Bloomberg American Health  Initiative](https://americanhealth.jhu.edu/open-case-studies).
+
+***
+
+The total reading time for this case study is calculated via [koRpus](https://github.com/unDocUMeantIt/koRpus) and shown below: 
+
+```{r, echo=FALSE}
+readtable = text_stats("index.Rmd") # producing reading time markdown table
+readtime = read.so::read.md(readtable) %>% dplyr::select(Method, koRpus) %>% # reading table into dataframe, selecting relevant factors
+  dplyr::filter(Method == "Reading time") %>% # dropping unnecessary rows
+  dplyr::mutate(koRpus = paste(round(as.numeric(stringr::str_split(koRpus, " ")[[1]][1])), "minutes")) %>% # rounding reading time estimate
+  dplyr::mutate(Method = "koRpus") %>% dplyr::relocate(koRpus, .before = Method) %>% dplyr::rename(`Reading Time` = koRpus) # reorganizing table
+knitr::kable(readtime, format="markdown")
+```
+
+***
+
+**Readability Score: **
+
+A readability index estimates the reading difficulty level of a particular text. Flesch-Kincaid, FORCAST, and SMOG are three common readability indices that were calculated for this case study via [koRpus](https://github.com/unDocUMeantIt/koRpus). These indices provide an estimation of the minimum reading level required to comprehend this case study by grade and age. 
+
+```{r, echo=FALSE}
+rt = wordcountaddin::readability("index.Rmd", quiet=TRUE) # producing readability markdown table
+df = read.so::read.md(rt) %>% dplyr::select(index, grade, age) %>%  # reading table into dataframe, selecting relevant factors
+  tidyr::drop_na() %>% dplyr::mutate(grade = round(as.numeric(grade)), # dropping rows with missing values, rounding age and grade columns
+                                     age = round(as.numeric(age))
+                                     )
+knitr::kable(df, format="markdown")
+```
+
+***
 
 Please help us by filling out our survey.
 
@@ -473,13 +507,15 @@ Importantly, the API also includes population estimates for the years (2006 to 2
 # **Data Import**
 *** 
 
-Note that if you have trouble with the data import from the API, we have saved files after getting the data from the API that you may import into your R environment using the `OCSdata` package:
+Note that if you have trouble with the data import from the API, we have saved files after getting the data from the API that you may import into your R environment using the `OCSdata` package and the `load()` function:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
+# install.packages("OCSdata")
 # library(OCSdata)
-load_imported_data("ocs-bp-opioid-rural-urban")
+imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(here::here("OCSdata", "data", "imported", "land_area.rda"))
+load(here::here("OCSdata", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCSdata", "data", "imported", "county_annual.rda"))
 ```
 
 You may also obtain these files from the `data/imported` directory of our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/).
@@ -510,12 +546,11 @@ We will use the `read_excel()` function of the `readxl` package to import the da
 If you did not clone our github repository or do not have this data already, you may download this data using the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
+# install.packages("OCSdata")
 # library(OCSdata)
 
-load_raw_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-# This function creates a "data" sub-directory in your current working directory.
+raw_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+# This function creates a "OCSdata" sub-directory in your current working directory.
 # It also creates a "raw" sub-directory within "data" which contains the .xls file.
 ```
 
@@ -810,16 +845,7 @@ save(monthlyDosage,
 # **Data Exploration**
 ***
 
-If you have been following along but stopped, we could load our imported data using the `OCSdata` package like so:
-
-```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_imported_data("ocs-bp-opioid-rural-urban")
-```
-
-If you prefer loading the imported data from the "data" directory, you may do it like so:
+If you have been following along but stopped, we could load our imported data from the "data" directory like so:
 
 ```{r}
 load(here::here("data", "imported", "land_area.rda"))
@@ -830,24 +856,26 @@ load(here::here("data", "imported", "county_annual.rda"))
 ***
 <details> <summary> If you skipped the data import section click here. </summary>
 
-First you need to install the `OCSdata` package:
+First you need to install and load the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may load the imported data into your R environment using the following function:
+Then, you may load the imported data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_imported_data("ocs-bp-opioid-rural-urban")
+imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(here::here("OCSdata", "data", "imported", "land_area.rda"))
+load(here::here("OCSdata", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCSdata", "data", "imported", "county_annual.rda"))
 ```
 
 Alternatively, you may download the raw data as well as the CSV files for simpler import using the following function:
 
 ```{r, eval=FALSE}
-load_simpler_import("ocs-bp-opioid-rural-urban", outpath = getwd())
+simpler_import_data("ocs-bp-opioid-rural-urban", outpath = getwd())
 ```
 
 If the package does not work for you, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/imported). Download these files and then place them in your current working directory within a subdirectory called "imported" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
@@ -973,16 +1001,7 @@ We will update these values in the next section.
 # **Data Wrangling**
 ***
 
-If you have been following along but stopped, we could load our imported data using the `OCSdata` package like so:
-
-```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_imported_data("ocs-bp-opioid-rural-urban")
-```
-
-If you prefer loading the imported data from the "data" directory, you may do it like so:
+If you have been following along but stopped, we could load our imported data from the "data" directory like so:
 
 ```{r}
 load(here::here("data", "imported", "land_area.rda"))
@@ -993,24 +1012,26 @@ load(here::here("data", "imported", "county_annual.rda"))
 ***
 <details> <summary> If you skipped the previous sections click here. </summary>
 
-First you need to install the `OCSdata` package:
+First you need to install and load the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may load the imported data into your R environment using the following function:
+Then, you may load the imported data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_imported_data("ocs-bp-opioid-rural-urban")
+imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(here::here("OCSdata", "data", "imported", "land_area.rda"))
+load(here::here("OCSdata", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCSdata", "data", "imported", "county_annual.rda"))
 ```
 
 Alternatively, you may download the raw data as well as the CSV files for simpler import using the following function:
 
 ```{r, eval=FALSE}
-load_simpler_import("ocs-bp-opioid-rural-urban", outpath = getwd())
+simpler_import_data("ocs-bp-opioid-rural-urban", outpath = getwd())
 ```
 
 If the package does not work for you, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/imported). Download these files and then place them in your current working directory within a subdirectory called "imported" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
@@ -1523,37 +1544,29 @@ save(county_info, file = here::here("data", "wrangled", "county_info.rda"))
 # **Data Visualization**
 ***
 
-If you have been following along but stopped, we could load our wrangled data using the `OCSdata` package like so:
-
-```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-```
-
-If you prefer loading the wrangled data from the "data" directory, you may do it like so:
+If you have been following along but stopped, we could load our wrangled data from the "data" directory like so:
 
 ```{r}
-load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("data", "wrangled", "Annual_opioid_data.rda"))
 load(file = here::here("data", "wrangled", "county_info.rda"))
 ```
 
 ***
 <details> <summary> If you skipped the previous sections click here. </summary>
 
-First you need to install the `OCSdata` package:
+First you need to install and load the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may download and load the wrangled data into your R environment using the following function:
+Then, you may download and load the wrangled data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+wrangled_rda("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(file = here::here("OCSdata", "data", "wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCSdata", "data", "wrangled", "county_info.rda"))
 ```
 
 If the package does not work for you, alternatively, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/wrangled). Download these files and then place them in your current working directory within a subdirectory called "wrangled" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
@@ -2612,19 +2625,10 @@ Indeed when we evaluate the data in this way, we see that small urban and rural 
 # **Data Analysis**
 ***
 
-If you have been following along but stopped, we could load our wrangled data using the `OCSdata` package like so:
-
-```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-```
-
-If you prefer loading the wrangled data from the "data" directory, you may do it like so:
+If you have been following along but stopped, we could load our wrangled data from the "data" directory like so:
 
 ```{r}
-load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("data", "wrangled", "Annual_opioid_data.rda"))
 load(file = here::here("data", "wrangled", "county_info.rda"))
 ```
 
@@ -2634,21 +2638,22 @@ load(file = here::here("data", "wrangled", "county_info.rda"))
 First you need to install the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may download and load the wrangled data into your R environment using the following function:
+Then, you may download and load the wrangled data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+wrangled_rda("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(file = here::here("OCSdata", "data", "wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCSdata", "data", "wrangled", "county_info.rda"))
 ```
 
 If the package does not work for you, alternatively, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/wrangled). Download these files and then place them in your current working directory within a subdirectory called "wrangled" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
 
 ```{r}
-load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("data", "wrangled", "Annual_opioid_data.rda"))
 load(file = here::here("data", "wrangled", "county_info.rda"))
 ```
 
@@ -3239,6 +3244,13 @@ knitr::include_graphics("https://miro.medium.com/max/700/1*CdiSAr3OomVFHC6_1E_XK
 sessionInfo()
 ```
 
+**RMarkdown Compilation Time: **
+
+```{r, echo=FALSE}
+rmarkdown:::perf_timer_stop("render")
+pts = rmarkdown:::perf_timer_summary()
+cat("About", round(pts$time[1]/1000 + 10), "seconds")
+```
 
 ## **Acknowledgments**
 ***
