@@ -51,8 +51,11 @@ knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
 library(here)
 library(knitr)
 library(readr)
-library(wordcountaddin)
 library(magrittr)
+remotes::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
+remotes::install_github("alistaire47/read.so")
+library(wordcountaddin)
+library(read.so)
 
 rmarkdown:::perf_timer_reset_all()
 rmarkdown:::perf_timer_start("render")
@@ -82,7 +85,7 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [
 
 To cite this case study please use:
 
-Wright, Carrie and Wang, Kexin and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban) Opioids in the United States (Version v1.0.0).
+Wright, Carrie and Wang, Kexin and Meng, Qier and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban) Opioids in the United States (Version v1.0.0).
 
 ####
 
@@ -3257,8 +3260,9 @@ cat("About", round(pts$time[1]/1000 + 10), "seconds")
 
 We would like to acknowledge [Brendan Saloner](https://www.jhsph.edu/faculty/directory/profile/2929/brendan-saloner) for assisting in framing the major direction of the case study.
 
-We would also like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
+We would like to acknowledge [Michael Breshock](https://mbreshock.github.io/) for his contributions to this case study and developing the `OCSdata` package. 
 
+We would also like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
 
 
 <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=080808&w=300&t=tt&d=G9e5uaGLv_omCgMY3tVaNZ5dC48zriftXuj4U5vxCLc&co=ffffff&cmo=3acc3a&cmn=ff5353&ct=808080'></script>
