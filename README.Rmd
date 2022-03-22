@@ -259,7 +259,8 @@ This case study is appropriate for those new to R programming. It is also approp
 
 Students could focus on the counties of a particular state and perform the same analyses and visualizations to see how the different types of counties compared for opioid pill shipments. Students could be asked to work on different states. Discussion could follow about  how and why the states show different results.
 
-#### RMarkdown Compilation Time
+#### Estimate of RMarkdown Compilation Time:
 
-~ 110 seconds
+~ About 103 - 113 seconds
 
+This compilation time was measured on a PC machine operating on Windows 10. This range should only be used as an estimate as compilation time will vary with different machines and operating systems.
