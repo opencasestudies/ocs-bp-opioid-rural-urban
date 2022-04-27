@@ -42,8 +42,8 @@ States License.
 
 To cite this case study:
 
-Wright, Carrie and Wang, Kexin and Jager, Leah and Taub, Margaret and
-Hicks, Stephanie. (2020).
+Wright, Carrie and Wang, Kexin and Meng, Qier and Jager, Leah and Taub,
+Margaret and Hicks, Stephanie. (2020).
 [https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban)
 Opioids in the United States (Version v1.0.0).
 
@@ -53,8 +53,20 @@ We would like to acknowledge [Brendan
 Saloner](https://www.jhsph.edu/faculty/directory/profile/2929/brendan-saloner)
 for assisting in framing the major direction of the case study.
 
+We would like to acknowledge [Michael
+Breshock](https://mbreshock.github.io/) for his contributions to this
+case study and developing the `OCSdata` package.
+
 We would also like to acknowledge the [Bloomberg American Health
 Initiative](https://americanhealth.jhu.edu/) for funding this work.
+
+### Reading Metrics
+
+The total reading time for this case study was calculated with
+[koRpus](https://github.com/unDocUMeantIt/koRpus): **About 90 minutes**
+
+The Flesch-Kincaid Readability Index was also calculated with
+[koRpus](https://github.com/unDocUMeantIt/koRpus): **Grade 9, Age 14**
 
 ### Title
 
@@ -445,3 +457,11 @@ the same analyses and visualizations to see how the different types of
 counties compared for opioid pill shipments. Students could be asked to
 work on different states. Discussion could follow about how and why the
 states show different results.
+
+#### Estimate of RMarkdown Compilation Time:
+
+~ About 103 - 113 seconds
+
+This compilation time was measured on a PC machine operating on Windows
+10. This range should only be used as an estimate as compilation time
+will vary with different machines and operating systems.
