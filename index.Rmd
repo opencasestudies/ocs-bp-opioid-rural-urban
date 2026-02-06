@@ -58,7 +58,6 @@ remotes::install_github("alistaire47/read.so")
 library(here)
 library(knitr)
 library(readr)
-library(magrittr)
 library(formattable)
 library(wordcountaddin)
 library(read.so)
@@ -258,7 +257,6 @@ library(tibble)
 library(httr)
 library(jsonlite)
 library(stringr)
-library(magrittr)
 library(dplyr)
 library(tidyr)
 library(naniar)
@@ -287,7 +285,6 @@ Package   | Use in this case study
 [jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
 [naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
@@ -522,9 +519,9 @@ Note that if you have trouble with the data import from the API, we have saved f
 # install.packages("OCSdata")
 # library(OCSdata)
 imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-load(here::here("OCSdata", "data", "imported", "land_area.rda"))
-load(here::here("OCSdata", "data", "imported", "county_pop_arcos.rda"))
-load(here::here("OCSdata", "data", "imported", "county_annual.rda"))
+load(here::here("data", "imported", "land_area.rda"))
+load(here::here("data", "imported", "county_pop_arcos.rda"))
+load(here::here("data", "imported", "county_annual.rda"))
 ```
 
 You may also obtain these files from the `data/imported` directory of our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/).
@@ -666,10 +663,10 @@ This gives us the following output:
 We can copy the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package :
 
 ```{r}
-count_url <- "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"
+# count_url <- "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"
 
-county_pop_json <- 
-  httr::GET(url = count_url)
+# county_pop_json <- 
+#   httr::GET(url = count_url)
 ```
 
 If we needed to specify a username and password, we would do so using the `authenticate()` function of the `httr` package within the `GET` function. The `authenticate()` function takes `user`, `password` and `type` arguments.
@@ -677,10 +674,10 @@ If we needed to specify a username and password, we would do so using the `authe
 Here is an example:
 
 ```{r, eval = FALSE}
-GET(url = "https://exampleURL", 
-    authenticate(user = "username", 
-                 password = "password", 
-                 type = "basic"))
+# GET(url = "https://exampleURL", 
+#     authenticate(user = "username", 
+#                  password = "password", 
+#                  type = "basic"))
 ```
 
 The default authentication request type is `"basic"` and typically what is needed.
@@ -688,7 +685,7 @@ The default authentication request type is `"basic"` and typically what is neede
 Now that we have used the `GET` function, let's see what the data are. 
 
 ```{r}
-county_pop_json
+# county_pop_json
 ```
 
 Here we can see that the object called `county_pop_json` is a `json` object. 
@@ -699,8 +696,8 @@ You will also see that the `Status` is `200`, which means that we were successfu
 Now we can use the `content()` function of the `httr` package to extract the text from the file:
 
 ```{r}
-county_pop_text <- 
-  httr::content(county_pop_json, "text")
+# county_pop_text <- 
+#   httr::content(county_pop_json, "text")
 ```
 
 This will be a very large string at this point, we can take a look at part of it by using the `str_sub()` function of the `stringr` package. In this case we will only look at the first 400 characters.
@@ -721,25 +718,25 @@ If data are of class character, than the numeric values will not be processed li
 ***
 
 ```{r}
-stringr::str_sub(county_pop_text, start = 1, end = 400)
+# stringr::str_sub(county_pop_text, start = 1, end = 400)
 ```
 
 
 To get the data into a more readable format, we can use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()` 
 
 ```{r}
-county_pop <- 
-  jsonlite::fromJSON(county_pop_text, 
-                     flatten = TRUE)
-
-county_pop <- as_tibble(county_pop)
+# county_pop <- 
+#   jsonlite::fromJSON(county_pop_text, 
+#                      flatten = TRUE)
+# 
+# county_pop <- as_tibble(county_pop)
 ```
 
 We can use the `glimpse()` function and the `distinct()` function of the `dplyr` package to get a better sense of the data. The `distinct()` function allows us to take a look at the unique values of the `year` variable.
 
 ```{r}
-dplyr::glimpse(county_pop)
-dplyr::distinct(county_pop, year)
+# dplyr::glimpse(county_pop)
+# dplyr::distinct(county_pop, year)
 ```
 
 It looks like we have the full data from 2006-2014.
@@ -748,11 +745,11 @@ Now let's save this data:
 
 ```{r, eval = FALSE, echo = FALSE}
 # For instructors who want to do a simpler version of import
-write.csv(county_pop, file = here::here("data", "simpler_import", "county_pop_arcos.csv"))
+# write.csv(county_pop, file = here::here("data", "simpler_import", "county_pop_arcos.csv"))
 ```
 
 ```{r, eval = FALSE}
-save(county_pop, file =  here::here("data", "imported",  "county_pop_arcos.rda"))
+# save(county_pop, file =  here::here("data", "imported",  "county_pop_arcos.rda"))
 ```
 
 
@@ -771,8 +768,8 @@ curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4E
 or in R, the URL is 
 
 ```{r}
-annual_url <- 
-  "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
+# annual_url <- 
+#   "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
 ```
 
 
@@ -830,24 +827,24 @@ Looks like we have the same years of data.
 
 ```{r, eval = FALSE, echo = FALSE}
 # We also retrieved the monthly data for instructors who wish to use this data
-countyjson <- 
-  httr::GET(url = "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I")
-
-countyjson_text <- 
-  httr::content(countyjson, "text")
-
-county <- 
-  jsonlite::fromJSON(countyjson_text, flatten = TRUE)
-
-monthlyDosage <- 
-  tibble::as_tibble(county)
-
-# for instructors who want to do a simpler version of import
-write.csv(monthlyDosage, 
-          file = here::here("data","extra", "county_monthly.csv"))
-
-save(monthlyDosage, 
-     file =  here::here("data", "extra", "county_monthly.rda"))
+# countyjson <- 
+#   httr::GET(url = "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I")
+# 
+# countyjson_text <- 
+#   httr::content(countyjson, "text")
+# 
+# county <- 
+#   jsonlite::fromJSON(countyjson_text, flatten = TRUE)
+# 
+# monthlyDosage <- 
+#   tibble::as_tibble(county)
+# 
+# # for instructors who want to do a simpler version of import
+# write.csv(monthlyDosage, 
+#           file = here::here("data","extra", "county_monthly.csv"))
+# 
+# save(monthlyDosage, 
+#      file =  here::here("data", "extra", "county_monthly.rda"))
 ```
 
 
@@ -876,9 +873,9 @@ Then, you may load the imported data into your R environment using the following
 
 ```{r, eval=FALSE}
 imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-load(here::here("OCSdata", "data", "imported", "land_area.rda"))
-load(here::here("OCSdata", "data", "imported", "county_pop_arcos.rda"))
-load(here::here("OCSdata", "data", "imported", "county_annual.rda"))
+load(here::here("data", "imported", "land_area.rda"))
+load(here::here("data", "imported", "county_pop_arcos.rda"))
+load(here::here("data", "imported", "county_annual.rda"))
 ```
 
 Alternatively, you may download the raw data as well as the CSV files for simpler import using the following function:
@@ -939,7 +936,7 @@ Although it is very hard to see in the figure, we appear to be missing some valu
 
 Let's use the `filter()` function of the `dplyr` package and the `is.na()` base function to see more about the data that does not have `NAME` values.
 
-We will also start using the `%>%` pipe of the `magrittr` package for our assignments.
+We will also start using the `%>%` pipe of the `dplyr` package for our assignments.
 
 ***
 <details> <summary> Click here if you are unfamiliar with piping in R, which uses this `%>%` operator</summary>  
@@ -1132,12 +1129,10 @@ Then, We will recode the `coutryfips` values for these rows to be `"05097"` usin
 
 We need to use `TRUE ~` to recode all the other `countyfips` values to what they currently are. Otherwise these would automatically be set to `NA`.
 
-We are also going to use a special pipe operator from the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) called the *compound assignment pipe operator* or sometimes the *double pipe operator*. 
-
-This allows us to use the `annualDosage` as our input and, in the same step, reassign it to take the updated value of the tibble, after all the subsequent steps have been performed. In this case, it is only one step, but this saves us typing and avoids creating an intermediate version of the tibble.
+We are going to use the `%>%` pipe operator to use the `annualDosage` as our input and perform subsequent steps to create an updates version of the tibble.
 
 ```{r}
-annualDosage %<>% 
+annualDosage <- annualDosage %>% 
   mutate(countyfips = case_when(BUYER_STATE == "AR" & 
                                 BUYER_COUNTY == "MONTGOMERY" ~ as.character("05097"),
                                 TRUE ~ countyfips))
@@ -1169,7 +1164,7 @@ annualDosage %>%
 We can remove these rows from our data set using the `filter()` command along with the `!` (exclamation point) before the `is.na()` function.
 
 ```{r}
-annualDosage %<>% 
+annualDosage <- annualDosage %>%  
   filter(!is.na(BUYER_COUNTY))
 ```
 
@@ -1212,7 +1207,7 @@ Do you recall how to do this?
 
 <details> <summary> Click here to reveal the code. </summary>
 ```{r}
-annualDosage %<>% 
+annualDosage <- annualDosage %>%  
   filter(!is.na(countyfips))
 ```
 </details> 
@@ -1278,7 +1273,7 @@ Great, it looks like both are character strings based on the `<chr>` next to the
 We can use the `rename()` function of the `dplyr` package to rename the `STCOU` column from the `land_area` data set to be `countyfips`. The new name is always listed first before the old name with this function like so: `rename(new_name = old_name)`.
 
 ```{r}
-land_area %<>%
+land_area <- land_area %>% 
   rename(countyfips = STCOU)
 ```
 
@@ -1356,7 +1351,7 @@ nrow(county_info) == nrow(county_pop)
 We are now ready to calculate the population density per square mile. We create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. Let's also make the `year` variable a factor. We can do using the `as.factor()` base function. If you are not familiar with factors, please see the click to expand section above about data classes in R. 
 
 ```{r}
-county_info %<>%
+county_info <- county_info %>% 
   mutate(density = population/LND110210D,
          year = as.factor(year))
 
@@ -1373,7 +1368,7 @@ We will use the `case_when()` function of the `dplyr` package to classify the ne
 The `|` operator is used to indicate that either expression should result in coding the county as `"Rural"`
 
 ```{r}
-county_info %<>%
+county_info <- county_info %>% 
   mutate(rural_urban = case_when(density  >= 500 ~ "Urban",
                                  density  <  500 | population < 2500 ~ "Rural"))
 ```
@@ -1398,7 +1393,7 @@ How might we do this?
 <details> <summary> Click here to reveal the code. </summary>
 
 ```{r}
-annualDosage %<>%
+annualDosage <- annualDosage %>%  
   mutate(countyfips = as.factor(countyfips),
          year = as.factor(year))
   
@@ -1500,7 +1495,7 @@ Do you recall how you would do this?
 <details> <summary> Click here to reveal the code. </summary>
 
 ```{r}
-Annual %<>% 
+Annual <- Annual %>% 
   filter(!is.na(STATE))
 ```
 
@@ -1977,7 +1972,7 @@ Now let's get a sense of how the shipments of [oxycodone](https://en.wikipedia.o
 First, we create a new variable in the `Annual` data that is the number of pills (in millions), as this is easier for us to interpret.
 
 ```{r}
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(Pills_in_millions = DOSAGE_UNIT/1000000)
 ```
 
@@ -2079,7 +2074,7 @@ raw_average
 
 It looks like the average number of opioid pills shipped to a county peaked in 2011 and has slowly declined. 
 
-We can look a bit deeper if we only calculate a mean for each state. To make a visual of this we will use the `geom_boxjitter()` function of the `ggpol` package.
+We can look a bit deeper if we only calculate a mean for each state.
 
 ```{r}
 raw_state_avg <- 
@@ -2088,7 +2083,7 @@ raw_state_avg <-
   summarize( mean_DOSAGE = mean(Pills_in_millions)) %>% 
   ungroup() %>%
   ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    ggpol::geom_boxjitter() +
+    geom_jitter(width = 0.2, alpha = 0.6) +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          y = "Number of pills in millions") + 
   theme_minimal()
@@ -2174,7 +2169,7 @@ example_data <-
   tibble(population = c(10, 50, 100),
          pills = c(100, 100, 100))
 
-example_data %<>% 
+example_data <- example_data %>% 
   mutate(norm_pills = pills/population)
 
 example_data
@@ -2189,7 +2184,7 @@ Note that however, it is likely that only a small portion of the county populati
 Back to our example: we create a new variable called `pop_DOSAGE` that is the number of pills shipped per county divided by the population of that county:
 
 ```{r}
-Annual %<>%
+Annual <- Annual %>% 
   mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
 
 glimpse(Annual)
@@ -2250,7 +2245,7 @@ norm_state_avg <-
   summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
   ungroup() %>%
   ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    geom_boxjitter() + 
+    geom_jitter(width = 0.2, alpha = 0.6) + 
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          y = "Number of Pills Per Capita")+
     theme_minimal()
@@ -2459,7 +2454,7 @@ Thus we will use the `&` operator to indicate that the small urban category is g
 
 ```{r}
 
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(category = case_when(population >= 200000 ~ "Large Urban",
                               population >= 50000 & 
                               population < 200000 ~ "Small Urban",
@@ -2564,7 +2559,7 @@ Thus it seems reasonable to lump the rural and small urban categories together, 
 We will modify our original code with the population thresholds which was:
 
 ```{r, eval = FALSE}
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(category = case_when(population >= 200000 ~ "Large Urban",
                               population >= 50000 & 
                               population < 200000 ~ "Small Urban",
@@ -2576,7 +2571,7 @@ Now we will just replace the labels for the small urban and rural counties to be
 
 ```{r}
 
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(large_urban = case_when(population >= 200000 ~ "Large Urban",
                                  population >= 50000 & 
                                  population < 200000 ~ "Small Urban or Rural",
@@ -2586,7 +2581,7 @@ Annual %<>%
 
 
 ```{r}
-plot_2cat_raw <-Annual %>%
+plot_2cat_raw <- Annual %>%
 ggplot( aes(y = Pills_in_millions, x = year, 
             colour = large_urban, group = large_urban)) + 
   stat_summary(fun.data = mean_cl_boot,
@@ -2695,15 +2690,15 @@ If you are starting here, we will also perform a few extra steps with the data t
 
 ```{r}
 # We create a new variable called `pop_DOSAGE` that is the number of pills shipped per county divided by the population of that county
-Annual%<>%  mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
+Annual <- Annual %>%  mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
 
 
 # we create a new variable called `Pills_in_millions` that is the number of pills shiped per county divided by 1 million
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(Pills_in_millions = DOSAGE_UNIT/1000000)
 
 #We make a new variable based on being either large urban or small urban/rural based off a threshold of population because of our visualizations
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(large_urban = case_when(population >= 200000 ~ "Large Urban",
                                  population >= 50000 & 
                                  population < 200000 ~ "Small Urban or Rural",
@@ -2931,19 +2926,20 @@ outer(R,U, ">")
 # 3+3 = 6 pairs out of 9 where R was greater than U thus W is equal to 6
 
 sum(outer(R,U, ">"))
-wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
-
+#wilcox.test(pills ~ county, data = example,  paired = FALSE,  alternative = "greater")
+wilcox.test(pills ~ county, data = example, alternative = "greater")
 ```
 
 
 We can also see that if we switch the order of our counties (i.e., we make the values that were for urban now the values for rural) we then get the $W$ for what was previously our second group in the result. (Remember whatever is alphabetically first will be the first group - so again the results are for "R".)
 
-```{r }
+```{r}
 
 example <-tibble(pills = c(10,12, 20, 25,30, 40), county = c("U", "R", "R", "R", "U", "U"))
 example
 
-wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
+# wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
+wilcox.test(pills~ county, data = example, alternative = "greater")
 
 ```
 
@@ -2974,14 +2970,14 @@ We need to specify that we want to look for differences of normalized pill count
 ```{r}
 
 wilcox.test(pop_DOSAGE ~ rural_urban, data = Annual,
-                                    paired = FALSE, 
+                                  #  paired = FALSE, 
                                alternative = "greater", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
 
 
 wilcox.test(pop_DOSAGE ~ large_urban, data = Annual, 
-                                    paired = FALSE, 
+                                  #  paired = FALSE, 
                                alternative = "less", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
@@ -2998,14 +2994,14 @@ If we had not normalized the data, what would our results look like?
 ```{r}
 
 wilcox.test(DOSAGE_UNIT ~ rural_urban, data = Annual,
-                                    paired = FALSE, 
+                                  #  paired = FALSE, 
                                alternative = "greater", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
 
 
 wilcox.test(DOSAGE_UNIT ~ large_urban, data = Annual, 
-                                    paired = FALSE, 
+                                  #  paired = FALSE, 
                                alternative = "less", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
@@ -3139,12 +3135,7 @@ Note: Monthly data is also available within the `data` directory. This could be 
 [Cheatsheet on RStuido IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}  
 [Other RStudio cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}   
 [RStudio projects](https://r4ds.had.co.nz/workflow-projects.html)
-
 [Tidyverse](https://www.tidyverse.org/){target="_blank"}   
-
-   
-[Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
-
 [application prgoramming interface (API)](https://en.wikipedia.org/wiki/API)  
 [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)  
 [Lightweight programming languagnes](https://en.wikipedia.org/wiki/Lightweight_programming_language)   
@@ -3190,7 +3181,6 @@ Package   | Use in this case study
 [jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
 [naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
