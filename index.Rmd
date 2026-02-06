@@ -48,12 +48,18 @@ function googleTranslateElementInit() {
 knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
                       message = FALSE, warning = FALSE, cache = FALSE,
                       fig.align = "center", out.width = '90%')
+
+devtools::install_github("renkun-ken/formattable")
+remotes::install_github("njtierney/naniar")
+devtools::install_github("OpenIntroStat/usdata")
+devtools::install_github('erocoar/ggpol')
+remotes::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
+remotes::install_github("alistaire47/read.so")
 library(here)
 library(knitr)
 library(readr)
 library(magrittr)
-remotes::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
-remotes::install_github("alistaire47/read.so")
+library(formattable)
 library(wordcountaddin)
 library(read.so)
 
