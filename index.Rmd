@@ -68,6 +68,7 @@ library(readr)
 library(formattable)
 library(wordcountaddin)
 library(read.so)
+library(tidyverse)
 
 rmarkdown:::perf_timer_reset_all()
 rmarkdown:::perf_timer_start("render")
@@ -2849,10 +2850,19 @@ raw_state_avg <-
   group_by(BUYER_STATE, year) %>%
   summarize(mean_DOSAGE = mean(Pills_in_millions)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    geom_boxplot() +
-    geom_jitter() +
+  ggplot(aes(x = year, y = mean_DOSAGE)) + 
+  geom_boxplot(aes(x = year), 
+               # width = 0.3,
+               outlier.shape = NA,
+               fill = "coral") +
+  geom_dotplot(aes(x = year), 
+               binaxis = "y", 
+               binwidth = 0.04, 
+               stackdir = "center",
+               dotsize = 10,
+               fill = "transparent") +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
+         x = "",
          y = "Number of pills in millions") + 
   theme_minimal()
 
@@ -3078,9 +3088,18 @@ norm_state_avg <-
   group_by(BUYER_STATE, year) %>%
   summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    geom_boxplot() + 
-    geom_jitter(width = 0.2, alpha = 0.6) + 
+  ggplot(aes(x = year, y = mean_DOSAGE)) + 
+  geom_boxplot(aes(x = year), 
+               # width = 0.3,
+               outlier.shape = NA,
+               fill = "lightgreen"
+               ) +
+  geom_dotplot(aes(x = year), 
+               binaxis = "y", 
+               binwidth = 0.04, 
+               stackdir = "center",
+               dotsize = 20,
+               fill = "transparent") +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          y = "Number of Pills Per Capita")+
     theme_minimal()
