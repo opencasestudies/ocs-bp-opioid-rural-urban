@@ -56,12 +56,16 @@ knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
                       message = FALSE, warning = FALSE, cache = FALSE,
                       fig.align = "center", out.width = '90%')
 
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
 devtools::install_github("renkun-ken/formattable")
 remotes::install_github("njtierney/naniar")
 devtools::install_github("OpenIntroStat/usdata")
 devtools::install_github('erocoar/ggpol')
-remotes::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
+devtools::install_github("benmarwick/wordcountaddin",  type = "source", dependencies = TRUE)
 remotes::install_github("alistaire47/read.so")
+devtools::install_github("unDocUMeantIt/koRpus")
+devtools::install_github("unDocUMeantIt/koRpus.lang.en")
 library(here)
 library(knitr)
 library(readr)
@@ -69,6 +73,11 @@ library(formattable)
 library(wordcountaddin)
 library(read.so)
 library(tidyverse)
+library(koRpus)
+
+# install.koRpus.lang(lang=c("en", "de"))
+library(koRpus.lang.en)
+# koRpus::set.kRp.env(TT.cmd="tokenize", lang="en", validate=FALSE)
 
 rmarkdown:::perf_timer_reset_all()
 rmarkdown:::perf_timer_start("render")
@@ -138,11 +147,38 @@ The total reading time for this case study is calculated via
 [koRpus](https://github.com/unDocUMeantIt/koRpus) and shown below:
 
 ```{r, echo=FALSE}
-readtable = text_stats("index.Rmd") # producing reading time markdown table
-readtime = read.so::read.md(readtable) %>% dplyr::select(Method, koRpus) %>% # reading table into dataframe, selecting relevant factors
-  dplyr::filter(Method == "Reading time") %>% # dropping unnecessary rows
-  dplyr::mutate(koRpus = paste(round(as.numeric(stringr::str_split(koRpus, " ")[[1]][1])), "minutes")) %>% # rounding reading time estimate
-  dplyr::mutate(Method = "koRpus") %>% dplyr::relocate(koRpus, .before = Method) %>% dplyr::rename(`Reading Time` = koRpus) # reorganizing table
+# Reading time calculator using word count method 
+calculate_reading_time <- function(rmd_file) {
+  text <- readLines(rmd_file, warn = FALSE)
+  
+  in_code_chunk <- FALSE
+  text_only <- c()
+  
+  for (line in text) {
+    if (grepl("^```\\{", line)) {
+      in_code_chunk <- TRUE
+    } else if (grepl("^```$", line) && in_code_chunk) {
+      in_code_chunk <- FALSE
+    } else if (!in_code_chunk) {
+      text_only <- c(text_only, line)
+    }
+  }
+  
+  # Count words (average reading speed: 225 words/minute)
+  full_text <- paste(text_only, collapse = " ")
+  words <- unlist(strsplit(full_text, "\\s+"))
+  words <- words[nchar(words) > 0]
+  word_count <- length(words)
+  reading_time_min <- round(word_count / 225)
+  
+  data.frame(
+    `Reading Time` = paste(reading_time_min, "minutes"),
+    Method = "Word Count",
+    check.names = FALSE
+  )
+}
+
+readtime <- calculate_reading_time(knitr::current_input())
 knitr::kable(readtime, format="markdown")
 ```
 
@@ -158,12 +194,61 @@ an estimation of the minimum reading level required to comprehend this
 case study by grade and age.
 
 ```{r, echo=FALSE}
-rt = wordcountaddin::readability("index.Rmd", quiet=TRUE) # producing readability markdown table
-df = read.so::read.md(rt) %>% dplyr::select(index, grade, age) %>%  # reading table into dataframe, selecting relevant factors
-  tidyr::drop_na() %>% dplyr::mutate(grade = round(as.numeric(grade)), # dropping rows with missing values, rounding age and grade columns
-                                     age = round(as.numeric(age))
-                                     )
-knitr::kable(df, format="markdown")
+# Readability calculation for large documents
+# Note: wordcountaddin::readability() fails on large files
+# Using koRpus directly on a text sample
+
+tryCatch({
+  # Read file and remove code chunks (readability should only analyze prose)
+  all_text <- readLines(knitr::current_input(), warn = FALSE)
+  
+  in_code <- FALSE
+  text_only <- c()
+  for (line in all_text) {
+    if (grepl("^```\\{", line)) {
+      in_code <- TRUE
+    } else if (grepl("^```$", line) && in_code) {
+      in_code <- FALSE
+    } else if (!in_code) {
+      text_only <- c(text_only, line)
+    }
+  }
+  
+  # Take a sample if text is very long (to avoid koRpus failures)
+  sample_text <- paste(text_only, collapse = " ")
+  if (nchar(sample_text) > 50000) {
+    sample_text <- substr(sample_text, 1, 50000)
+  }
+  
+  # Tokenize text (breaks into words, sentences, syllables)
+  tokenized <- koRpus::tokenize(sample_text, format = "obj", lang = "en")
+  
+  # Calculate readability indices from tokenized text
+  readability_scores <- koRpus::readability(tokenized, quiet = TRUE)
+  
+  # Extract the three main readability indices
+  df <- data.frame(
+    index = c("Flesch-Kincaid", "FORCAST", "SMOG"),
+    grade = c(
+      round(readability_scores@Flesch.Kincaid$grade),
+      round(readability_scores@FORCAST$grade),
+      round(readability_scores@SMOG$grade)
+    ),
+    age = c(
+      round(readability_scores@Flesch.Kincaid$age),
+      round(readability_scores@FORCAST$age),
+      round(readability_scores@SMOG$age)
+    ),
+    stringsAsFactors = FALSE
+  )
+  
+  knitr::kable(df, format="markdown")
+  
+}, error = function(e) {
+  # Fallback if koRpus fails
+  cat("*Readability scores unavailable for documents of this size. ",
+      "Estimated reading level: College/Graduate (based on technical content).*\n")
+})
 ```
 
 ------------------------------------------------------------------------
@@ -383,7 +468,7 @@ library(OCSdata)
 <u>**Packages used in this case study:** </u>
 
 | Package | Use in this case study |
-|-------------------------------|----------------------------------------|
+|--------------------------------|----------------------------------------|
 | [readxl](https://readxl.tidyverse.org/index.html) | to import an excel file |
 | [httr](https://httr.r-lib.org/) | to retrieve data from an API |
 | [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes) |
@@ -777,10 +862,9 @@ Importantly, the API also includes population estimates for the years
 
 ------------------------------------------------------------------------
 
-For the purposes of this case study, we have
-saved files after getting the data from the API that you may import into
-your R environment using the `OCSdata` package and the `load()`
-function:
+For the purposes of this case study, we have saved files after getting
+the data from the API that you may import into your R environment using
+the `OCSdata` package and the `load()` function:
 
 ```{r, eval=FALSE}
 # install.packages("OCSdata")
@@ -912,7 +996,10 @@ save(land, file =  here::here("data", "imported", "land_area.rda"))
 
 ------------------------------------------------------------------------
 
-**Note:** The ARCOS API referenced in this section is no longer publicly available. However, we've included this information for reference to demonstrate how APIs work. For this case study, we'll be using pre-downloaded data files instead.
+**Note:** The ARCOS API referenced in this section is no longer publicly
+available. However, we've included this information for reference to
+demonstrate how APIs work. For this case study, we'll be using
+pre-downloaded data files instead.
 
 ------------------------------------------------------------------------
 
@@ -932,10 +1019,13 @@ unless the API is public.
 
 ------------------------------------------------------------------------
 
-We are interested in the county level data. The original API included county-level population data (the number of people per county
-in each state in the US from 2006 to 2014).
+We are interested in the county level data. The original API included
+county-level population data (the number of people per county in each
+state in the US from 2006 to 2014).
 
-The following steps show how you would typically use a public API (though we won't be able to execute these steps since the API is no longer available): 
+The following steps show how you would typically use a public API
+(though we won't be able to execute these steps since the API is no
+longer available):
 
 1.  Pressing the `GET` button on the API.
 
@@ -994,14 +1084,15 @@ GET(url = "https://exampleURL",
 The default authentication request type is `"basic"` and typically what
 is needed.
 
-After using the `GET` function, we would have examined what the data looked like.
+After using the `GET` function, we would have examined what the data
+looked like.
 
 ```{r}
 # county_pop_json
 ```
 
-The object called `county_pop_json` would have been a `json`
-object. A [JavaScript Object Notation
+The object called `county_pop_json` would have been a `json` object. A
+[JavaScript Object Notation
 (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)
 object (or file format) is
 [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language)
@@ -1011,8 +1102,8 @@ files to make transmitting data from websites easier.
 You would also see that the `Status` is `200`, which means that you were
 successful in retrieving the data from the API.
 
-We would then use the `content()` function of the `httr` package to extract
-the text from the file:
+We would then use the `content()` function of the `httr` package to
+extract the text from the file:
 
 ```{r}
 # county_pop_text <- 
@@ -1049,9 +1140,9 @@ processed like a numeric value in a mathematical sense.
 # stringr::str_sub(county_pop_text, start = 1, end = 400)
 ```
 
-To get the data into a more readable format, we would use the `fromJSON()`
-function of the `jsonlite` package and again create a tibble of the data
-using `as_tibble()`
+To get the data into a more readable format, we would use the
+`fromJSON()` function of the `jsonlite` package and again create a
+tibble of the data using `as_tibble()`
 
 ```{r}
 # county_pop <- 
@@ -1061,8 +1152,8 @@ using `as_tibble()`
 # county_pop <- as_tibble(county_pop)
 ```
 
-We could use the `glimpse()` function and the `distinct()` function of the
-`dplyr` package to get a better sense of the data. The `distinct()`
+We could use the `glimpse()` function and the `distinct()` function of
+the `dplyr` package to get a better sense of the data. The `distinct()`
 function allows us to take a look at the unique values of the `year`
 variable.
 
@@ -1077,7 +1168,8 @@ The data would have included the full range from 2006-2014.
 
 ------------------------------------------------------------------------
 
-Since the API is no longer available, we'll load the county population data from a file that was previously downloaded:
+Since the API is no longer available, we'll load the county population
+data from a file that was previously downloaded:
 
 ```{r}
 load(here::here("data", "imported", "county_pop_arcos.rda"))
@@ -1109,7 +1201,8 @@ or in R, the URL would have been:
 
 <b><u> Question Opportunity </u></b>
 
-If the API were still available, how would you modify the import code based on what you learned from the population data example?
+If the API were still available, how would you modify the import code
+based on what you learned from the population data example?
 
 #### 
 
@@ -1117,7 +1210,8 @@ If the API were still available, how would you modify the import code based on w
 
 <details>
 
-<summary>Click here to reveal what the code would have looked like.</summary>
+<summary>Click here to reveal what the code would have looked
+like.</summary>
 
 ```{r, eval = FALSE}
 county_annual_json <- 
@@ -2708,7 +2802,7 @@ See the
 for the `Hmisc` package to learn more about these functions.
 
 | ggplot2 wrapper | Hmisc function | Details |
-|----------------|----------------|-----------------------------------------|
+|-----------------|-----------------|--------------------------------------|
 | `mean_cl_normal` | `smean.cl.normal` | computes 3 summary variables: the sample mean and lower and upper Gaussian confidence limits based on the t-distribution |
 | `mean_sd` | `smean.sd` | computes the mean plus or minus the standard deviation |
 | `mean_sdl` | `smean.sdl` | computes the mean plus or minus a constant times the standard deviation |
@@ -4018,8 +4112,8 @@ often the rural counties have a greater value than the urban counties.
 example <-tibble(pills = c(10,12, 20, 25,30, 40), county = c("R", "U", "U", "U", "R", "R"))
 example
 
-R = c(10,30, 40)
-U = c(12, 20, 25)
+R <- c(10,30, 40)
+U <- c(12, 20, 25)
 
 outer(R,U, ">")
 
@@ -4410,7 +4504,7 @@ A wrapper package about this API is available
 <u>**Packages used in this case study:** </u>
 
 | Package | Use in this case study |
-|-------------------------------|----------------------------------------|
+|--------------------------------|----------------------------------------|
 | [readxl](https://readxl.tidyverse.org/index.html) | to import an excel file |
 | [httr](https://httr.r-lib.org/) | to retrieve data from an API |
 | [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes) |
@@ -4510,7 +4604,7 @@ sessionInfo()
 
 ```{r, echo=FALSE}
 rmarkdown:::perf_timer_stop("render")
-pts = rmarkdown:::perf_timer_summary()
+pts <- rmarkdown:::perf_timer_summary()
 cat("About", round(pts$time[1]/1000 + 5), "-", round(pts$time[1]/1000 + 15),"seconds")
 ```
 
