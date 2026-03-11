@@ -81,8 +81,7 @@ To access the GitHub Repository for this case study see here: https://github.com
 You may also access and download the data using our `OCSdata` package. To learn more about this package including examples, see this [link](https://github.com/opencasestudies/OCSdata). Here is how you would install this package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 ```
 
 This case study is part of a series of public health case studies for the [Bloomberg American Health  Initiative](https://americanhealth.jhu.edu/open-case-studies).
@@ -467,13 +466,15 @@ Importantly, the API also includes population estimates for the years (2006 to 2
 # **Data Import**
 *** 
 
-Note that if you have trouble with the data import from the API, we have saved files after getting the data from the API that you may import into your R environment using the `OCSdata` package:
+For the purposes of this case study, we have saved files after getting the data from the API that you may import into your R environment using the `OCSdata` package and the `load()` function:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
+# install.packages("OCSdata")
 # library(OCSdata)
-load_imported_data("ocs-bp-opioid-rural-urban")
+imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(here::here("data", "imported", "land_area.rda"))
+load(here::here("data", "imported", "county_pop_arcos.rda"))
+load(here::here("data", "imported", "county_annual.rda"))
 ```
 
 You may also obtain these files from the `data/imported` directory of our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/).
@@ -504,12 +505,11 @@ We will use the `read_excel()` function of the `readxl` package to import the da
 If you did not clone our github repository or do not have this data already, you may download this data using the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
+# install.packages("OCSdata")
 # library(OCSdata)
 
-load_raw_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-# This function creates a "data" sub-directory in your current working directory.
+raw_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+# This function creates a "OCSdata" sub-directory in your current working directory.
 # It also creates a "raw" sub-directory within "data" which contains the .xls file.
 ```
 
@@ -579,15 +579,17 @@ The `jsonlite` package allows you to convert the data from `JSON` (often used by
 
 APIs typically require a password or key to gain access or authenticate your data request. The `httr` package helps to authenticate your data request. Often these keys are something that you do not want to share, unless the API is public.
 
-In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed public, and currently "uO4EK6I" is publicly published as a key to use on the [github page](https://github.com/wpinvestigative/arcos) for the `arcos` package. We will use that here to access the API.
+**Note:** The ARCOS API referenced in this section is no longer publicly available. However, we've included this information for reference to demonstrate how APIs work. For this case study, we'll be using pre-downloaded data files instead.
+
+------------------------------------------------------------------------
 
 
 ## **County Population Data**
 ***
 
-We are interested in the county level data. Conveniently, the API also includes county-level population data (the number of people per county in each state in the US from 2006 to 2014)
+We are interested in the county level data. The original API included county-level population data (the number of people per county in each state in the US from 2006 to 2014).
 
-We can access it from the API by:
+The following steps show how you would typically use a public API (though we won't be able to execute these steps since the API is no longer available):
 
 1. Pressing the `GET` button on the API.
 
@@ -602,7 +604,7 @@ knitr::include_graphics(here::here("www", "img", "get.png"))
 knitr::include_graphics(here::here("www", "img", "tryitout.png"))
 ```
 
-3. Entering the key (which we got from [here]([github page](https://github.com/wpinvestigative/arcos))).
+3. Entering the key.
 
 ```{r, echo=FALSE}
 knitr::include_graphics(here::here("www", "img", "key.png"))
@@ -614,17 +616,17 @@ knitr::include_graphics(here::here("www", "img", "key.png"))
 knitr::include_graphics(here::here("www", "img", "execute.png"))
 ```
 
-This gives us the following output:
+This would have given us the following output:
 
 `curl -X GET "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I" -H  "accept: application/json"`
 
-We can copy the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package :
+We could have copied the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and used it in the `GET()` function of the `httr` package :
 
-```{r}
+```{r, eval = FALSE}
 count_url <- "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"
 
 county_pop_json <- 
-  httr::GET(url = count_url)
+   httr::GET(url = count_url)
 ```
 
 If we needed to specify a username and password, we would do so using the `authenticate()` function of the `httr` package within the `GET` function. The `authenticate()` function takes `user`, `password` and `type` arguments.
@@ -640,25 +642,24 @@ GET(url = "https://exampleURL",
 
 The default authentication request type is `"basic"` and typically what is needed.
 
-Now that we have used the `GET` function, let's see what the data are. 
+After using the `GET` function, we would have examined what the data looked like.
 
 ```{r}
-county_pop_json
+# county_pop_json
 ```
 
-Here we can see that the object called `county_pop_json` is a `json` object. 
-A [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) object (or file format) is [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that it does not take up much memory and they are human readable files to make transmitting data from websites easier.
+The object called `county_pop_json` would have been a `json` object. A [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) object (or file format) is [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that it does not take up much memory and they are human readable files to make transmitting data from websites easier.
 
-You will also see that the `Status` is `200`, which means that we were successful in retrieving the data from the API.
+You would also see that the `Status` is `200`, which means that you were successful in retrieving the data from the API.
 
-Now we can use the `content()` function of the `httr` package to extract the text from the file:
+We would then use the `content()` function of the `httr` package to extract the text from the file:
 
 ```{r}
-county_pop_text <- 
-  httr::content(county_pop_json, "text")
+# county_pop_text <- 
+#   httr::content(county_pop_json, "text")
 ```
 
-This will be a very large string at this point, we can take a look at part of it by using the `str_sub()` function of the `stringr` package. In this case we will only look at the first 400 characters.
+This would be a very large string at this point. We could take a look at part of it by using the `str_sub()` function of the `stringr` package. In this case we would only look at the first 400 characters.
 
 What is a string or a character?
 
@@ -676,38 +677,36 @@ If data are of class character, than the numeric values will not be processed li
 ***
 
 ```{r}
-stringr::str_sub(county_pop_text, start = 1, end = 400)
+# stringr::str_sub(county_pop_text, start = 1, end = 400)
 ```
 
-
-To get the data into a more readable format, we can use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()` 
+To get the data into a more readable format, we would use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()`
 
 ```{r}
-county_pop <- 
-  jsonlite::fromJSON(county_pop_text, 
-                     flatten = TRUE)
-
-county_pop <- as_tibble(county_pop)
+# county_pop <- 
+#   jsonlite::fromJSON(county_pop_text, 
+#                      flatten = TRUE)
+# 
+# county_pop <- as_tibble(county_pop)
 ```
 
-We can use the `glimpse()` function and the `distinct()` function of the `dplyr` package to get a better sense of the data. The `distinct()` function allows us to take a look at the unique values of the `year` variable.
+We could use the `glimpse()` function and the `distinct()` function of the `dplyr` package to get a better sense of the data. The `distinct()` function allows us to take a look at the unique values of the `year` variable.
 
 ```{r}
-dplyr::glimpse(county_pop)
-dplyr::distinct(county_pop, year)
+# dplyr::glimpse(county_pop)
+# dplyr::distinct(county_pop, year)
 ```
 
-It looks like we have the full data from 2006-2014.
+The data would have included the full range from 2006-2014.
 
-Now let's save this data:
+## **Using Pre-Downloaded Data**
 
-```{r, eval = FALSE, echo = FALSE}
-# For instructors who want to do a simpler version of import
-write.csv(county_pop, file = here::here("data", "simpler_import", "county_pop_arcos.csv"))
-```
+***
 
-```{r, eval = FALSE}
-save(county_pop, file =  here::here("data", "imported",  "county_pop_arcos.rda"))
+Since the API is no longer available, we'll load the county population data from a file that was previously downloaded:
+
+```{r}
+load(here::here("www", "data", "imported", "county_pop_arcos.rda"))
 ```
 
 
@@ -723,84 +722,23 @@ curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4E
      -H  "accept: application/json"
 ```     
 
-or in R, the URL is 
+or in R, the URL would have been:
 
 ```{r}
-annual_url <- 
-  "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
+# annual_url <- 
+#   "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
 ```
-
 
 #### {.recall_code_question_block}
 <b><u> Question Opportunity </u></b>
 
-See if you can modify the import code without looking at the code for the population data.
+If the API were still available, how would you modify the import code based on what you learned from the population data example?
 
 ####
 
-```{r di_code1-setup}
-library(httr)
-library(jsonlite)
-library(tibble)
-
-annual_url <- "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
-```
-
-```{r di_code1, exercise = TRUE}
-# create a json object
-county_annual_json <-
-
-# extract the text
-county_annual_json_text <- 
-
-# put the data into a more readable format
-county_annual <-
-
-# create a tibble of the data
-annualDosage <-
-```
-
-```{r di_code1-hint-1}
-county_annual_json <- 
-  httr::GET(url = annual_url)
-```
-
-```{r di_code1-hint-2}
-county_annual_json <- 
-  httr::GET(url = annual_url)
-
-county_annual_json_text <- 
-  httr::content(county_annual_json, "text")
-```
-
-```{r di_code1-hint-3}
-county_annual_json <- 
-  httr::GET(url = annual_url)
-
-county_annual_json_text <- 
-  httr::content(county_annual_json, "text")
-
-county_annual <- 
-  jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
-```
-
-```{r di_code1-solution}
-county_annual_json <- 
-  httr::GET(url = annual_url)
-
-county_annual_json_text <- 
-  httr::content(county_annual_json, "text")
-
-county_annual <- 
-  jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
-
-annualDosage <- 
-  tibble::as_tibble(county_annual)
-```
-
 ***
 
-<details> <summary> Click here to reveal the code. </summary>
+<details> <summary> Click here to reveal what the code would have looked like. </summary>
 
 ```{r, eval = FALSE}
 county_annual_json <- 
@@ -820,18 +758,9 @@ annualDosage <-
 
 ***
 
-Now we will also save this data:
+Instead, we will load this data from the pre-downloaded file:
 
-```{r, echo = FALSE, eval = FALSE}
-# for instructors who want to do a simpler version of import
-write.csv(annualDosage, file = here::here("data", "simpler_import", "county_annual.csv"))
-```
-
-```{r, eval = FALSE}
-save(annualDosage, file = here::here("data", "imported", "county_annual.rda"))
-```
-
-```{r, echo = FALSE}
+```{r}
 load(here::here("www", "data", "imported", "county_annual.rda"))
 ```
 
@@ -841,7 +770,7 @@ glimpse(annualDosage)
 distinct(annualDosage, year)
 ```
 
-Looks like we have the same years of data.
+The data includes the same years as the population data (2006-2014).
 
 ```{r, eval = FALSE, echo = FALSE}
 # We also retrieved the monthly data for instructors who wish to use this data
@@ -869,16 +798,7 @@ save(monthlyDosage,
 # **Data Exploration**
 ***
 
-If you have been following along but stopped, we could load our imported data using the `OCSdata` package like so:
-
-```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_imported_data("ocs-bp-opioid-rural-urban")
-```
-
-If you prefer loading the imported data from the "data" directory, you may do it like so:
+If you have been following along but stopped, we could load our imported data from the "data" directory like so:
 
 ```{r, eval=FALSE}
 load(here::here("data", "imported", "land_area.rda"))
@@ -895,24 +815,26 @@ load(here::here("www", "data", "imported", "county_annual.rda"))
 ***
 <details> <summary> If you skipped the data import section click here. </summary>
 
-First you need to install the `OCSdata` package:
+First you need to install and load the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may load the imported data into your R environment using the following function:
+Then, you may load the imported data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_imported_data("ocs-bp-opioid-rural-urban")
+imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(here::here("data", "imported", "land_area.rda"))
+load(here::here("data", "imported", "county_pop_arcos.rda"))
+load(here::here("data", "imported", "county_annual.rda"))
 ```
 
 Alternatively, you may download the raw data as well as the CSV files for simpler import using the following function:
 
 ```{r, eval=FALSE}
-load_simpler_import("ocs-bp-opioid-rural-urban", outpath = getwd())
+simpler_import_data("ocs-bp-opioid-rural-urban", outpath = getwd())
 ```
 
 If the package does not work for you, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/imported). Download these files and then place them in your current working directory within a subdirectory called "imported" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
@@ -1075,16 +997,7 @@ mydata %>%
 # **Data Wrangling**
 ***
 
-If you have been following along but stopped, we could load our imported data using the `OCSdata` package like so:
-
-```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_imported_data("ocs-bp-opioid-rural-urban")
-```
-
-If you prefer loading the imported data from the "data" directory, you may do it like so:
+If you have been following along but stopped, we could load our imported data from the "data" directory like so:
 
 ```{r, eval=FALSE}
 load(here::here("data", "imported", "land_area.rda"))
@@ -1101,35 +1014,31 @@ load(here::here("www", "data", "imported", "county_annual.rda"))
 ***
 <details> <summary> If you skipped the previous sections click here. </summary>
 
-First you need to install the `OCSdata` package:
+First you need to install and load the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may load the imported data into your R environment using the following function:
+Then, you may load the imported data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_imported_data("ocs-bp-opioid-rural-urban")
+imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(here::here("OCSdata", "data", "imported", "land_area.rda"))
+load(here::here("OCSdata", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCSdata", "data", "imported", "county_annual.rda"))
 ```
 
 Alternatively, you may download the raw data as well as the CSV files for simpler import using the following function:
 
 ```{r, eval=FALSE}
-load_simpler_import("ocs-bp-opioid-rural-urban", outpath = getwd())
+simpler_import_data("ocs-bp-opioid-rural-urban", outpath = getwd())
 ```
 
 If the package does not work for you, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/imported). Download these files and then place them in your current working directory within a subdirectory called "imported" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
 
-```{r, eval=FALSE}
-load(here::here("data", "imported", "land_area.rda"))
-load(here::here("data", "imported", "county_pop_arcos.rda"))
-load(here::here("data", "imported", "county_annual.rda"))
-```
-
-```{r, echo=FALSE}
+```{r}
 load(here::here("www", "data", "imported", "land_area.rda"))
 load(here::here("www", "data", "imported", "county_pop_arcos.rda"))
 load(here::here("www", "data", "imported", "county_annual.rda"))
@@ -1840,16 +1749,7 @@ grade_code()
 # **Data Visualization**
 ***
 
-If you have been following along but stopped, we could load our wrangled data using the `OCSdata` package like so:
-
-```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-```
-
-If you prefer loading the wrangled data from the "data" directory, you may do it like so:
+If you have been following along but stopped, we could load our wrangled data from the "data" directory like so:
 
 ```{r, eval=FALSE}
 load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
@@ -1864,18 +1764,19 @@ load(file = here::here("www", "data", "wrangled", "county_info.rda"))
 ***
 <details> <summary> If you skipped the previous sections click here. </summary>
 
-First you need to install the `OCSdata` package:
+First you need to install and load the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may download and load the wrangled data into your R environment using the following function:
+Then, you may download and load the wrangled data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+wrangled_rda("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(file = here::here("OCSdata", "data", "wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCSdata", "data", "wrangled", "county_info.rda"))
 ```
 
 If the package does not work for you, alternatively, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/wrangled). Download these files and then place them in your current working directory within a subdirectory called "wrangled" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
@@ -3187,16 +3088,7 @@ question("Which one of the following inside the `ggplot()` function can be used 
 # **Data Analysis**
 ***
 
-If you have been following along but stopped, we could load our wrangled data using the `OCSdata` package like so:
-
-```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-```
-
-If you prefer loading the wrangled data from the "data" directory, you may do it like so:
+If you have been following along but stopped, we could load our wrangled data from the "data" directory like so:
 
 ```{r, eval=FALSE}
 load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
@@ -3214,15 +3106,16 @@ load(file = here::here("www", "data", "wrangled", "county_info.rda"))
 First you need to install the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may download and load the wrangled data into your R environment using the following function:
+Then, you may download and load the wrangled data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+wrangled_rda("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(file = here::here("OCSdata", "data", "wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCSdata", "data", "wrangled", "county_info.rda"))
 ```
 
 If the package does not work for you, alternatively, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/wrangled). Download these files and then place them in your current working directory within a subdirectory called "wrangled" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
