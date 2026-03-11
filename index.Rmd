@@ -1626,7 +1626,6 @@ save(county_info, file = here::here("www", "data", "wrangled", "county_info.rda"
 quiz(caption = "",
   question("If we want to modify a tibble in place using a sequence of `%>%` pipe operations, which of the following is the correct approach in dplyr?",
     answer("`df <- df %>% mutate(...)`", correct = TRUE, message = "Correct! Using `<-` to assign the result of a pipeline back to the same variable name is the standard dplyr approach."),
-    answer("`df %<>% mutate(...)`", message = "The `%<>%` compound assignment pipe from magrittr works, but using explicit `<-` assignment with `%>%` is clearer and more standard."),
     answer("`df %>% mutate(...)`", message = "This pipes into `mutate()` but does not save the result anywhere."),
     answer("`mutate(df, ...)`", message = "This returns a modified tibble but does not update `df` unless assigned with `<-`."),
     allow_retry = TRUE,
@@ -3084,7 +3083,7 @@ question("Which of the following is the long format of the data?",
     answer("A", message = "This is the wide format because each variable has its own column."),
     answer("B", correct = TRUE),
     allow_retry = TRUE,
-    random_answer_order = TRUE
+    random_answer_order = FALSE
   )
 ```
 
