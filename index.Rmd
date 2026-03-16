@@ -81,8 +81,7 @@ To access the GitHub Repository for this case study see here: https://github.com
 You may also access and download the data using our `OCSdata` package. To learn more about this package including examples, see this [link](https://github.com/opencasestudies/OCSdata). Here is how you would install this package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 ```
 
 This case study is part of a series of public health case studies for the [Bloomberg American Health  Initiative](https://americanhealth.jhu.edu/open-case-studies).
@@ -210,7 +209,6 @@ library(tibble)
 library(httr)
 library(jsonlite)
 library(stringr)
-library(magrittr)
 library(dplyr)
 library(tidyr)
 library(naniar)
@@ -238,8 +236,7 @@ Package   | Use in this case study
 [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)   
 [jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
-[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data (also provides the `%>%` pipe operator)   
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
 [naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
@@ -467,13 +464,15 @@ Importantly, the API also includes population estimates for the years (2006 to 2
 # **Data Import**
 *** 
 
-Note that if you have trouble with the data import from the API, we have saved files after getting the data from the API that you may import into your R environment using the `OCSdata` package:
+For the purposes of this case study, we have saved files after getting the data from the API that you may import into your R environment using the `OCSdata` package and the `load()` function:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
+# install.packages("OCSdata")
 # library(OCSdata)
-load_imported_data("ocs-bp-opioid-rural-urban")
+imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(here::here("OCS_data", "data", "imported", "land_area.rda"))
+load(here::here("OCS_data", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCS_data", "data", "imported", "county_annual.rda"))
 ```
 
 You may also obtain these files from the `data/imported` directory of our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/).
@@ -504,12 +503,11 @@ We will use the `read_excel()` function of the `readxl` package to import the da
 If you did not clone our github repository or do not have this data already, you may download this data using the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
+# install.packages("OCSdata")
 # library(OCSdata)
 
-load_raw_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-# This function creates a "data" sub-directory in your current working directory.
+raw_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+# This function creates a "OCSdata" sub-directory in your current working directory.
 # It also creates a "raw" sub-directory within "data" which contains the .xls file.
 ```
 
@@ -539,7 +537,7 @@ See [here](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Project
 ***
 
 ```{r, eval=FALSE}
-land <- readxl::read_excel(here::here("data", "raw", "LND01.xls"))
+land <- readxl::read_excel(here::here("OCS_data", "data", "raw", "LND01.xls"))
 land <- as_tibble(land)
 ```
 
@@ -562,11 +560,11 @@ Now we will save our data in the data directory within a subdirectory called "im
 
 ```{r, eval = FALSE, echo = FALSE}
 # for instructors who want to do a simpler version of import
-write.csv(land, file = here::here("data", "simpler_import", "land_area.csv"))
+write.csv(land, file = here::here("OCS_data", "data", "simpler_import", "land_area.csv"))
 ```
 
 ```{r, eval = FALSE}
-save(land, file =  here::here("data", "imported", "land_area.rda"))
+save(land, file =  here::here("OCS_data", "data", "imported", "land_area.rda"))
 ```
 
 
@@ -579,15 +577,17 @@ The `jsonlite` package allows you to convert the data from `JSON` (often used by
 
 APIs typically require a password or key to gain access or authenticate your data request. The `httr` package helps to authenticate your data request. Often these keys are something that you do not want to share, unless the API is public.
 
-In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed public, and currently "uO4EK6I" is publicly published as a key to use on the [github page](https://github.com/wpinvestigative/arcos) for the `arcos` package. We will use that here to access the API.
+**Note:** The ARCOS API referenced in this section is no longer publicly available. However, we've included this information for reference to demonstrate how APIs work. For this case study, we'll be using pre-downloaded data files instead.
+
+------------------------------------------------------------------------
 
 
 ## **County Population Data**
 ***
 
-We are interested in the county level data. Conveniently, the API also includes county-level population data (the number of people per county in each state in the US from 2006 to 2014)
+We are interested in the county level data. The original API included county-level population data (the number of people per county in each state in the US from 2006 to 2014).
 
-We can access it from the API by:
+The following steps show how you would typically use a public API (though we won't be able to execute these steps since the API is no longer available):
 
 1. Pressing the `GET` button on the API.
 
@@ -602,7 +602,7 @@ knitr::include_graphics(here::here("www", "img", "get.png"))
 knitr::include_graphics(here::here("www", "img", "tryitout.png"))
 ```
 
-3. Entering the key (which we got from [here]([github page](https://github.com/wpinvestigative/arcos))).
+3. Entering the key.
 
 ```{r, echo=FALSE}
 knitr::include_graphics(here::here("www", "img", "key.png"))
@@ -614,17 +614,17 @@ knitr::include_graphics(here::here("www", "img", "key.png"))
 knitr::include_graphics(here::here("www", "img", "execute.png"))
 ```
 
-This gives us the following output:
+This would have given us the following output:
 
 `curl -X GET "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I" -H  "accept: application/json"`
 
-We can copy the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package :
+We could have copied the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and used it in the `GET()` function of the `httr` package :
 
-```{r}
+```{r, eval = FALSE}
 count_url <- "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"
 
 county_pop_json <- 
-  httr::GET(url = count_url)
+   httr::GET(url = count_url)
 ```
 
 If we needed to specify a username and password, we would do so using the `authenticate()` function of the `httr` package within the `GET` function. The `authenticate()` function takes `user`, `password` and `type` arguments.
@@ -640,25 +640,24 @@ GET(url = "https://exampleURL",
 
 The default authentication request type is `"basic"` and typically what is needed.
 
-Now that we have used the `GET` function, let's see what the data are. 
+After using the `GET` function, we would have examined what the data looked like.
 
 ```{r}
-county_pop_json
+# county_pop_json
 ```
 
-Here we can see that the object called `county_pop_json` is a `json` object. 
-A [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) object (or file format) is [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that it does not take up much memory and they are human readable files to make transmitting data from websites easier.
+The object called `county_pop_json` would have been a `json` object. A [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) object (or file format) is [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that it does not take up much memory and they are human readable files to make transmitting data from websites easier.
 
-You will also see that the `Status` is `200`, which means that we were successful in retrieving the data from the API.
+You would also see that the `Status` is `200`, which means that you were successful in retrieving the data from the API.
 
-Now we can use the `content()` function of the `httr` package to extract the text from the file:
+We would then use the `content()` function of the `httr` package to extract the text from the file:
 
 ```{r}
-county_pop_text <- 
-  httr::content(county_pop_json, "text")
+# county_pop_text <- 
+#   httr::content(county_pop_json, "text")
 ```
 
-This will be a very large string at this point, we can take a look at part of it by using the `str_sub()` function of the `stringr` package. In this case we will only look at the first 400 characters.
+This would be a very large string at this point. We could take a look at part of it by using the `str_sub()` function of the `stringr` package. In this case we would only look at the first 400 characters.
 
 What is a string or a character?
 
@@ -676,38 +675,36 @@ If data are of class character, than the numeric values will not be processed li
 ***
 
 ```{r}
-stringr::str_sub(county_pop_text, start = 1, end = 400)
+# stringr::str_sub(county_pop_text, start = 1, end = 400)
 ```
 
-
-To get the data into a more readable format, we can use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()` 
+To get the data into a more readable format, we would use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()`
 
 ```{r}
-county_pop <- 
-  jsonlite::fromJSON(county_pop_text, 
-                     flatten = TRUE)
-
-county_pop <- as_tibble(county_pop)
+# county_pop <- 
+#   jsonlite::fromJSON(county_pop_text, 
+#                      flatten = TRUE)
+# 
+# county_pop <- as_tibble(county_pop)
 ```
 
-We can use the `glimpse()` function and the `distinct()` function of the `dplyr` package to get a better sense of the data. The `distinct()` function allows us to take a look at the unique values of the `year` variable.
+We could use the `glimpse()` function and the `distinct()` function of the `dplyr` package to get a better sense of the data. The `distinct()` function allows us to take a look at the unique values of the `year` variable.
 
 ```{r}
-dplyr::glimpse(county_pop)
-dplyr::distinct(county_pop, year)
+# dplyr::glimpse(county_pop)
+# dplyr::distinct(county_pop, year)
 ```
 
-It looks like we have the full data from 2006-2014.
+The data would have included the full range from 2006-2014.
 
-Now let's save this data:
+## **Using Pre-Downloaded Data**
 
-```{r, eval = FALSE, echo = FALSE}
-# For instructors who want to do a simpler version of import
-write.csv(county_pop, file = here::here("data", "simpler_import", "county_pop_arcos.csv"))
-```
+***
 
-```{r, eval = FALSE}
-save(county_pop, file =  here::here("data", "imported",  "county_pop_arcos.rda"))
+Since the API is no longer available, we'll load the county population data from a file that was previously downloaded:
+
+```{r}
+load(here::here("www", "data", "imported", "county_pop_arcos.rda"))
 ```
 
 
@@ -723,84 +720,23 @@ curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4E
      -H  "accept: application/json"
 ```     
 
-or in R, the URL is 
+or in R, the URL would have been:
 
 ```{r}
-annual_url <- 
-  "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
+# annual_url <- 
+#   "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
 ```
-
 
 #### {.recall_code_question_block}
 <b><u> Question Opportunity </u></b>
 
-See if you can modify the import code without looking at the code for the population data.
+If the API were still available, how would you modify the import code based on what you learned from the population data example?
 
 ####
 
-```{r di_code1-setup}
-library(httr)
-library(jsonlite)
-library(tibble)
-
-annual_url <- "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
-```
-
-```{r di_code1, exercise = TRUE}
-# create a json object
-county_annual_json <-
-
-# extract the text
-county_annual_json_text <- 
-
-# put the data into a more readable format
-county_annual <-
-
-# create a tibble of the data
-annualDosage <-
-```
-
-```{r di_code1-hint-1}
-county_annual_json <- 
-  httr::GET(url = annual_url)
-```
-
-```{r di_code1-hint-2}
-county_annual_json <- 
-  httr::GET(url = annual_url)
-
-county_annual_json_text <- 
-  httr::content(county_annual_json, "text")
-```
-
-```{r di_code1-hint-3}
-county_annual_json <- 
-  httr::GET(url = annual_url)
-
-county_annual_json_text <- 
-  httr::content(county_annual_json, "text")
-
-county_annual <- 
-  jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
-```
-
-```{r di_code1-solution}
-county_annual_json <- 
-  httr::GET(url = annual_url)
-
-county_annual_json_text <- 
-  httr::content(county_annual_json, "text")
-
-county_annual <- 
-  jsonlite::fromJSON(county_annual_json_text, flatten = TRUE)
-
-annualDosage <- 
-  tibble::as_tibble(county_annual)
-```
-
 ***
 
-<details> <summary> Click here to reveal the code. </summary>
+<details> <summary> Click here to reveal what the code would have looked like. </summary>
 
 ```{r, eval = FALSE}
 county_annual_json <- 
@@ -820,18 +756,9 @@ annualDosage <-
 
 ***
 
-Now we will also save this data:
+Instead, we will load this data from the pre-downloaded file:
 
-```{r, echo = FALSE, eval = FALSE}
-# for instructors who want to do a simpler version of import
-write.csv(annualDosage, file = here::here("data", "simpler_import", "county_annual.csv"))
-```
-
-```{r, eval = FALSE}
-save(annualDosage, file = here::here("data", "imported", "county_annual.rda"))
-```
-
-```{r, echo = FALSE}
+```{r}
 load(here::here("www", "data", "imported", "county_annual.rda"))
 ```
 
@@ -841,7 +768,7 @@ glimpse(annualDosage)
 distinct(annualDosage, year)
 ```
 
-Looks like we have the same years of data.
+The data includes the same years as the population data (2006-2014).
 
 ```{r, eval = FALSE, echo = FALSE}
 # We also retrieved the monthly data for instructors who wish to use this data
@@ -859,31 +786,22 @@ monthlyDosage <-
 
 # for instructors who want to do a simpler version of import
 write.csv(monthlyDosage, 
-          file = here::here("data","extra", "county_monthly.csv"))
+          file = here::here("OCS_data", "data","extra", "county_monthly.csv"))
 
 save(monthlyDosage, 
-     file =  here::here("data", "extra", "county_monthly.rda"))
+     file =  here::here("OCS_data", "data", "extra", "county_monthly.rda"))
 ```
 
 
 # **Data Exploration**
 ***
 
-If you have been following along but stopped, we could load our imported data using the `OCSdata` package like so:
+If you have been following along but stopped, we could load our imported data from the "data" directory like so:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_imported_data("ocs-bp-opioid-rural-urban")
-```
-
-If you prefer loading the imported data from the "data" directory, you may do it like so:
-
-```{r, eval=FALSE}
-load(here::here("data", "imported", "land_area.rda"))
-load(here::here("data", "imported", "county_pop_arcos.rda"))
-load(here::here("data", "imported", "county_annual.rda"))
+load(here::here("OCS_data", "data", "imported", "land_area.rda"))
+load(here::here("OCS_data", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCS_data", "data", "imported", "county_annual.rda"))
 ```
 
 ```{r, echo=FALSE}
@@ -895,32 +813,34 @@ load(here::here("www", "data", "imported", "county_annual.rda"))
 ***
 <details> <summary> If you skipped the data import section click here. </summary>
 
-First you need to install the `OCSdata` package:
+First you need to install and load the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may load the imported data into your R environment using the following function:
+Then, you may load the imported data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_imported_data("ocs-bp-opioid-rural-urban")
+imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(here::here("OCS_data", "data", "imported", "land_area.rda"))
+load(here::here("OCS_data", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCS_data", "data", "imported", "county_annual.rda"))
 ```
 
 Alternatively, you may download the raw data as well as the CSV files for simpler import using the following function:
 
 ```{r, eval=FALSE}
-load_simpler_import("ocs-bp-opioid-rural-urban", outpath = getwd())
+simpler_import_data("ocs-bp-opioid-rural-urban", outpath = getwd())
 ```
 
 If the package does not work for you, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/imported). Download these files and then place them in your current working directory within a subdirectory called "imported" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
 
 ```{r, eval=FALSE}
-load(here::here("data", "imported", "land_area.rda"))
-load(here::here("data", "imported", "county_pop_arcos.rda"))
-load(here::here("data", "imported", "county_annual.rda"))
+load(here::here("OCS_data", "data", "imported", "land_area.rda"))
+load(here::here("OCS_data", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCS_data", "data", "imported", "county_annual.rda"))
 ```
 
 ```{r, echo=FALSE}
@@ -973,13 +893,13 @@ Although it is very hard to see in the figure, we appear to be missing some valu
 
 Let's use the `filter()` function of the `dplyr` package and the `is.na()` base function to see more about the data that does not have `NAME` values.
 
-We will also start using the `%>%` pipe of the `magrittr` package for our assignments.
+We will also start using the `%>%` pipe operator for our assignments.
 
 ***
 <details> <summary> Click here if you are unfamiliar with piping in R, which uses this `%>%` operator</summary>  
 
 
-By [piping](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"} we mean using the `%>%` pipe operator which is accessible after loading the `tidyverse` or several of the packages within the tidyverse like `dplyr` because they load the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}. 
+By [piping](https://r4ds.had.co.nz/pipes.html){target="_blank"} we mean using the `%>%` pipe operator, which is available after loading `dplyr` or the `tidyverse`. 
 This allows us to perform multiple sequential steps on one data input. 
 
 </details> 
@@ -1075,21 +995,12 @@ mydata %>%
 # **Data Wrangling**
 ***
 
-If you have been following along but stopped, we could load our imported data using the `OCSdata` package like so:
+If you have been following along but stopped, we could load our imported data from the "data" directory like so:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_imported_data("ocs-bp-opioid-rural-urban")
-```
-
-If you prefer loading the imported data from the "data" directory, you may do it like so:
-
-```{r, eval=FALSE}
-load(here::here("data", "imported", "land_area.rda"))
-load(here::here("data", "imported", "county_pop_arcos.rda"))
-load(here::here("data", "imported", "county_annual.rda"))
+load(here::here("OCS_data", "data", "imported", "land_area.rda"))
+load(here::here("OCS_data", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCS_data", "data", "imported", "county_annual.rda"))
 ```
 
 ```{r, echo=FALSE}
@@ -1101,35 +1012,31 @@ load(here::here("www", "data", "imported", "county_annual.rda"))
 ***
 <details> <summary> If you skipped the previous sections click here. </summary>
 
-First you need to install the `OCSdata` package:
+First you need to install and load the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may load the imported data into your R environment using the following function:
+Then, you may load the imported data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_imported_data("ocs-bp-opioid-rural-urban")
+imported_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(here::here("OCSdata", "data", "imported", "land_area.rda"))
+load(here::here("OCSdata", "data", "imported", "county_pop_arcos.rda"))
+load(here::here("OCSdata", "data", "imported", "county_annual.rda"))
 ```
 
 Alternatively, you may download the raw data as well as the CSV files for simpler import using the following function:
 
 ```{r, eval=FALSE}
-load_simpler_import("ocs-bp-opioid-rural-urban", outpath = getwd())
+simpler_import_data("ocs-bp-opioid-rural-urban", outpath = getwd())
 ```
 
 If the package does not work for you, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/imported). Download these files and then place them in your current working directory within a subdirectory called "imported" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
 
-```{r, eval=FALSE}
-load(here::here("data", "imported", "land_area.rda"))
-load(here::here("data", "imported", "county_pop_arcos.rda"))
-load(here::here("data", "imported", "county_annual.rda"))
-```
-
-```{r, echo=FALSE}
+```{r}
 load(here::here("www", "data", "imported", "land_area.rda"))
 load(here::here("www", "data", "imported", "county_pop_arcos.rda"))
 load(here::here("www", "data", "imported", "county_annual.rda"))
@@ -1216,12 +1123,10 @@ Then, We will recode the `coutryfips` values for these rows to be `"05097"` usin
 
 We need to use `TRUE ~` to recode all the other `countyfips` values to what they currently are. Otherwise these would automatically be set to `NA`.
 
-We are also going to use a special pipe operator from the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) called the *compound assignment pipe operator* or sometimes the *double pipe operator*. 
-
-This allows us to use the `annualDosage` as our input and, in the same step, reassign it to take the updated value of the tibble, after all the subsequent steps have been performed. In this case, it is only one step, but this saves us typing and avoids creating an intermediate version of the tibble.
+We use the standard assignment operator `<-` combined with the `%>%` pipe to update `annualDosage` in place. This passes `annualDosage` into the pipeline on the right-hand side and assigns the result back to the same variable name, avoiding the creation of an intermediate tibble.
 
 ```{r}
-annualDosage %<>% 
+annualDosage <- annualDosage %>% 
   mutate(countyfips = case_when(BUYER_STATE == "AR" & 
                                 BUYER_COUNTY == "MONTGOMERY" ~ as.character("05097"),
                                 TRUE ~ countyfips))
@@ -1253,7 +1158,7 @@ annualDosage %>%
 We can remove these rows from our data set using the `filter()` command along with the `!` (exclamation point) before the `is.na()` function.
 
 ```{r}
-annualDosage %<>% 
+annualDosage <- annualDosage %>% 
   filter(!is.na(BUYER_COUNTY))
 ```
 
@@ -1298,17 +1203,16 @@ save(annualDosage, file = here("www", "exercise", "dw_code1.rda"))
 
 ```{r dw_code1-setup}
 library(tidyverse)
-library(magrittr)
 
 load(here("www", "exercise", "dw_code1.rda"))
 ```
 
 ```{r dw_code1, exercise=TRUE}
-annualDosage %<>%
+annualDosage <- annualDosage %>%
 ```
 
 ```{r dw_code1-solution}
-annualDosage %<>% 
+annualDosage <- annualDosage %>% 
   filter(!is.na(countyfips))
 ```
 
@@ -1316,7 +1220,7 @@ annualDosage %<>%
 
 <details> <summary> Click here to reveal the code. </summary>
 ```{r}
-annualDosage %<>% 
+annualDosage <- annualDosage %>% 
   filter(!is.na(countyfips))
 ```
 </details> 
@@ -1382,7 +1286,7 @@ Great, it looks like both are character strings based on the `<chr>` next to the
 We can use the `rename()` function of the `dplyr` package to rename the `STCOU` column from the `land_area` data set to be `countyfips`. The new name is always listed first before the old name with this function like so: `rename(new_name = old_name)`.
 
 ```{r}
-land_area %<>%
+land_area <- land_area %>%
   rename(countyfips = STCOU)
 ```
 
@@ -1460,7 +1364,7 @@ nrow(county_info) == nrow(county_pop)
 We are now ready to calculate the population density per square mile. We create a new column with this data using the `mutate()` function and the `/` to divide the `population` value by the land area value (in square miles) for each county. Let's also make the `year` variable a factor. We can do using the `as.factor()` base function. If you are not familiar with factors, please see the click to expand section above about data classes in R. 
 
 ```{r}
-county_info %<>%
+county_info <- county_info %>%
   mutate(density = population/LND110210D,
          year = as.factor(year))
 
@@ -1477,7 +1381,7 @@ We will use the `case_when()` function of the `dplyr` package to classify the ne
 The `|` operator is used to indicate that either expression should result in coding the county as `"Rural"`
 
 ```{r}
-county_info %<>%
+county_info <- county_info %>%
   mutate(rural_urban = case_when(density  >= 500 ~ "Urban",
                                  density  <  500 | population < 2500 ~ "Rural"))
 ```
@@ -1503,14 +1407,13 @@ save(annualDosage, county_info, file = here("www", "exercise", "dw_code2.rda"))
 
 ```{r dw_code2-setup}
 library(tidyverse)
-library(magrittr)
 
 load(here("www", "exercise", "dw_code2.rda"))
 ```
 
 ```{r dw_code2, exercise=TRUE}
 # To do so, we first need to make the "year" variable a factor as it is in the `county_info` tibble
-annualDosage %<>%
+annualDosage <- annualDosage %>%
 
 # Then, we join the data
 Annual <- 
@@ -1519,12 +1422,12 @@ glimpse(Annual)
 ```
 
 ```{r dw_code2-hint}
-annualDosage %<>%
+annualDosage <- annualDosage %>%
   mutate(year = as.factor(year))
 ```
 
 ```{r dw_code2-solution}
-annualDosage %<>%
+annualDosage <- annualDosage %>%
   mutate(year = as.factor(year))
 
 Annual <- 
@@ -1538,7 +1441,7 @@ glimpse(Annual)
 <details> <summary> Click here to reveal the code. </summary>
 
 ```{r}
-annualDosage %<>%
+annualDosage <- annualDosage %>%
   mutate(year = as.factor(year))
   
 Annual <- 
@@ -1642,17 +1545,16 @@ save(Annual, file = here("www", "exercise", "dw_code3.rda"))
 
 ```{r dw_code3-setup}
 library(tidyverse)
-library(magrittr)
 
 load(here("www", "exercise", "dw_code3.rda"))
 ```
 
 ```{r dw_code3, exercise=TRUE}
-Annual %<>%
+Annual <- Annual %>%
 ```
 
 ```{r dw_code3-solution}
-Annual %<>% 
+Annual <- Annual %>% 
   filter(!is.na(STATE))
 ```
 
@@ -1661,7 +1563,7 @@ Annual %<>%
 <details> <summary> Click here to reveal the code. </summary>
 
 ```{r}
-Annual %<>% 
+Annual <- Annual %>% 
   filter(!is.na(STATE))
 ```
 
@@ -1705,10 +1607,10 @@ Thus, it is important to keep in mind as we continue to analyze this data, that 
 Let's save this data now in a directory called "wrangled" within the "data" directory. We will also write csv file versions which could be useful to give to a collaborator for example.
 
 ```{r, eval=FALSE}
-write.csv(Annual, file = here::here("data","wrangled", "Annual_opioid_data.csv"))
-save(Annual, file =  here::here("data","wrangled", "Annual_opioid_data.rda"))
-write.csv(county_info, file = here::here("data", "wrangled", "county_info.csv"))
-save(county_info, file = here::here("data", "wrangled", "county_info.rda"))
+write.csv(Annual, file = here::here("OCS_data", "data","wrangled", "Annual_opioid_data.csv"))
+save(Annual, file =  here::here("OCS_data", "data","wrangled", "Annual_opioid_data.rda"))
+write.csv(county_info, file = here::here("OCS_data", "data", "wrangled", "county_info.csv"))
+save(county_info, file = here::here("OCS_data", "data", "wrangled", "county_info.rda"))
 ```
 
 ```{r, echo=FALSE}
@@ -1722,11 +1624,10 @@ save(county_info, file = here::here("www", "data", "wrangled", "county_info.rda"
 ***
 ``` {r dw_quiz, echo = FALSE}
 quiz(caption = "",
-  question("Which one of the pipe operators (from the `magrittr` package) should be used right after a variable name if we want to perform a sequence of operations on that variable, and meanwhile, assign the final output to that variable (without redefining that variable using `<-` or `=`)?",
-    answer("`%>%`", message = "This operator cannot assign the final output to that variable."),
-    answer("`%<%`", message = "This is not a valie pipe operator."),
-    answer("`%T>%`", message = "This is the [side-effects operator] (https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html#additional-pipe-operators)."),
-    answer("`%<>%`", correct = TRUE),
+  question("If we want to modify a tibble in place using a sequence of `%>%` pipe operations, which of the following is the correct approach in dplyr?",
+    answer("`df <- df %>% mutate(...)`", correct = TRUE, message = "Correct! Using `<-` to assign the result of a pipeline back to the same variable name is the standard dplyr approach."),
+    answer("`df %>% mutate(...)`", message = "This pipes into `mutate()` but does not save the result anywhere."),
+    answer("`mutate(df, ...)`", message = "This returns a modified tibble but does not update `df` unless assigned with `<-`."),
     allow_retry = TRUE,
     random_answer_order = TRUE
   ),
@@ -1840,20 +1741,11 @@ grade_code()
 # **Data Visualization**
 ***
 
-If you have been following along but stopped, we could load our wrangled data using the `OCSdata` package like so:
+If you have been following along but stopped, we could load our wrangled data from the "data" directory like so:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-```
-
-If you prefer loading the wrangled data from the "data" directory, you may do it like so:
-
-```{r, eval=FALSE}
-load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
-load(file = here::here("data", "wrangled", "county_info.rda"))
+load(file = here::here("OCS_data", "data","wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCS_data", "data", "wrangled", "county_info.rda"))
 ```
 
 ```{r, echo=FALSE}
@@ -1864,25 +1756,26 @@ load(file = here::here("www", "data", "wrangled", "county_info.rda"))
 ***
 <details> <summary> If you skipped the previous sections click here. </summary>
 
-First you need to install the `OCSdata` package:
+First you need to install and load the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may download and load the wrangled data into your R environment using the following function:
+Then, you may download and load the wrangled data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+wrangled_rda("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(file = here::here("OCSdata", "data", "wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCSdata", "data", "wrangled", "county_info.rda"))
 ```
 
 If the package does not work for you, alternatively, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/wrangled). Download these files and then place them in your current working directory within a subdirectory called "wrangled" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
 
 ```{r, eval=FALSE}
-load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
-load(file = here::here("data", "wrangled", "county_info.rda"))
+load(file = here::here("OCS_data", "data","wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCS_data", "data", "wrangled", "county_info.rda"))
 ```
 
 ```{r, echo=FALSE}
@@ -2060,7 +1953,6 @@ save(Annual, file = here("www", "exercise", "dv_code1.rda"))
 
 ```{r dv_code1-setup}
 library(tidyverse)
-library(magrittr)
 
 load(here("www", "exercise", "dv_code1.rda"))
 ```
@@ -2131,7 +2023,6 @@ save(Annual, file = here("www", "exercise", "dv_code2.rda"))
 
 ```{r dv_code2-setup}
 library(tidyverse)
-library(magrittr)
 
 load(here("www", "exercise", "dv_code2.rda"))
 ```
@@ -2344,7 +2235,7 @@ Now let's get a sense of how the shipments of [oxycodone](https://en.wikipedia.o
 First, we create a new variable in the `Annual` data that is the number of pills (in millions), as this is easier for us to interpret.
 
 ```{r}
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(Pills_in_millions = DOSAGE_UNIT/1000000)
 ```
 
@@ -2446,17 +2337,27 @@ raw_average
 
 It looks like the average number of opioid pills shipped to a county peaked in 2011 and has slowly declined. 
 
-We can look a bit deeper if we only calculate a mean for each state. To make a visual of this we will use the `geom_boxjitter()` function of the `ggpol` package.
+We can look a bit deeper if we only calculate a mean for each state.
 
 ```{r}
 raw_state_avg <- 
   Annual %>% 
   group_by(BUYER_STATE, year) %>%
-  summarize( mean_DOSAGE = mean(Pills_in_millions)) %>% 
+  summarize(mean_DOSAGE = mean(Pills_in_millions)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    ggpol::geom_boxjitter() +
+  ggplot(aes(x = year, y = mean_DOSAGE)) + 
+  geom_boxplot(aes(x = year), 
+               # width = 0.3,
+               outlier.shape = NA,
+               fill = "coral") +
+  geom_dotplot(aes(x = year), 
+               binaxis = "y", 
+               binwidth = 0.04, 
+               stackdir = "center",
+               dotsize = 10,
+               fill = "transparent") +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
+         x = "",
          y = "Number of pills in millions") + 
   theme_minimal()
 
@@ -2541,7 +2442,7 @@ example_data <-
   tibble(population = c(10, 50, 100),
          pills = c(100, 100, 100))
 
-example_data %<>% 
+example_data <- example_data %>% 
   mutate(norm_pills = pills/population)
 
 example_data
@@ -2556,7 +2457,7 @@ Note that however, it is likely that only a small portion of the county populati
 Back to our example: we create a new variable called `pop_DOSAGE` that is the number of pills shipped per county divided by the population of that county:
 
 ```{r}
-Annual %<>%
+Annual <- Annual %>%
   mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
 
 glimpse(Annual)
@@ -2611,7 +2512,6 @@ save(Annual, raw_state_avg, file = here("www", "exercise", "dv_code3.rda"))
 
 ```{r dv_code3-setup}
 library(tidyverse)
-library(magrittr)
 library(patchwork)
 library(ggpol)
 
@@ -2634,8 +2534,18 @@ norm_state_avg <-
   group_by(BUYER_STATE, year) %>%
   summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    geom_boxjitter() + 
+  ggplot(aes(x = year, y = mean_DOSAGE)) + 
+  geom_boxplot(aes(x = year), 
+               # width = 0.3,
+               outlier.shape = NA,
+               fill = "lightgreen"
+               ) +
+  geom_dotplot(aes(x = year), 
+               binaxis = "y", 
+               binwidth = 0.04, 
+               stackdir = "center",
+               dotsize = 20,
+               fill = "transparent") +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          y = "Number of Pills Per Capita")+
     theme_minimal()
@@ -2650,8 +2560,18 @@ norm_state_avg <-
   group_by(BUYER_STATE, year) %>%
   summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    geom_boxjitter() + 
+  ggplot(aes(x = year, y = mean_DOSAGE)) + 
+  geom_boxplot(aes(x = year), 
+               # width = 0.3,
+               outlier.shape = NA,
+               fill = "lightgreen"
+               ) +
+  geom_dotplot(aes(x = year), 
+               binaxis = "y", 
+               binwidth = 0.04, 
+               stackdir = "center",
+               dotsize = 20,
+               fill = "transparent") +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          y = "Number of Pills Per Capita")+
     theme_minimal()
@@ -2681,8 +2601,18 @@ norm_state_avg <-
   group_by(BUYER_STATE, year) %>%
   summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    geom_boxjitter() + 
+  ggplot(aes(x = year, y = mean_DOSAGE)) + 
+  geom_boxplot(aes(x = year), 
+               # width = 0.3,
+               outlier.shape = NA,
+               fill = "lightgreen"
+               ) +
+  geom_dotplot(aes(x = year), 
+               binaxis = "y", 
+               binwidth = 0.04, 
+               stackdir = "center",
+               dotsize = 20,
+               fill = "transparent") +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          y = "Number of Pills Per Capita")+
     theme_minimal()
@@ -2725,7 +2655,6 @@ save(Annual, file = here("www", "exercise", "dv_code4.rda"))
 
 ```{r dv_code4-setup}
 library(tidyverse)
-library(magrittr)
 library(ggiraph)
 
 load(here("www", "exercise", "dv_code4.rda"))
@@ -2930,7 +2859,7 @@ Thus we will use the `&` operator to indicate that the small urban category is g
 
 ```{r}
 
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(category = case_when(population >= 200000 ~ "Large Urban",
                               population >= 50000 & 
                               population < 200000 ~ "Small Urban",
@@ -2954,7 +2883,6 @@ save(Annual, file = here("www", "exercise", "dv_code5.rda"))
 
 ```{r dv_code5-setup}
 library(tidyverse)
-library(magrittr)
 library(formattable)
 
 load(here("www", "exercise", "dv_code5.rda"))
@@ -3080,7 +3008,7 @@ Thus it seems reasonable to lump the rural and small urban categories together, 
 We will modify our original code with the population thresholds which was:
 
 ```{r, eval = FALSE}
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(category = case_when(population >= 200000 ~ "Large Urban",
                               population >= 50000 & 
                               population < 200000 ~ "Small Urban",
@@ -3092,7 +3020,7 @@ Now we will just replace the labels for the small urban and rural counties to be
 
 ```{r}
 
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(large_urban = case_when(population >= 200000 ~ "Large Urban",
                                  population >= 50000 & 
                                  population < 200000 ~ "Small Urban or Rural",
@@ -3155,7 +3083,7 @@ question("Which of the following is the long format of the data?",
     answer("A", message = "This is the wide format because each variable has its own column."),
     answer("B", correct = TRUE),
     allow_retry = TRUE,
-    random_answer_order = TRUE
+    random_answer_order = FALSE
   )
 ```
 
@@ -3187,20 +3115,11 @@ question("Which one of the following inside the `ggplot()` function can be used 
 # **Data Analysis**
 ***
 
-If you have been following along but stopped, we could load our wrangled data using the `OCSdata` package like so:
+If you have been following along but stopped, we could load our wrangled data from the "data" directory like so:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-# devtools::install_github("opencasestudies/OCSdata")
-# library(OCSdata)
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
-```
-
-If you prefer loading the wrangled data from the "data" directory, you may do it like so:
-
-```{r, eval=FALSE}
-load(file = here::here("data","wrangled", "Annual_opioid_data.rda"))
-load(file = here::here("data", "wrangled", "county_info.rda"))
+load(file = here::here("OCS_data", "data","wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCS_data", "data", "wrangled", "county_info.rda"))
 ```
 
 ```{r, echo=FALSE}
@@ -3214,22 +3133,23 @@ load(file = here::here("www", "data", "wrangled", "county_info.rda"))
 First you need to install the `OCSdata` package:
 
 ```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("opencasestudies/OCSdata")
+install.packages("OCSdata")
 library(OCSdata)
 ```
 
-Then, you may download and load the wrangled data into your R environment using the following function:
+Then, you may download and load the wrangled data into your R environment using the following code:
 
 ```{r, eval=FALSE}
-load_wrangled_data("ocs-bp-opioid-rural-urban", outpath = getwd())
+wrangled_rda("ocs-bp-opioid-rural-urban", outpath = getwd())
+load(file = here::here("OCSdata", "data", "wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCSdata", "data", "wrangled", "county_info.rda"))
 ```
 
 If the package does not work for you, alternatively, the RDA files (stands for R data) of the data can be found in our [GitHub repository](https://github.com/opencasestudies/ocs-bp-opioid-rural-urban/tree/master/data/wrangled). Download these files and then place them in your current working directory within a subdirectory called "wrangled" within a subdirectory called "data" to copy and paste our code. We used an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to the files more easily. 
 
 ```{r, eval=FALSE}
-load(file =  here::here("data","wrangled", "Annual_opioid_data.rda"))
-load(file = here::here("data", "wrangled", "county_info.rda"))
+load(file =  here::here("OCS_data", "data","wrangled", "Annual_opioid_data.rda"))
+load(file = here::here("OCS_data", "data", "wrangled", "county_info.rda"))
 ```
 
 ```{r, echo=FALSE}
@@ -3266,15 +3186,16 @@ If you are starting here, we will also perform a few extra steps with the data t
 
 ```{r}
 # We create a new variable called `pop_DOSAGE` that is the number of pills shipped per county divided by the population of that county
-Annual%<>%  mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
+Annual <- Annual %>%
+  mutate(pop_DOSAGE =  DOSAGE_UNIT / population)
 
 
 # we create a new variable called `Pills_in_millions` that is the number of pills shiped per county divided by 1 million
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(Pills_in_millions = DOSAGE_UNIT/1000000)
 
 #We make a new variable based on being either large urban or small urban/rural based off a threshold of population because of our visualizations
-Annual %<>% 
+Annual <- Annual %>% 
   mutate(large_urban = case_when(population >= 200000 ~ "Large Urban",
                                  population >= 50000 & 
                                  population < 200000 ~ "Small Urban or Rural",
@@ -3502,7 +3423,7 @@ outer(R,U, ">")
 # 3+3 = 6 pairs out of 9 where R was greater than U thus W is equal to 6
 
 sum(outer(R,U, ">"))
-wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
+wilcox.test(pills ~ county, data = example, alternative = "greater")
 
 ```
 
@@ -3514,7 +3435,7 @@ We can also see that if we switch the order of our counties (i.e., we make the v
 example <-tibble(pills = c(10,12, 20, 25,30, 40), county = c("U", "R", "R", "R", "U", "U"))
 example
 
-wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
+wilcox.test(pills ~ county, data = example,  alternative = "greater")
 
 ```
 
@@ -3545,14 +3466,14 @@ We need to specify that we want to look for differences of normalized pill count
 ```{r}
 
 wilcox.test(pop_DOSAGE ~ rural_urban, data = Annual,
-                                    paired = FALSE, 
+                                    # paired = FALSE, 
                                alternative = "greater", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
 
 
 wilcox.test(pop_DOSAGE ~ large_urban, data = Annual, 
-                                    paired = FALSE, 
+                                    # paired = FALSE, 
                                alternative = "less", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
@@ -3569,14 +3490,14 @@ If we had not normalized the data, what would our results look like?
 ```{r}
 
 wilcox.test(DOSAGE_UNIT ~ rural_urban, data = Annual,
-                                    paired = FALSE, 
+                                    # paired = FALSE, 
                                alternative = "greater", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
 
 
 wilcox.test(DOSAGE_UNIT ~ large_urban, data = Annual, 
-                                    paired = FALSE, 
+                                    # paired = FALSE, 
                                alternative = "less", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
@@ -3698,6 +3619,11 @@ Our results also suggest that this is the case, as we identified higher numbers 
 
 Students could focus on the counties of a particular state and perform the same analyses and visualizations to see how the different types of counties compared for opioid pill shipments. Students could be asked to work on different states. Discussion could follow about how and why the states show different results.
 
+# **More Case Studies**
+***
+
+Interested in exploring more open case studies? Visit **[opencasestudies.org](https://opencasestudies.org)** to access additional studies and open educational resources.
+
 # **Additional Information**
 ***
 
@@ -3760,8 +3686,7 @@ Package   | Use in this case study
 [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)   
 [jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
-[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data (also provides the `%>%` pipe operator)   
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
 [naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
@@ -3823,6 +3748,8 @@ knitr::include_graphics("https://miro.medium.com/max/700/1*CdiSAr3OomVFHC6_1E_XK
 ```{r}
 sessionInfo()
 ```
+
+
 
 
 ## **Acknowledgments**
