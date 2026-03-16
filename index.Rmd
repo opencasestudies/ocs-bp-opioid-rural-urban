@@ -4426,6 +4426,11 @@ states show different results.
 Note: Monthly data is also available within the `data` directory. This
 could be used for time series analysis.
 
+# **More Case Studies**
+***
+
+Interested in exploring more open case studies? Visit **[opencasestudies.org](https://opencasestudies.org)** to access additional studies and open educational resources.
+
 ## **Helpful Links**
 
 ------------------------------------------------------------------------
