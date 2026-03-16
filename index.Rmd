@@ -3619,6 +3619,11 @@ Our results also suggest that this is the case, as we identified higher numbers 
 
 Students could focus on the counties of a particular state and perform the same analyses and visualizations to see how the different types of counties compared for opioid pill shipments. Students could be asked to work on different states. Discussion could follow about how and why the states show different results.
 
+# **More Case Studies**
+***
+
+Interested in exploring more open case studies? Visit **[opencasestudies.org](https://opencasestudies.org)** to access additional studies and open educational resources.
+
 # **Additional Information**
 ***
 
@@ -3743,6 +3748,8 @@ knitr::include_graphics("https://miro.medium.com/max/700/1*CdiSAr3OomVFHC6_1E_XK
 ```{r}
 sessionInfo()
 ```
+
+
 
 
 ## **Acknowledgments**
