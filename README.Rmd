@@ -169,7 +169,7 @@ Also see [here](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pd
 [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test)  
 [Confidence interval](http://onlinestatbook.com/2/estimation/mean.html)   
 [Sampling distribution](https://en.wikipedia.org/wiki/Sampling_distribution)   
-[Bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics))    [Resampling](https://en.wikipedia.org/wiki/Resampling_(statistics))  
+[Bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics))    [Resampling](https://en.wikipedia.org/wiki/Resampling_%28statistics%29)
 
 [Motivating report for this case study](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs/mm6802a1-H.pdf)  
 
