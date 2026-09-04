@@ -52,10 +52,12 @@ library(here)
 library(knitr)
 library(readr)
 library(magrittr)
-remotes::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
-remotes::install_github("alistaire47/read.so")
-library(wordcountaddin)
-library(read.so)
+
+# These packages are used only for the optional reading-metrics tables below.
+# Do not install packages while rendering: GitHub's unauthenticated API limit
+# makes an otherwise reproducible render fail intermittently.
+has_reading_metrics <- requireNamespace("wordcountaddin", quietly = TRUE) &&
+  requireNamespace("read.so", quietly = TRUE)
 
 rmarkdown:::perf_timer_reset_all()
 rmarkdown:::perf_timer_start("render")
@@ -104,12 +106,16 @@ This case study is part of a series of public health case studies for the [Bloom
 The total reading time for this case study is calculated via [koRpus](https://github.com/unDocUMeantIt/koRpus) and shown below: 
 
 ```{r, echo=FALSE}
-readtable = text_stats("index.Rmd") # producing reading time markdown table
-readtime = read.so::read.md(readtable) %>% dplyr::select(Method, koRpus) %>% # reading table into dataframe, selecting relevant factors
-  dplyr::filter(Method == "Reading time") %>% # dropping unnecessary rows
-  dplyr::mutate(koRpus = paste(round(as.numeric(stringr::str_split(koRpus, " ")[[1]][1])), "minutes")) %>% # rounding reading time estimate
-  dplyr::mutate(Method = "koRpus") %>% dplyr::relocate(koRpus, .before = Method) %>% dplyr::rename(`Reading Time` = koRpus) # reorganizing table
-knitr::kable(readtime, format="markdown")
+if (has_reading_metrics) {
+  readtable = wordcountaddin::text_stats("index.Rmd") # producing reading time markdown table
+  readtime = read.so::read.md(readtable) %>% dplyr::select(Method, koRpus) %>% # reading table into dataframe, selecting relevant factors
+    dplyr::filter(Method == "Reading time") %>% # dropping unnecessary rows
+    dplyr::mutate(koRpus = paste(round(as.numeric(stringr::str_split(koRpus, " ")[[1]][1])), "minutes")) %>% # rounding reading time estimate
+    dplyr::mutate(Method = "koRpus") %>% dplyr::relocate(koRpus, .before = Method) %>% dplyr::rename(`Reading Time` = koRpus) # reorganizing table
+  knitr::kable(readtime, format="markdown")
+} else {
+  cat("Reading-time metrics are unavailable because the optional `wordcountaddin` and `read.so` packages are not installed.\\n")
+}
 ```
 
 ***
@@ -119,12 +125,16 @@ knitr::kable(readtime, format="markdown")
 A readability index estimates the reading difficulty level of a particular text. Flesch-Kincaid, FORCAST, and SMOG are three common readability indices that were calculated for this case study via [koRpus](https://github.com/unDocUMeantIt/koRpus). These indices provide an estimation of the minimum reading level required to comprehend this case study by grade and age. 
 
 ```{r, echo=FALSE}
-rt = wordcountaddin::readability("index.Rmd", quiet=TRUE) # producing readability markdown table
-df = read.so::read.md(rt) %>% dplyr::select(index, grade, age) %>%  # reading table into dataframe, selecting relevant factors
-  tidyr::drop_na() %>% dplyr::mutate(grade = round(as.numeric(grade)), # dropping rows with missing values, rounding age and grade columns
-                                     age = round(as.numeric(age))
-                                     )
-knitr::kable(df, format="markdown")
+if (has_reading_metrics) {
+  rt = wordcountaddin::readability("index.Rmd", quiet=TRUE) # producing readability markdown table
+  df = read.so::read.md(rt) %>% dplyr::select(index, grade, age) %>%  # reading table into dataframe, selecting relevant factors
+    tidyr::drop_na() %>% dplyr::mutate(grade = round(as.numeric(grade)), # dropping rows with missing values, rounding age and grade columns
+                                       age = round(as.numeric(age))
+                                       )
+  knitr::kable(df, format="markdown")
+} else {
+  cat("Readability metrics are unavailable because the optional `wordcountaddin` and `read.so` packages are not installed.\\n")
+}
 ```
 
 ***
@@ -153,7 +163,7 @@ García, M. C. et al. Opioid Prescribing Rates in Nonmetropolitan and Metropolit
 
 ####
 
-This article explores rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://landing.athenahealth.com/g/improvecare?cmp=10672941) for 31,422 primary care providers from January 2014 to March 2017.
+This article explores rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://www.athenahealth.com/solutions/athenaone) for 31,422 primary care providers from January 2014 to March 2017.
 
 The main takeaways from this article were:
 
@@ -246,6 +256,32 @@ The skills, methods, and concepts that students will be familiar with by the end
 
 We will begin by loading the packages that we will need:
 
+When this case study renders in a new environment, the following chunk installs any missing packages before they are loaded.
+
+```{r, eval=TRUE}
+cran_packages <- c(
+  "naniar", "formattable", "Hmisc", "ggiraph", "patchwork",
+  "directlabels", "usdata", "OCSdata", "wordcountaddin", "read.so"
+)
+
+missing_cran_packages <- cran_packages[!vapply(
+  cran_packages, requireNamespace, logical(1), quietly = TRUE
+)]
+
+if (length(missing_cran_packages) > 0) {
+  install.packages(missing_cran_packages)
+}
+
+# Install remotes only when ggpol is not already available.
+if (!requireNamespace("ggpol", quietly = TRUE)) {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+
+  remotes::install_github("erocoar/ggpol")
+}
+```
+
 ```{r}
 library(readxl)
 library(tibble)
@@ -288,7 +324,7 @@ Package   | Use in this case study
 [formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
 [Hmisc](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) | to calculate different features about the data
-[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that have jitter and half boxplots   
+[ggpol](https://github.com/erocoar/ggpol) | to create plots that have jitter and half boxplots   
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
@@ -403,7 +439,7 @@ knitr::include_graphics(here::here("img", "Opioids_Infographic.png"))
 ##### [[source]](https://www.hhs.gov/opioids/sites/default/files/2019-11/Opioids%20Infographic_letterSizePDF_10-02-19.pdf)
 
 
-According to the [CDC](https://www.cdc.gov/drugoverdose/epidemic/index.html), there were 3 waves of the epidemic:
+According to the [CDC](https://www.cdc.gov/overdose-prevention/about/understanding-the-opioid-overdose-epidemic.html), there were 3 waves of the epidemic:
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "2018-3-Wave-Lines-Mortality.png"))
@@ -481,7 +517,7 @@ This data was part of the [Automated Reports and Consolidated Ordering System (A
 
 > manufacturers and distributors report their controlled substances transactions
 
-Their [website](https://www.deadiversion.usdoj.gov/arcos/index.html#background) indicates that: 
+Their [website](https://www.deadiversion.usdoj.gov/arcos/arcos.html) indicates that: 
 
 > The Controlled Substances Act of 1970 created the requirement for Manufacturers and Distributors to report their controlled substances transactions to the Attorney General. The Attorney General delegates this authority to the Drug Enforcement Administration (DEA).
 
@@ -489,7 +525,7 @@ Their [website](https://www.deadiversion.usdoj.gov/arcos/index.html#background) 
 
 The annual report about the data from 2019, can be found [here](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/report_yr_2019.pdf).
 
-As this is a very large dataset, thus the Washington Post created an [application prgoramming interface (API)](https://en.wikipedia.org/wiki/API)  to make it easier for users to access the data. 
+As this is a very large dataset, thus the Washington Post created an [application programming interface (API)](https://en.wikipedia.org/wiki/API)  to make it easier for users to access the data. 
 
 An API is a computational interface that simplifies interactions with a data or file system for a user. It is similar to a [Graphical User Interface (GUI)](https://en.wikipedia.org/wiki/Graphical_user_interface), yet it allows the user some more flexibility/functionality.
 
@@ -499,7 +535,7 @@ This YouTube video gives an overview of what an API is.
 
 ##### [[source]](https://www.youtube.com/watch?v=s7wmiS2mSXY)
 
-This [link](https://arcos-api.ext.nile.works/__swagger__/) takes you to the Washington Post ARCOS API. 
+This [repository](https://github.com/wpinvestigative/arcos) contains the Washington Post ARCOS API client and documentation. 
 
 There was also an R package on cran called [arcos](https://cran.r-project.org/package=arcos) for interacting with the API, but this has been archived.  This package is however still available [here](https://github.com/wpinvestigative/arcos) on GitHub.
 
@@ -618,7 +654,7 @@ The `jsonlite` package allows you to convert the data from `JSON` (often used by
 
 APIs typically require a password or key to gain access or authenticate your data request. The `httr` package helps to authenticate your data request. Often these keys are something that you do not want to share, unless the API is public.
 
-In our case the [API](https://arcos-api.ext.nile.works/__swagger__/) is indeed public, and currently "uO4EK6I" is publicly published as a key to use on the [github page](https://github.com/wpinvestigative/arcos) for the `arcos` package. We will use that here to access the API.
+The ARCOS API is publicly documented by the [`arcos` package](https://github.com/wpinvestigative/arcos). The examples below use its documented `WaPo` key; the rendered case study uses a bundled data snapshot so it does not depend on an external service.
 
 
 ## **County Population Data**
@@ -653,14 +689,12 @@ knitr::include_graphics(here::here("img", "key.png"))
 knitr::include_graphics(here::here("img", "execute.png"))
 ```
 
-This gives us the following output:
+The original ARCOS API hostname used in this case study is no longer available. The maintained `arcos` package documents the current API at [ne.washingtonpost.com/arcos](https://ne.washingtonpost.com/arcos/__docs__/). Because the service is external and can be temporarily unavailable, the website renders from a bundled snapshot of the API response. You can still use the following request code interactively when the service is available:
 
-`curl -X GET "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I" -H  "accept: application/json"`
+`curl -X GET "https://ne.washingtonpost.com/arcos/v1/county_population?key=WaPo" -H "accept: application/json"`
 
-We can copy the URL section `"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"` and use it in the `GET()` function of the `httr` package :
-
-```{r}
-count_url <- "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"
+```{r, eval = FALSE}
+count_url <- "https://ne.washingtonpost.com/arcos/v1/county_population?key=WaPo"
 
 county_pop_json <- 
   httr::GET(url = count_url)
@@ -671,7 +705,7 @@ If we needed to specify a username and password, we would do so using the `authe
 Here is an example:
 
 ```{r, eval = FALSE}
-GET(url = "https://exampleURL", 
+GET(url = "https://example.com",
     authenticate(user = "username", 
                  password = "password", 
                  type = "basic"))
@@ -681,18 +715,18 @@ The default authentication request type is `"basic"` and typically what is neede
 
 Now that we have used the `GET` function, let's see what the data are. 
 
-```{r}
+```{r, eval = FALSE}
 county_pop_json
 ```
 
-Here we can see that the object called `county_pop_json` is a `json` object. 
+When run interactively, `county_pop_json` is a `json` object.
 A [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) object (or file format) is [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that it does not take up much memory and they are human readable files to make transmitting data from websites easier.
 
-You will also see that the `Status` is `200`, which means that we were successful in retrieving the data from the API.
+You will also see that the `Status` is `200`, which means that the data were retrieved from the API.
 
 Now we can use the `content()` function of the `httr` package to extract the text from the file:
 
-```{r}
+```{r, eval = FALSE}
 county_pop_text <- 
   httr::content(county_pop_json, "text")
 ```
@@ -714,19 +748,25 @@ If data are of class character, than the numeric values will not be processed li
 </details>
 ***
 
-```{r}
+```{r, eval = FALSE}
 stringr::str_sub(county_pop_text, start = 1, end = 400)
 ```
 
 
 To get the data into a more readable format, we can use the `fromJSON()` function of the `jsonlite` package and again create a tibble of the data using `as_tibble()` 
 
-```{r}
+```{r, eval = FALSE}
 county_pop <- 
   jsonlite::fromJSON(county_pop_text, 
                      flatten = TRUE)
 
 county_pop <- as_tibble(county_pop)
+```
+
+For the rendered case study, load the bundled snapshot in place of the live response:
+
+```{r}
+load(here::here("data", "imported", "county_pop_arcos.rda"))
 ```
 
 We can use the `glimpse()` function and the `distinct()` function of the `dplyr` package to get a better sense of the data. The `distinct()` function allows us to take a look at the unique values of the `year` variable.
@@ -758,7 +798,7 @@ We are also interested in the number of opioid pill shipped at the county level.
 Here is the result of the same steps using the API for the `combined_county_annual` data:
 
 ```
-curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I" 
+curl -X GET "https://ne.washingtonpost.com/arcos/v1/combined_county_annual?key=WaPo"
      -H  "accept: application/json"
 ```     
 
@@ -766,7 +806,7 @@ or in R, the URL is
 
 ```{r}
 annual_url <- 
-  "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
+  "https://ne.washingtonpost.com/arcos/v1/combined_county_annual?key=WaPo"
 ```
 
 
@@ -825,7 +865,7 @@ Looks like we have the same years of data.
 ```{r, eval = FALSE, echo = FALSE}
 # We also retrieved the monthly data for instructors who wish to use this data
 countyjson <- 
-  httr::GET(url = "https://arcos-api.ext.nile.works/v1/combined_county_monthly?key=uO4EK6I")
+  httr::GET(url = "https://ne.washingtonpost.com/arcos/v1/combined_county_monthly?key=WaPo")
 
 countyjson_text <- 
   httr::content(countyjson, "text")
@@ -2440,7 +2480,7 @@ According to the [Organization for Economic Co-operation and Development (OECD)]
 
 Thus we could try a cutoff for small urban populations as less than 200,000. Of note this is not as ideal as having commuting patterns etc, however it is a starting point.
 
-According to the [Economic Reserach Service of the US department of Agriculture (USDA)](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural.aspx#:~:text=Small%20population%20size%20typically%20characterizes,50%2C000%2C%20depending%20on%20the%20definition):
+According to the [Economic Research Service of the US Department of Agriculture (USDA)](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural.aspx#:~:text=Small%20population%20size%20typically%20characterizes,50%2C000%2C%20depending%20on%20the%20definition):
 
 > Population thresholds used to differentiate rural and urban communities range from 2,500 up to 50,000, depending on the definition.
 
@@ -3130,7 +3170,7 @@ Note: Monthly data is also available within the `data` directory. This could be 
 ***
 
 [RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}  
-[Cheatsheet on RStuido IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}  
+[Cheatsheet on RStudio IDE](https://rstudio.github.io/cheatsheets/rstudio-ide.pdf){target="_blank"}  
 [Other RStudio cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}   
 [RStudio projects](https://r4ds.had.co.nz/workflow-projects.html)
 
@@ -3139,9 +3179,9 @@ Note: Monthly data is also available within the `data` directory. This could be 
    
 [Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
 
-[application prgoramming interface (API)](https://en.wikipedia.org/wiki/API)  
+[application programming interface (API)](https://en.wikipedia.org/wiki/API)  
 [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)  
-[Lightweight programming languagnes](https://en.wikipedia.org/wiki/Lightweight_programming_language)   
+[Lightweight programming languages](https://en.wikipedia.org/wiki/Lightweight_programming_language)   
 
 [Table formats](https://en.wikipedia.org/wiki/Wide_and_narrow_data){target="_blank"}
 
@@ -3161,14 +3201,14 @@ Also see [here](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pd
 [Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test)  
 [Confidence interval](http://onlinestatbook.com/2/estimation/mean.html)   
 [Sampling distribution](https://en.wikipedia.org/wiki/Sampling_distribution)   
-[Bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics))    [Resampling](https://en.wikipedia.org/wiki/Resampling_(statistics))  
+[Bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics))    [Resampling](https://en.wikipedia.org/wiki/Resampling_%28statistics%29)
 
 [Motivating report for this case study](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs/mm6802a1-H.pdf)  
 
 Also see this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed people who use heroin in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).  
 
 
-The data for this case study is available at this [API](https://arcos-api.ext.nile.works/__swagger__/). 
+The source data for this case study are documented at the [ARCOS API](https://ne.washingtonpost.com/arcos/__docs__/); a snapshot is included with this project for reproducible builds.
 
 This data is from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/).   
 
@@ -3190,7 +3230,7 @@ Package   | Use in this case study
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
 [formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
-[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that are have jitter and half boxplots   
+[ggpol](https://github.com/erocoar/ggpol) | to create plots that are have jitter and half boxplots   
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots

@@ -102,7 +102,7 @@ This case study is motivated by this
 [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w),that
 explored rates of opioid prescriptions in rural and urban communities in
 the United States using the [Athenahealth electronic health record (EHR)
-system](https://landing.athenahealth.com/g/improvecare?cmp=10672941&utm_salesforce=7016f000001yWQMAA2&utm_medium=cpc&utm_campaign=1%20Branded%20Experimental&utm_adgroup=ModBroad&utm_source=google&utm_term=%2Bathena%20%2Bhealth&utm_type=b&gclid=Cj0KCQjwtZH7BRDzARIsAGjbK2bn_oxyd0jNBGQkPMcSSpEuGbzLUqL8m-tuAQWMZ-smUNLLjtztB7EaAgSlEALw_wcB)
+system](https://www.athenahealth.com/solutions/athenaone)
 for 31,422 primary care providers from January 2014 to March 2017.
 
 They found that:
@@ -209,7 +209,7 @@ are defined.
 ### Other notes and resources
 
 <a href="https://rstudio.com/products/rstudio/features/" target="_blank">RStudio</a>  
-<a href="https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf" target="_blank">Cheatsheet on RStuido IDE</a>  
+<a href="https://rstudio.github.io/cheatsheets/rstudio-ide.pdf" target="_blank">Cheatsheet on RStudio IDE</a>  
 <a href="https://rstudio.com/resources/cheatsheets/" target="_blank">Other RStudio cheatsheets</a>  
 [RStudio projects](https://r4ds.had.co.nz/workflow-projects.html)
 
@@ -217,12 +217,12 @@ are defined.
 
 <a href="https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html" target="_blank">Piping in R</a>
 
-[application prgoramming interface
+[application programming interface
 (API)](https://en.wikipedia.org/wiki/API)  
 [JavaScript Object Notation
 (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)  
 [Lightweight programming
-languagnes](https://en.wikipedia.org/wiki/Lightweight_programming_language)
+languages](https://en.wikipedia.org/wiki/Lightweight_programming_language)
 
 <a href="https://en.wikipedia.org/wiki/Wide_and_narrow_data" target="_blank">Table formats</a>
 
@@ -254,7 +254,7 @@ interval](http://onlinestatbook.com/2/estimation/mean.html)
 [Sampling
 distribution](https://en.wikipedia.org/wiki/Sampling_distribution)  
 [Bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics))
-[Resampling](https://en.wikipedia.org/wiki/Resampling_(statistics))
+[Resampling](https://en.wikipedia.org/wiki/Resampling_%28statistics%29)
 
 [Motivating report for this case
 study](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs/mm6802a1-H.pdf)
@@ -267,7 +267,7 @@ and the [Researchers and Participants Interacting Directly (RAPID)
 program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).
 
 The data for this case study is available at this
-[API](https://arcos-api.ext.nile.works/__swagger__/).
+[Washington Post ARCOS API client and documentation](https://github.com/wpinvestigative/arcos).
 
 This data is from the [DEA](https://www.dea.gov/) [Automated Reports and
 Consolidated Ordering System
@@ -341,7 +341,7 @@ A wrapper package about this API is available
 <td>to reorder factor for plot</td>
 </tr>
 <tr class="odd">
-<td><a href="https://cran.r-project.org/web/packages/ggpol/ggpol.pdf">ggpol</a></td>
+<td><a href="https://github.com/erocoar/ggpol">ggpol</a></td>
 <td>to create plots that are have jitter and half boxplots</td>
 </tr>
 <tr class="even">
