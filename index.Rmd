@@ -256,19 +256,30 @@ The skills, methods, and concepts that students will be familiar with by the end
 
 We will begin by loading the packages that we will need:
 
-If you are setting up this case study, run the following once to install any of these packages that you do not already have. The reading-metrics packages are optional; install them only if you would like those tables to appear when rendering.
+When this case study renders in a new environment, the following chunk installs any missing packages before they are loaded.
 
-```{r, eval=FALSE}
-install.packages(c(
+```{r, eval=TRUE}
+cran_packages <- c(
   "naniar", "formattable", "Hmisc", "ggiraph", "patchwork",
-  "directlabels", "usdata", "OCSdata"
-))
+  "directlabels", "usdata", "OCSdata", "wordcountaddin", "read.so"
+)
 
-# Optional packages for the reading-time and readability tables
-install.packages(c("wordcountaddin", "read.so"))
+missing_cran_packages <- cran_packages[!vapply(
+  cran_packages, requireNamespace, logical(1), quietly = TRUE
+)]
 
-# ggpol is installed from GitHub
-remotes::install_github("erocoar/ggpol")
+if (length(missing_cran_packages) > 0) {
+  install.packages(missing_cran_packages)
+}
+
+# Install remotes only when ggpol is not already available.
+if (!requireNamespace("ggpol", quietly = TRUE)) {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+
+  remotes::install_github("erocoar/ggpol")
+}
 ```
 
 ```{r}
