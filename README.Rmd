@@ -68,7 +68,7 @@ This data comes from the [DEA](https://www.dea.gov/) [Automated Reports and Cons
 
 We will investigate how the number of shipped pills compares for rural and urban counties. This analysis will demonstrate how different regions of the country may have been more at risk for opioid addiction crises due to differing rates of opioid prescription (using the number of pills as a proxy for prescription rates). This will help inform students about how evidence-based intervention decisions are made in this area.  
 
-This case study is motivated by this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w),that explored rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://landing.athenahealth.com/g/improvecare?cmp=10672941&utm_salesforce=7016f000001yWQMAA2&utm_medium=cpc&utm_campaign=1%20Branded%20Experimental&utm_adgroup=ModBroad&utm_source=google&utm_term=%2Bathena%20%2Bhealth&utm_type=b&gclid=Cj0KCQjwtZH7BRDzARIsAGjbK2bn_oxyd0jNBGQkPMcSSpEuGbzLUqL8m-tuAQWMZ-smUNLLjtztB7EaAgSlEALw_wcB) for 31,422 primary care providers from January 2014 to March 2017.
+This case study is motivated by this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w),that explored rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://www.athenahealth.com/solutions/athenaone) for 31,422 primary care providers from January 2014 to March 2017.
 
 They found that:
 
@@ -138,7 +138,7 @@ This case study focuses on when and how to compare groups using the nonparametri
 ### Other notes and resources
 
 [RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}  
-[Cheatsheet on RStuido IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}  
+[Cheatsheet on RStudio IDE](https://rstudio.github.io/cheatsheets/rstudio-ide.pdf){target="_blank"}  
 [Other RStudio cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}   
 [RStudio projects](https://r4ds.had.co.nz/workflow-projects.html)
 
@@ -147,9 +147,9 @@ This case study focuses on when and how to compare groups using the nonparametri
    
 [Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
 
-[application prgoramming interface (API)](https://en.wikipedia.org/wiki/API)  
+[application programming interface (API)](https://en.wikipedia.org/wiki/API)  
 [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)  
-[Lightweight programming languagnes](https://en.wikipedia.org/wiki/Lightweight_programming_language)   
+[Lightweight programming languages](https://en.wikipedia.org/wiki/Lightweight_programming_language)   
 
 [Table formats](https://en.wikipedia.org/wiki/Wide_and_narrow_data){target="_blank"}
 
@@ -176,7 +176,7 @@ Also see [here](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pd
 Also see this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed heroin users in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).  
 
 
-The data for this case study is available at this [API](https://arcos-api.ext.nile.works/__swagger__/). 
+The data for this case study is available through the [Washington Post ARCOS API client and documentation](https://github.com/wpinvestigative/arcos). 
 
 This data is from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/).   
 
@@ -198,7 +198,7 @@ Package   | Use in this case study
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
 [formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
-[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that are have jitter and half boxplots   
+[ggpol](https://github.com/erocoar/ggpol) | to create plots that are have jitter and half boxplots   
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots

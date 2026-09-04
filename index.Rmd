@@ -163,7 +163,7 @@ García, M. C. et al. Opioid Prescribing Rates in Nonmetropolitan and Metropolit
 
 ####
 
-This article explores rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://landing.athenahealth.com/g/improvecare?cmp=10672941) for 31,422 primary care providers from January 2014 to March 2017.
+This article explores rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://www.athenahealth.com/solutions/athenaone) for 31,422 primary care providers from January 2014 to March 2017.
 
 The main takeaways from this article were:
 
@@ -256,6 +256,21 @@ The skills, methods, and concepts that students will be familiar with by the end
 
 We will begin by loading the packages that we will need:
 
+If you are setting up this case study, run the following once to install any of these packages that you do not already have. The reading-metrics packages are optional; install them only if you would like those tables to appear when rendering.
+
+```{r, eval=FALSE}
+install.packages(c(
+  "naniar", "formattable", "Hmisc", "ggiraph", "patchwork",
+  "directlabels", "usdata", "OCSdata"
+))
+
+# Optional packages for the reading-time and readability tables
+install.packages(c("wordcountaddin", "read.so"))
+
+# ggpol is installed from GitHub
+remotes::install_github("erocoar/ggpol")
+```
+
 ```{r}
 library(readxl)
 library(tibble)
@@ -298,7 +313,7 @@ Package   | Use in this case study
 [formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
 [Hmisc](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) | to calculate different features about the data
-[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that have jitter and half boxplots   
+[ggpol](https://github.com/erocoar/ggpol) | to create plots that have jitter and half boxplots   
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
@@ -413,7 +428,7 @@ knitr::include_graphics(here::here("img", "Opioids_Infographic.png"))
 ##### [[source]](https://www.hhs.gov/opioids/sites/default/files/2019-11/Opioids%20Infographic_letterSizePDF_10-02-19.pdf)
 
 
-According to the [CDC](https://www.cdc.gov/drugoverdose/epidemic/index.html), there were 3 waves of the epidemic:
+According to the [CDC](https://www.cdc.gov/overdose-prevention/about/understanding-the-opioid-overdose-epidemic.html), there were 3 waves of the epidemic:
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "2018-3-Wave-Lines-Mortality.png"))
@@ -491,7 +506,7 @@ This data was part of the [Automated Reports and Consolidated Ordering System (A
 
 > manufacturers and distributors report their controlled substances transactions
 
-Their [website](https://www.deadiversion.usdoj.gov/arcos/index.html#background) indicates that: 
+Their [website](https://www.deadiversion.usdoj.gov/arcos/arcos.html) indicates that: 
 
 > The Controlled Substances Act of 1970 created the requirement for Manufacturers and Distributors to report their controlled substances transactions to the Attorney General. The Attorney General delegates this authority to the Drug Enforcement Administration (DEA).
 
@@ -499,7 +514,7 @@ Their [website](https://www.deadiversion.usdoj.gov/arcos/index.html#background) 
 
 The annual report about the data from 2019, can be found [here](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/report_yr_2019.pdf).
 
-As this is a very large dataset, thus the Washington Post created an [application prgoramming interface (API)](https://en.wikipedia.org/wiki/API)  to make it easier for users to access the data. 
+As this is a very large dataset, thus the Washington Post created an [application programming interface (API)](https://en.wikipedia.org/wiki/API)  to make it easier for users to access the data. 
 
 An API is a computational interface that simplifies interactions with a data or file system for a user. It is similar to a [Graphical User Interface (GUI)](https://en.wikipedia.org/wiki/Graphical_user_interface), yet it allows the user some more flexibility/functionality.
 
@@ -509,7 +524,7 @@ This YouTube video gives an overview of what an API is.
 
 ##### [[source]](https://www.youtube.com/watch?v=s7wmiS2mSXY)
 
-This [link](https://arcos-api.ext.nile.works/__swagger__/) takes you to the Washington Post ARCOS API. 
+This [repository](https://github.com/wpinvestigative/arcos) contains the Washington Post ARCOS API client and documentation. 
 
 There was also an R package on cran called [arcos](https://cran.r-project.org/package=arcos) for interacting with the API, but this has been archived.  This package is however still available [here](https://github.com/wpinvestigative/arcos) on GitHub.
 
@@ -2450,7 +2465,7 @@ According to the [Organization for Economic Co-operation and Development (OECD)]
 
 Thus we could try a cutoff for small urban populations as less than 200,000. Of note this is not as ideal as having commuting patterns etc, however it is a starting point.
 
-According to the [Economic Reserach Service of the US department of Agriculture (USDA)](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural.aspx#:~:text=Small%20population%20size%20typically%20characterizes,50%2C000%2C%20depending%20on%20the%20definition):
+According to the [Economic Research Service of the US Department of Agriculture (USDA)](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural.aspx#:~:text=Small%20population%20size%20typically%20characterizes,50%2C000%2C%20depending%20on%20the%20definition):
 
 > Population thresholds used to differentiate rural and urban communities range from 2,500 up to 50,000, depending on the definition.
 
@@ -3140,7 +3155,7 @@ Note: Monthly data is also available within the `data` directory. This could be 
 ***
 
 [RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}  
-[Cheatsheet on RStuido IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}  
+[Cheatsheet on RStudio IDE](https://rstudio.github.io/cheatsheets/rstudio-ide.pdf){target="_blank"}  
 [Other RStudio cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}   
 [RStudio projects](https://r4ds.had.co.nz/workflow-projects.html)
 
@@ -3149,9 +3164,9 @@ Note: Monthly data is also available within the `data` directory. This could be 
    
 [Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
 
-[application prgoramming interface (API)](https://en.wikipedia.org/wiki/API)  
+[application programming interface (API)](https://en.wikipedia.org/wiki/API)  
 [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)  
-[Lightweight programming languagnes](https://en.wikipedia.org/wiki/Lightweight_programming_language)   
+[Lightweight programming languages](https://en.wikipedia.org/wiki/Lightweight_programming_language)   
 
 [Table formats](https://en.wikipedia.org/wiki/Wide_and_narrow_data){target="_blank"}
 
@@ -3200,7 +3215,7 @@ Package   | Use in this case study
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
 [formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
-[ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that are have jitter and half boxplots   
+[ggpol](https://github.com/erocoar/ggpol) | to create plots that are have jitter and half boxplots   
 [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
 [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
 [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
