@@ -1,0 +1,3 @@
+https://arcos-api\.ext\.nile\.works
+https://exampleURL
+https://en\.wikipedia\.org/wiki/Resampling_[(]statistics
