@@ -685,7 +685,7 @@ knitr::include_graphics(here::here("img", "key.png"))
 knitr::include_graphics(here::here("img", "execute.png"))
 ```
 
-The original ARCOS API hostname used in this case study is no longer available. The maintained `arcos` package documents the current API at [ne.washingtonpost.com/arcos](https://ne.washingtonpost.com/arcos/__docs__/). Because the service is external and can be temporarily unavailable, the website renders from a bundled snapshot of the API response. You can still use the following request code interactively when the service is available:
+The original ARCOS API used in this case study is no longer available. The maintained `arcos` package documents the current API in its [documentation](https://ne.washingtonpost.com/arcos/__docs__/). Because the service is external and can be temporarily unavailable, the website renders from a bundled snapshot of the API response. You can still use the following request code interactively when the service is available:
 
 `curl -X GET "https://ne.washingtonpost.com/arcos/v1/county_population?key=WaPo" -H "accept: application/json"`
 
