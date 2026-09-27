@@ -12,10 +12,7 @@ output:
     theme: cosmo
     toc: yes
     toc_float: yes
-  pdf_document:
-    toc: yes
-  word_document:
-    toc: yes
+
 ---
 
 ```{=html}
@@ -66,15 +63,13 @@ devtools::install_github("unDocUMeantIt/koRpus.lang.en")
 library(here)
 library(knitr)
 library(readr)
-library(formattable)
-library(wordcountaddin)
-library(read.so)
-library(tidyverse)
-library(koRpus)
+library(magrittr)
 
-# install.koRpus.lang(lang=c("en", "de"))
-library(koRpus.lang.en)
-# koRpus::set.kRp.env(TT.cmd="tokenize", lang="en", validate=FALSE)
+# These packages are used only for the optional reading-metrics tables below.
+# Do not install packages while rendering: GitHub's unauthenticated API limit
+# makes an otherwise reproducible render fail intermittently.
+has_reading_metrics <- requireNamespace("wordcountaddin", quietly = TRUE) &&
+  requireNamespace("read.so", quietly = TRUE)
 
 rmarkdown:::perf_timer_reset_all()
 rmarkdown:::perf_timer_start("render")
@@ -144,39 +139,16 @@ The total reading time for this case study is calculated via
 [koRpus](https://github.com/unDocUMeantIt/koRpus) and shown below:
 
 ```{r, echo=FALSE}
-# Reading time calculator using word count method 
-calculate_reading_time <- function(rmd_file) {
-  text <- readLines(rmd_file, warn = FALSE)
-  
-  in_code_chunk <- FALSE
-  text_only <- c()
-  
-  for (line in text) {
-    if (grepl("^```\\{", line)) {
-      in_code_chunk <- TRUE
-    } else if (grepl("^```$", line) && in_code_chunk) {
-      in_code_chunk <- FALSE
-    } else if (!in_code_chunk) {
-      text_only <- c(text_only, line)
-    }
-  }
-  
-  # Count words (average reading speed: 225 words/minute)
-  full_text <- paste(text_only, collapse = " ")
-  words <- unlist(strsplit(full_text, "\\s+"))
-  words <- words[nchar(words) > 0]
-  word_count <- length(words)
-  reading_time_min <- round(word_count / 225)
-  
-  data.frame(
-    `Reading Time` = paste(reading_time_min, "minutes"),
-    Method = "Word Count",
-    check.names = FALSE
-  )
+if (has_reading_metrics) {
+  readtable = wordcountaddin::text_stats("index.Rmd") # producing reading time markdown table
+  readtime = read.so::read.md(readtable) %>% select(Method, koRpus) %>% # reading table into dataframe, selecting relevant factors
+    filter(Method == "Reading time") %>% # dropping unnecessary rows
+    mutate(koRpus = paste(round(as.numeric(str_split(koRpus, " ")[[1]][1])), "minutes")) %>% # rounding reading time estimate
+    mutate(Method = "koRpus") %>% relocate(koRpus, .before = Method) %>% rename(`Reading Time` = koRpus) # reorganizing table
+  knitr::kable(readtime, format="markdown")
+} else {
+  cat("Reading-time metrics are unavailable because the optional `wordcountaddin` and `read.so` packages are not installed.\\n")
 }
-
-readtime <- calculate_reading_time(knitr::current_input())
-knitr::kable(readtime, format="markdown")
 ```
 
 ------------------------------------------------------------------------
@@ -307,6 +279,19 @@ communities in the United States using the [Athenahealth electronic
 health record (EHR)
 system](https://landing.athenahealth.com/g/improvecare?cmp=10672941) for
 31,422 primary care providers from January 2014 to March 2017.
+This data comes from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/) after legal action by the owner of the [Charleston Gazette-Mail](https://www.wvgazettemail.com/) in West Virginia and the [Washington Post](https://www.washingtonpost.com/).
+
+We will investigate how the number of shipped pills has changed across time and between rural and urban counties in the US. This analysis will demonstrate how different regions of the country may have been more at risk for opioid addiction crises due to differing rates of opioid prescription (using the number of pills as a proxy for prescription rates). This will help inform students about how evidence-based intervention decisions are made in this area.  
+
+This case study is motivated by this [article](https://www.cdc.gov/mmwr/volumes/68/wr/mm6802a1.htm?s_cid=mm6802a1_w):
+
+#### {.reference_block}
+
+García, M. C. et al. Opioid Prescribing Rates in Nonmetropolitan and Metropolitan Counties Among Primary Care Providers Using an Electronic Health Record System — United States, 2014–2017. MMWR Morb. Mortal. Wkly. Rep. 68, 25–30 (2019). DOI: [10.15585/mmwr.mm6802a1](http://dx.doi.org/10.15585/mmwr.mm6802a1)
+
+####
+
+This article explores rates of opioid prescriptions in rural and urban communities in the United States using the [Athenahealth electronic health record (EHR) system](https://www.athenahealth.com/solutions/athenaone) for 31,422 primary care providers from January 2014 to March 2017.
 
 The main takeaways from this article were:
 
@@ -440,6 +425,24 @@ the end of this case study are:
 
 We will begin by loading the packages that we will need:
 
+When this case study renders in a new environment, the following chunk installs any missing packages before they are loaded.
+
+```{r, eval=TRUE}
+cran_packages <- c(
+  "naniar", "formattable", "Hmisc", "ggiraph", "patchwork",
+  "directlabels", "usdata", "OCSdata", "wordcountaddin", "read.so"
+)
+
+missing_cran_packages <- cran_packages[!vapply(
+  cran_packages, requireNamespace, logical(1), quietly = TRUE
+)]
+
+if (length(missing_cran_packages) > 0) {
+  install.packages(missing_cran_packages)
+}
+
+```
+
 ```{r}
 library(readxl)
 library(tibble)
@@ -453,7 +456,6 @@ library(ggplot2)
 library(formattable)
 library(forcats)
 library(Hmisc)
-library(ggpol)
 library(ggiraph)
 library(patchwork)
 library(directlabels)
@@ -493,6 +495,32 @@ the functions we will use come from.
 # **Context**
 
 ------------------------------------------------------------------------
+ <u>**Packages used in this case study:** </u>
+
+Package   | Use in this case study                                                                      
+---------- |-------------
+[readxl](https://readxl.tidyverse.org/index.html) | to import an excel file   
+[httr](https://httr.r-lib.org/) | to retrieve data from an API   
+[tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)   
+[jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
+[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
+[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
+[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
+[naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
+[ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
+[formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
+[forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
+[Hmisc](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) | to calculate different features about the data
+[ggpol](https://github.com/erocoar/ggpol) | to create plots that have jitter and half boxplots   
+[ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
+[patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
+[directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
+[usdata](https://cran.r-project.org/web/packages/usdata/usdata.pdf) | to add full state names to plots based on the state abbreviations
+[OCSdata](https://github.com/opencasestudies/OCSdata) | to access and download the data used in this case study
+
+The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
+
 
 **What exactly are opioids?**
 
@@ -758,6 +786,15 @@ this case study.
 ------------------------------------------------------------------------
 
 We will use data from two sources:
+See [here](https://www.washingtonpost.com/national/2019/07/20/opioid-files/?arc404=true) for more details about how this database was released.
+
+This data was part of the [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) of the DEA in which:
+
+> manufacturers and distributors report their controlled substances transactions
+
+Their [website](https://www.deadiversion.usdoj.gov/arcos/arcos.html) indicates that: 
+
+> The Controlled Substances Act of 1970 created the requirement for Manufacturers and Distributors to report their controlled substances transactions to the Attorney General. The Attorney General delegates this authority to the Drug Enforcement Administration (DEA).
 
 1.  The US census for land area of counties to allow us to estimate
     county-level population density. This was obtained from
@@ -1004,8 +1041,7 @@ The `httr` package creates what are called "GET requests" so that we can
 make these requests inside of R. This allows for the data to be
 retrieved from the API within R.
 
-The `jsonlite` package allows you to convert the data from `JSON` (often
-used by APIs) to a different format that is easier to work with.
+The ARCOS API is publicly documented by the [`arcos` package](https://github.com/wpinvestigative/arcos). The examples below use its documented `WaPo` key; the rendered case study uses a bundled data snapshot so it does not depend on an external service.
 
 APIs typically require a password or key to gain access or authenticate
 your data request. The `httr` package helps to authenticate your data
@@ -1049,16 +1085,12 @@ knitr::include_graphics(here::here("img", "key.png"))
 knitr::include_graphics(here::here("img", "execute.png"))
 ```
 
-This would have given us the following output:
+The original ARCOS API used in this case study is no longer available. The maintained `arcos` package documents the current API in its [documentation](https://ne.washingtonpost.com/arcos/__docs__/). Because the service is external and can be temporarily unavailable, the website renders from a bundled snapshot of the API response. You can still use the following request code interactively when the service is available:
 
-`curl -X GET "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I" -H  "accept: application/json"`
-
-We could have copied the URL section
-`"https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"`
-and used it in the `GET()` function of the `httr` package :
+`curl -X GET "https://ne.washingtonpost.com/arcos/v1/county_population?key=WaPo" -H "accept: application/json"`
 
 ```{r, eval = FALSE}
-count_url <- "https://arcos-api.ext.nile.works/v1/county_population?key=uO4EK6I"
+count_url <- "https://ne.washingtonpost.com/arcos/v1/county_population?key=WaPo"
 
 county_pop_json <- 
    httr::GET(url = count_url)
@@ -1072,9 +1104,9 @@ function. The `authenticate()` function takes `user`, `password` and
 Here is an example:
 
 ```{r, eval = FALSE}
-GET(url = "https://exampleURL",
-    authenticate(user = "username",
-                 password = "password",
+GET(url = "https://example.com",
+    authenticate(user = "username", 
+                 password = "password", 
                  type = "basic"))
 ```
 
@@ -1084,27 +1116,21 @@ is needed.
 After using the `GET` function, we would have examined what the data
 looked like.
 
-```{r}
-# county_pop_json
+```{r, eval = FALSE}
+county_pop_json
 ```
 
-The object called `county_pop_json` would have been a `json` object. A
-[JavaScript Object Notation
-(JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)
-object (or file format) is
-[lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language)
-meaning that it does not take up much memory and they are human readable
-files to make transmitting data from websites easier.
+When run interactively, `county_pop_json` is a `json` object.
+A [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.) object (or file format) is [lightweight](https://en.wikipedia.org/wiki/Lightweight_programming_language) meaning that it does not take up much memory and they are human readable files to make transmitting data from websites easier.
 
-You would also see that the `Status` is `200`, which means that you were
-successful in retrieving the data from the API.
+You will also see that the `Status` is `200`, which means that the data were retrieved from the API.
 
 We would then use the `content()` function of the `httr` package to
 extract the text from the file:
 
-```{r}
-# county_pop_text <- 
-#   httr::content(county_pop_json, "text")
+```{r, eval = FALSE}
+county_pop_text <- 
+  httr::content(county_pop_json, "text")
 ```
 
 This would be a very large string at this point. We could take a look at
@@ -1133,26 +1159,29 @@ processed like a numeric value in a mathematical sense.
 
 ------------------------------------------------------------------------
 
-```{r}
-# stringr::str_sub(county_pop_text, start = 1, end = 400)
+```{r, eval = FALSE}
+stringr::str_sub(county_pop_text, start = 1, end = 400)
 ```
 
 To get the data into a more readable format, we would use the
 `fromJSON()` function of the `jsonlite` package and again create a
 tibble of the data using `as_tibble()`
 
-```{r}
-# county_pop <- 
-#   jsonlite::fromJSON(county_pop_text, 
-#                      flatten = TRUE)
-# 
-# county_pop <- as_tibble(county_pop)
+```{r, eval = FALSE}
+county_pop <- 
+  jsonlite::fromJSON(county_pop_text, 
+                     flatten = TRUE)
+
+county_pop <- as_tibble(county_pop)
 ```
 
-We could use the `glimpse()` function and the `distinct()` function of
-the `dplyr` package to get a better sense of the data. The `distinct()`
-function allows us to take a look at the unique values of the `year`
-variable.
+For the rendered case study, load the bundled snapshot in place of the live response:
+
+```{r}
+load(here::here("data", "imported", "county_pop_arcos.rda"))
+```
+
+We can use the `glimpse()` function and the `distinct()` function of the `dplyr` package to get a better sense of the data. The `distinct()` function allows us to take a look at the unique values of the `year` variable.
 
 ```{r}
 # dplyr::glimpse(county_pop)
@@ -1179,19 +1208,16 @@ load(here::here("data", "imported", "county_pop_arcos.rda"))
 We are also interested in the number of opioid pills shipped at the
 county level.
 
-Here is what the result would have looked like using the API for the
-`combined_county_annual` data:
-
-```         
-curl -X GET "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I" 
+```
+curl -X GET "https://ne.washingtonpost.com/arcos/v1/combined_county_annual?key=WaPo"
      -H  "accept: application/json"
 ```
 
 or in R, the URL would have been:
 
 ```{r}
-# annual_url <- 
-#   "https://arcos-api.ext.nile.works/v1/combined_county_annual?key=uO4EK6I"
+annual_url <- 
+  "https://ne.washingtonpost.com/arcos/v1/combined_county_annual?key=WaPo"
 ```
 
 ####  {.recall_code_question_block}
@@ -1244,8 +1270,25 @@ distinct(annualDosage, year)
 The data includes the same years as the population data (2006-2014).
 
 ```{r, eval = FALSE, echo = FALSE}
-# We also have monthly data available for instructors who wish to use this data
-load(here::here("data", "extra", "county_monthly.rda"))
+# We also retrieved the monthly data for instructors who wish to use this data
+countyjson <- 
+  httr::GET(url = "https://ne.washingtonpost.com/arcos/v1/combined_county_monthly?key=WaPo")
+
+countyjson_text <- 
+  httr::content(countyjson, "text")
+
+county <- 
+  jsonlite::fromJSON(countyjson_text, flatten = TRUE)
+
+monthlyDosage <- 
+  tibble::as_tibble(county)
+
+# for instructors who want to do a simpler version of import
+write.csv(monthlyDosage, 
+          file = here::here("data","extra", "county_monthly.csv"))
+
+save(monthlyDosage, 
+     file =  here::here("data", "extra", "county_monthly.rda"))
 ```
 
 # **Data Exploration**
@@ -2933,7 +2976,7 @@ raw_average
 It looks like the average number of opioid pills shipped to a county
 peaked in 2011 and has slowly declined.
 
-We can look a bit deeper if we only calculate a mean for each state.
+We can look a bit deeper if we only calculate a mean for each state. The plot combines a boxplot with jittered observations to show both the distribution and the individual state averages.
 
 ```{r}
 raw_state_avg <- 
@@ -2941,17 +2984,9 @@ raw_state_avg <-
   group_by(BUYER_STATE, year) %>%
   summarize(mean_DOSAGE = mean(Pills_in_millions)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = mean_DOSAGE)) + 
-  geom_boxplot(aes(x = year), 
-               # width = 0.3,
-               outlier.shape = NA,
-               fill = "coral") +
-  geom_dotplot(aes(x = year), 
-               binaxis = "y", 
-               binwidth = 0.04, 
-               stackdir = "center",
-               dotsize = 10,
-               fill = "transparent") +
+  ggplot(aes(x = year, y = mean_DOSAGE, group = year)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_jitter(width = 0.18, alpha = 0.45) +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          x = "",
          y = "Number of pills in millions") + 
@@ -3179,18 +3214,9 @@ norm_state_avg <-
   group_by(BUYER_STATE, year) %>%
   summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = mean_DOSAGE)) + 
-  geom_boxplot(aes(x = year), 
-               # width = 0.3,
-               outlier.shape = NA,
-               fill = "lightgreen"
-               ) +
-  geom_dotplot(aes(x = year), 
-               binaxis = "y", 
-               binwidth = 0.04, 
-               stackdir = "center",
-               dotsize = 20,
-               fill = "transparent") +
+  ggplot(aes(x = year, y = mean_DOSAGE, group = year)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_jitter(width = 0.18, alpha = 0.45) +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          y = "Number of Pills Per Capita")+
     theme_minimal()
@@ -3393,6 +3419,30 @@ theme_county <- function() {
         legend.title = element_blank())
 }
 ```
+Now we simply need to type `county_theme()` instead to achieve the same style for our plot.
+
+## **Greater granularity of density**
+***
+
+Recall that the [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) that surveyed people who use heroin in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html) found that:
+
+> A much greater percentage of heroin users completing the survey in the SKIP Program reported currently living in small urban or nonurban areas than in large urban areas (75.2% vs 24.8%) at the time of survey completion. 
+
+This survey used self-declared area of current residence (large urban, small urban, suburban, or rural).
+
+Given that we saw a large degree of variability among the urban counties, we will now parse this group further to see if examining counties that were either large urban or smaller (including small urban and rural) seems reasonable.
+
+According to the [Organization for Economic Co-operation and Development (OECD)](https://data.oecd.org/popregion/urban-population-by-city-size.htm#:~:text=their%20administrative%20boundaries.-,Urban%20areas%20in%20OECD%20countries%20are%20classified%20as%3A%20large%20metropolitan,areas%20if%20their%20population%20is):
+
+> Urban population by city size is determined by population density and commuting patterns; this better reflects the economic function of cities in addition to their administrative boundaries. Urban areas in OECD countries are classified as: large metropolitan areas if they have a population of 1.5 million or more; metropolitan areas if their population is between 500 000 and 1.5 million; medium-size urban areas if their population is between 200 000 and 500 000; and, small urban areas if their population is between 50 000 and 200 000. This indicator is measured as a percentage of the national population.
+
+Thus we could try a cutoff for small urban populations as less than 200,000. Of note this is not as ideal as having commuting patterns etc, however it is a starting point.
+
+According to the [Economic Research Service of the US Department of Agriculture (USDA)](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural.aspx#:~:text=Small%20population%20size%20typically%20characterizes,50%2C000%2C%20depending%20on%20the%20definition):
+
+> Population thresholds used to differentiate rural and urban communities range from 2,500 up to 50,000, depending on the definition.
+
+To also use a population threshold to redefine the rural category (to be consistent with our other definitions of large and small urban populations) we will use a cutoff of less than 50,000.
 
 Now we simply need to type `county_theme()` instead to achieve the same
 style for our plot.
@@ -4122,6 +4172,7 @@ outer(R,U, ">")
 
 sum(outer(R,U, ">"))
 wilcox.test(pills ~ county, data = example, alternative = "greater")
+
 ```
 
 We can also see that if we switch the order of our counties (i.e., we
@@ -4135,7 +4186,7 @@ again the results are for "R".)
 example <-tibble(pills = c(10,12, 20, 25,30, 40), county = c("U", "R", "R", "R", "U", "U"))
 example
 
-wilcox.test(pills~ county, data = example, alternative = "greater")
+wilcox.test(pills ~ county, data = example, alternative = "greater")
 
 ```
 
@@ -4172,29 +4223,9 @@ more detailed explanation about calculating this by hand.
 
 </details>
 
-------------------------------------------------------------------------
+Now, to implement this test in R we can use the `wilcox.test()` function of the `stats` package. 
 
-Now, to implement this test in R we can use the `wilcox.test()` function
-of the `stats` package.
-
-We need to specify that we want to look for differences of normalized
-pill counts (`pop_DOSAGE`) between the `rural_urban` groups. We can do
-so by using the `~` to indicate the dependent variable on the left and
-the independent variable on the right. We assume that the number of
-normalized pills depends on the county group, thus the normalized pill
-count is the dependent variable. Our data are not paired, thus we use
-the `paried = FALSE` argument. We would have paired data for example in
-the case where we had comparable rural and urban counties for every
-state, but that is not the case. See [this case
-study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/)
-for an example of the paired version of this test. We will use
-the`alternative =` argument to specify that we expect the first of the
-groups by alphabet (which would would be `Rural` of the `rural_urban`
-variable) to have greater values than the `Urban` group by setting it to
-"greater". Thus we will also use the `alternative = "less"` argument for
-the `large_urban` group comparison as we expect the first group
-(alphabetically) `Large Urban` to have smaller values than the
-`Small Urban or Rural` group.
+We need to specify that we want to look for differences of normalized pill counts (`pop_DOSAGE`) between the `rural_urban` groups. We can do so by using the `~` to indicate the dependent variable on the left and the independent variable on the right. We assume that the number of normalized pills depends on the county group, thus the normalized pill count is the dependent variable. These data are independent; the formula interface to `wilcox.test()` is the unpaired form, so no `paired` argument is needed. We would have paired data, for example, if we had comparable rural and urban counties for every state; that is not the case here. See [this case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/) for an example of the paired version of this test. We will use the `alternative =` argument to specify that we expect the first of the groups by alphabet (which would be `Rural` of the `rural_urban` variable) to have greater values than the `Urban` group by setting it to "greater". Thus we will also use the `alternative = "less"` argument for the `large_urban` group comparison as we expect the first group (alphabetically) `Large Urban` to have smaller values than the `Small Urban or Rural` group.
 
 ```{r}
 
@@ -4205,7 +4236,6 @@ wilcox.test(pop_DOSAGE ~ rural_urban, data = Annual,
 
 
 wilcox.test(pop_DOSAGE ~ large_urban, data = Annual, 
-                                  #  paired = FALSE, 
                                alternative = "less", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
@@ -4232,14 +4262,12 @@ If we had not normalized the data, what would our results look like?
 ```{r}
 
 wilcox.test(DOSAGE_UNIT ~ rural_urban, data = Annual,
-                                  #  paired = FALSE, 
                                alternative = "greater", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
 
 
 wilcox.test(DOSAGE_UNIT ~ large_urban, data = Annual, 
-                                  #  paired = FALSE, 
                                alternative = "less", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
@@ -4407,18 +4435,80 @@ populations are particularly vulnerable and why.
 
 ------------------------------------------------------------------------
 
-Students could focus on the counties of a particular state and perform
-the same analyses and visualizations to see how the different types of
-counties compared for opioid pill shipments. Students could be asked to
-work on different states. Discussion could follow about how and why the
-states show different results.
-
 # **Additional Information**
+***
+
+Note: Monthly data is also available within the `data` directory. This could be used for time series analysis. 
+
+## **Helpful Links**
+***
+
+[RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}  
+[Cheatsheet on RStudio IDE](https://rstudio.github.io/cheatsheets/rstudio-ide.pdf){target="_blank"}  
+[Other RStudio cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}   
+[RStudio projects](https://r4ds.had.co.nz/workflow-projects.html)
+
+[Tidyverse](https://www.tidyverse.org/){target="_blank"}   
+
+   
+[Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
+
+[application programming interface (API)](https://en.wikipedia.org/wiki/API)  
+[JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)  
+[Lightweight programming languages](https://en.wikipedia.org/wiki/Lightweight_programming_language)   
+
+[Table formats](https://en.wikipedia.org/wiki/Wide_and_narrow_data){target="_blank"}
+
+[`ggplot2` package](http://ggplot2.tidyverse.org){target="_blank"}    
+Please see [this case study](https://opencasestudies.github.io/ocs-bp-co2-emissions/)  for more details on using `ggplot2`    
+[grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html){target="_blank"}   
+[`ggplot2` themes](https://ggplot2.tidyverse.org/reference/ggtheme.html){target="_blank"}   
+[Normalization](https://en.wikipedia.org/wiki/Normalization_(statistics))  
+[Mann–Whitney–Wilcoxon (MWW) test](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test) also known as the Wilcoxon rank sum test or the two-sample Wilcox test   
+
+Also see [here](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pdf) for more information about this test and [here](https://youtu.be/BT1FKd1Qzjw) for a video for a more detailed explanation about performing this test by hand.
+
+
+[Outliers](https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm)  
+[Normal distribution](http://onlinestatbook.com/2/introduction/distributions.html)
+[Q-Q plots](http://onlinestatbook.com/2/advanced_graphs/q-q_plots.html) 
+[Student's $t$-test](https://stattrek.com/statistics/dictionary.aspx?definition=two-sample%20t-test)  
+[Confidence interval](http://onlinestatbook.com/2/estimation/mean.html)   
+[Sampling distribution](https://en.wikipedia.org/wiki/Sampling_distribution)   
+[Bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics))    [Resampling](https://en.wikipedia.org/wiki/Resampling_%28statistics%29)
+
+[Motivating report for this case study](https://www.cdc.gov/mmwr/volumes/68/wr/pdfs/mm6802a1-H.pdf)  
+
+Also see this [article](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/1874575) which surveyed people who use heroin in the [Survey of Key Informants’ Patients Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-patients.html) and the [Researchers and Participants Interacting Directly (RAPID) program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).  
+
+
+The source data for this case study are documented at the [ARCOS API](https://ne.washingtonpost.com/arcos/__docs__/); a snapshot is included with this project for reproducible builds.
+
+This data is from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/).   
+
+A wrapper package about this API is available [here](https://github.com/wpinvestigative/arcos).
 
 ------------------------------------------------------------------------
 
-Note: Monthly data is also available within the `data` directory. This
-could be used for time series analysis.
+Package   | Use in this case study                                                                      
+---------- |-------------
+[readxl](https://readxl.tidyverse.org/index.html) | to import an excel file   
+[httr](https://httr.r-lib.org/) | to retrieve data from an API   
+[tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)   
+[jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
+[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
+[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
+[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
+[naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
+[ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
+[formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table
+[forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
+[ggpol](https://github.com/erocoar/ggpol) | to create plots that are have jitter and half boxplots   
+[ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf)   | to create interactive plots
+[patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots
+[directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots
+[usdata](https://cran.r-project.org/web/packages/usdata/usdata.pdf) | to add full state names to plots based on the state abbreviations
 
 # **More Case Studies**
 ***
