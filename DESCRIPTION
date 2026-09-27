@@ -37,7 +37,6 @@ Imports:
     jsonlite,
     formattable,
     forcats,
-    ggpol,
     ggiraph,
     directlabels,
     usdata,

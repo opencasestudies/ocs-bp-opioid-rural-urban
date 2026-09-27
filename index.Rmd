@@ -268,14 +268,6 @@ if (length(missing_cran_packages) > 0) {
   install.packages(missing_cran_packages)
 }
 
-# Install remotes only when ggpol is not already available.
-if (!requireNamespace("ggpol", quietly = TRUE)) {
-  if (!requireNamespace("remotes", quietly = TRUE)) {
-    install.packages("remotes")
-  }
-
-  remotes::install_github("erocoar/ggpol")
-}
 ```
 
 ```{r}
@@ -292,7 +284,6 @@ library(ggplot2)
 library(formattable)
 library(forcats)
 library(Hmisc)
-library(ggpol)
 library(ggiraph)
 library(patchwork)
 library(directlabels)
@@ -2109,7 +2100,7 @@ raw_average
 
 It looks like the average number of opioid pills shipped to a county peaked in 2011 and has slowly declined. 
 
-We can look a bit deeper if we only calculate a mean for each state. To make a visual of this we will use the `geom_boxjitter()` function of the `ggpol` package.
+We can look a bit deeper if we only calculate a mean for each state. The plot combines a boxplot with jittered observations to show both the distribution and the individual state averages.
 
 ```{r}
 raw_state_avg <- 
@@ -2117,8 +2108,9 @@ raw_state_avg <-
   group_by(BUYER_STATE, year) %>%
   summarize( mean_DOSAGE = mean(Pills_in_millions)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    ggpol::geom_boxjitter() +
+  ggplot(aes(x = year, y = mean_DOSAGE, group = year)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_jitter(width = 0.18, alpha = 0.45) +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          y = "Number of pills in millions") + 
   theme_minimal()
@@ -2279,8 +2271,9 @@ norm_state_avg <-
   group_by(BUYER_STATE, year) %>%
   summarize(mean_DOSAGE = mean(pop_DOSAGE)) %>% 
   ungroup() %>%
-  ggplot(aes(x = year, y = (mean_DOSAGE))) + 
-    geom_boxjitter() + 
+  ggplot(aes(x = year, y = mean_DOSAGE, group = year)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_jitter(width = 0.18, alpha = 0.45) +
     labs(title = "Average number of opioid pills shipped to a given county for each state",
          y = "Number of Pills Per Capita")+
     theme_minimal()
