@@ -4121,7 +4121,6 @@ outer(R,U, ">")
 # 3+3 = 6 pairs out of 9 where R was greater than U thus W is equal to 6
 
 sum(outer(R,U, ">"))
-#wilcox.test(pills ~ county, data = example,  paired = FALSE,  alternative = "greater")
 wilcox.test(pills ~ county, data = example, alternative = "greater")
 ```
 
@@ -4136,7 +4135,6 @@ again the results are for "R".)
 example <-tibble(pills = c(10,12, 20, 25,30, 40), county = c("U", "R", "R", "R", "U", "U"))
 example
 
-# wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
 wilcox.test(pills~ county, data = example, alternative = "greater")
 
 ```
@@ -4201,7 +4199,6 @@ the `large_urban` group comparison as we expect the first group
 ```{r}
 
 wilcox.test(pop_DOSAGE ~ rural_urban, data = Annual,
-                                  #  paired = FALSE, 
                                alternative = "greater", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
