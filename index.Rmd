@@ -16,9 +16,6 @@ output:
     toc: yes
   word_document:
     toc: yes
-editor_options: 
-  markdown: 
-    wrap: 72
 ---
 
 ```{=html}
