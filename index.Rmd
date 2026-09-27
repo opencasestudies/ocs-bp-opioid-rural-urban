@@ -2954,7 +2954,7 @@ outer(R,U, ">")
 # 3+3 = 6 pairs out of 9 where R was greater than U thus W is equal to 6
 
 sum(outer(R,U, ">"))
-wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
+wilcox.test(pills ~ county, data = example, alternative = "greater")
 
 ```
 
@@ -2966,7 +2966,7 @@ We can also see that if we switch the order of our counties (i.e., we make the v
 example <-tibble(pills = c(10,12, 20, 25,30, 40), county = c("U", "R", "R", "R", "U", "U"))
 example
 
-wilcox.test(data = example,  paired = FALSE,  alternative = "greater", pills~ county)
+wilcox.test(pills ~ county, data = example, alternative = "greater")
 
 ```
 
@@ -2992,19 +2992,17 @@ Here is also a [link](https://youtu.be/BT1FKd1Qzjw) to a video for a more detail
 
 Now, to implement this test in R we can use the `wilcox.test()` function of the `stats` package. 
 
-We need to specify that we want to look for differences of normalized pill counts (`pop_DOSAGE`) between the `rural_urban` groups. We can do so by using the `~` to indicate the dependent variable on the left and the independent variable on the right. We assume that the number of normalized pills depends on the county group, thus the normalized pill count is the dependent variable. Our data are not paired, thus we use the `paried = FALSE` argument. We would have paired data for example in the case where we had comparable rural and urban counties for every state, but that is not the case. See [this case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/) for an example of the paired version of this test. We will use the` alternative =` argument to specify that we expect the first of the groups by alphabet (which would  would be `Rural` of the `rural_urban` variable) to have greater values than the `Urban` group by setting it to "greater". Thus we will also use the `alternative = "less"` argument for the `large_urban` group comparison as we expect the first group (alphabetically) `Large Urban` to have smaller values than the `Small Urban or Rural` group.
+We need to specify that we want to look for differences of normalized pill counts (`pop_DOSAGE`) between the `rural_urban` groups. We can do so by using the `~` to indicate the dependent variable on the left and the independent variable on the right. We assume that the number of normalized pills depends on the county group, thus the normalized pill count is the dependent variable. These data are independent; the formula interface to `wilcox.test()` is the unpaired form, so no `paired` argument is needed. We would have paired data, for example, if we had comparable rural and urban counties for every state; that is not the case here. See [this case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/) for an example of the paired version of this test. We will use the `alternative =` argument to specify that we expect the first of the groups by alphabet (which would be `Rural` of the `rural_urban` variable) to have greater values than the `Urban` group by setting it to "greater". Thus we will also use the `alternative = "less"` argument for the `large_urban` group comparison as we expect the first group (alphabetically) `Large Urban` to have smaller values than the `Small Urban or Rural` group.
 
 ```{r}
 
 wilcox.test(pop_DOSAGE ~ rural_urban, data = Annual,
-                                    paired = FALSE, 
                                alternative = "greater", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
 
 
 wilcox.test(pop_DOSAGE ~ large_urban, data = Annual, 
-                                    paired = FALSE, 
                                alternative = "less", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
@@ -3021,14 +3019,12 @@ If we had not normalized the data, what would our results look like?
 ```{r}
 
 wilcox.test(DOSAGE_UNIT ~ rural_urban, data = Annual,
-                                    paired = FALSE, 
                                alternative = "greater", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
 
 
 wilcox.test(DOSAGE_UNIT ~ large_urban, data = Annual, 
-                                    paired = FALSE, 
                                alternative = "less", 
                                   conf.int = TRUE,
                                   estimate = TRUE)
