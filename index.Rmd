@@ -52,14 +52,6 @@ knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
 
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
-devtools::install_github("renkun-ken/formattable")
-remotes::install_github("njtierney/naniar")
-devtools::install_github("OpenIntroStat/usdata")
-devtools::install_github('erocoar/ggpol')
-devtools::install_github("benmarwick/wordcountaddin",  type = "source", dependencies = TRUE)
-remotes::install_github("alistaire47/read.so")
-devtools::install_github("unDocUMeantIt/koRpus")
-devtools::install_github("unDocUMeantIt/koRpus.lang.en")
 library(here)
 library(readr)
 
