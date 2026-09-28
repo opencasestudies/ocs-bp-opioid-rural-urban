@@ -64,8 +64,6 @@ library(here)
 library(readr)
 
 # These packages are used only for the optional reading-metrics tables below.
-# Do not install packages while rendering: GitHub's unauthenticated API limit
-# makes an otherwise reproducible render fail intermittently.
 has_reading_metrics <- requireNamespace("wordcountaddin", quietly = TRUE) &&
   requireNamespace("read.so", quietly = TRUE)
 
@@ -138,12 +136,17 @@ The total reading time for this case study is calculated via
 
 ```{r, echo=FALSE}
 if (has_reading_metrics) {
-  readtable = wordcountaddin::text_stats("index.Rmd") # producing reading time markdown table
-  readtime = read.so::read.md(readtable) %>% select(Method, koRpus) %>% # reading table into dataframe, selecting relevant factors
-    filter(Method == "Reading time") %>% # dropping unnecessary rows
-    mutate(koRpus = paste(round(as.numeric(str_split(koRpus, " ")[[1]][1])), "minutes")) %>% # rounding reading time estimate
-    mutate(Method = "koRpus") %>% relocate(koRpus, .before = Method) %>% rename(`Reading Time` = koRpus) # reorganizing table
-  knitr::kable(readtime, format="markdown")
+  tryCatch({
+    readtable <- wordcountaddin::text_stats("index.Rmd")
+    readtime <- read.so::read.md(readtable) %>% select(Method, koRpus) %>%
+      filter(Method == "Reading time") %>%
+      mutate(koRpus = paste(round(as.numeric(str_split(koRpus, " ")[[1]][1])), "minutes")) %>%
+      mutate(Method = "koRpus") %>% relocate(koRpus, .before = Method) %>%
+      rename(`Reading Time` = koRpus)
+    knitr::kable(readtime, format = "markdown")
+  }, error = function(e) {
+    cat("Reading-time metrics are unavailable because an optional package could not be loaded.\\n")
+  })
 } else {
   cat("Reading-time metrics are unavailable because the optional `wordcountaddin` and `read.so` packages are not installed.\\n")
 }
