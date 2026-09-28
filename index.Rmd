@@ -62,7 +62,6 @@ devtools::install_github("unDocUMeantIt/koRpus")
 devtools::install_github("unDocUMeantIt/koRpus.lang.en")
 library(here)
 library(readr)
-library(magrittr)
 
 # These packages are used only for the optional reading-metrics tables below.
 # Do not install packages while rendering: GitHub's unauthenticated API limit
@@ -504,7 +503,6 @@ Package   | Use in this case study
 [jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
 [naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots
@@ -1420,11 +1418,10 @@ assignments.
 this `%>%` operator</summary>
 
 By
-[piping](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}
+[piping](https://r4ds.hadley.nz/workflow-basics.html#basics-pipes){target="_blank"}
 we mean using the `%>%` pipe operator which is accessible after loading
 the `tidyverse` or several of the packages within the tidyverse like
-`dplyr` because they load the [`magrittr`
-package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}.
+`dplyr`.
 This allows us to perform multiple sequential steps on one data input.
 
 </details>
@@ -4448,7 +4445,7 @@ Note: Monthly data is also available within the `data` directory. This could be 
 [Tidyverse](https://www.tidyverse.org/){target="_blank"}   
 
    
-[Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
+[Piping in R](https://r4ds.hadley.nz/workflow-basics.html#basics-pipes){target="_blank"}
 
 [application programming interface (API)](https://en.wikipedia.org/wiki/API)  
 [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)  
@@ -4495,7 +4492,6 @@ Package   | Use in this case study
 [jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
 [naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots

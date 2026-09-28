@@ -145,7 +145,7 @@ This case study focuses on when and how to compare groups using the nonparametri
 [Tidyverse](https://www.tidyverse.org/){target="_blank"}   
 
    
-[Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
+[Piping in R](https://r4ds.hadley.nz/workflow-basics.html#basics-pipes){target="_blank"}
 
 [application programming interface (API)](https://en.wikipedia.org/wiki/API)  
 [JavaScript Object Notation (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)  
@@ -192,7 +192,6 @@ Package   | Use in this case study
 [jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf) | to parse json files   
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (subset and detect parts of strings)    
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, and modify and summarize the data   
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands   
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long   
 [naniar](https://cran.r-project.org/web/packages/naniar/vignettes/getting-started-w-naniar.html) | to get a sense of missing data   
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots

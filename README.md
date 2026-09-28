@@ -215,7 +215,7 @@ are defined.
 
 <a href="https://www.tidyverse.org/" target="_blank">Tidyverse</a>
 
-<a href="https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html" target="_blank">Piping in R</a>
+<a href="https://r4ds.hadley.nz/workflow-basics.html#basics-pipes" target="_blank">Piping in R</a>
 
 [application programming interface
 (API)](https://en.wikipedia.org/wiki/API)  
@@ -317,8 +317,6 @@ A wrapper package about this API is available
 <td>to filter, subset, join, and modify and summarize the data</td>
 </tr>
 <tr class="odd">
-<td><a href="https://magrittr.tidyverse.org/" target="_blank">magrittr</a></td>
-<td>to pipe sequential commands</td>
 </tr>
 <tr class="even">
 <td><a href="https://tidyr.tidyverse.org/" target="_blank">tidyr</a></td>
