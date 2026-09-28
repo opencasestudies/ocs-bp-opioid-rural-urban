@@ -61,7 +61,6 @@ remotes::install_github("alistaire47/read.so")
 devtools::install_github("unDocUMeantIt/koRpus")
 devtools::install_github("unDocUMeantIt/koRpus.lang.en")
 library(here)
-library(knitr)
 library(readr)
 library(magrittr)
 
@@ -277,7 +276,7 @@ Wkly. Rep. 68, 25–30 (2019). DOI:
 This article explores rates of opioid prescriptions in rural and urban
 communities in the United States using the [Athenahealth electronic
 health record (EHR)
-system](https://landing.athenahealth.com/g/improvecare?cmp=10672941) for
+system](https://www.athenahealth.com/solutions/athenaone) for
 31,422 primary care providers from January 2014 to March 2017.
 This data comes from the [DEA](https://www.dea.gov/) [Automated Reports and Consolidated Ordering System (ARCOS)](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/) and was released by the [Washington Post](https://www.washingtonpost.com/) after legal action by the owner of the [Charleston Gazette-Mail](https://www.wvgazettemail.com/) in West Virginia and the [Washington Post](https://www.washingtonpost.com/).
 
@@ -336,7 +335,7 @@ opioid and then became people who use heroin.
 > to opioids through prescription drugs (75.0%)**.
 
 ```{r, out.width = "80%", echo = FALSE, fig.align ="center"}
-include_graphics(here::here("img", "introducedbyprescription.png"))
+knitr::include_graphics(here::here("img", "introducedbyprescription.png"))
 ```
 
 ##### [[source]]((https://doi.org/10.1001/jamapsychiatry.2014.366))
@@ -347,7 +346,7 @@ include_graphics(here::here("img", "introducedbyprescription.png"))
 > **outside of large urban areas**.
 
 ```{r, out.width = "50%", echo = FALSE, fig.align ="center"}
-include_graphics(here::here("img", "james-yarema-5tyMgag0wRo-unsplash.jpg"))
+knitr::include_graphics(here::here("img", "james-yarema-5tyMgag0wRo-unsplash.jpg"))
 ```
 
 Photo by
@@ -388,7 +387,7 @@ packages, these packages make data science in R more legible and
 intuitive.
 
 ```{r, out.width = "20%", echo = FALSE, fig.align ="center"}
-include_graphics("https://tidyverse.tidyverse.org/logo.png")
+knitr::include_graphics("https://tidyverse.tidyverse.org/logo.png")
 ```
 
 The skills, methods, and concepts that students will be familiar with by
@@ -480,7 +479,7 @@ library(OCSdata)
 | [formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table |
 | [forcats](https://forcats.tidyverse.org/){target="_blank"} | to reorder factor for plot |
 | [Hmisc](https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf) | to calculate different features about the data |
-| [ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that have jitter and half boxplots |
+| [ggpol](https://github.com/erocoar/ggpol) | to create plots that have jitter and half boxplots |
 | [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf) | to create interactive plots |
 | [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots |
 | [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots |
@@ -524,9 +523,7 @@ The first time we use a function, we will use the `::` to indicate which package
 
 **What exactly are opioids?**
 
-According to the [DEA](https://www.dea.gov/taxonomy/term/331) and the
-[Alta Mira addiction treatment
-center](https://www.altamirarecovery.com/opiates/difference-opiates-opioids/):
+According to the [Drug Enforcement Administration (DEA)](https://www.dea.gov/highlight-topics/opioids):
 
 Opioids (also known as narcotics), describes a class of drugs that
 contain [opium](https://en.wikipedia.org/wiki/Opium) (the poppy plant -
@@ -688,7 +685,7 @@ knitr::include_graphics(here::here("img", "Opioids_Infographic.png"))
 ##### [[source]](https://www.hhs.gov/opioids/sites/default/files/2019-11/Opioids%20Infographic_letterSizePDF_10-02-19.pdf)
 
 According to the
-[CDC](https://www.cdc.gov/drugoverdose/epidemic/index.html), there were
+[CDC](https://www.cdc.gov/overdose-prevention/about/understanding-the-opioid-overdose-epidemic.html), there were
 3 waves of the epidemic:
 
 ```{r, echo = FALSE}
@@ -833,7 +830,7 @@ of the DEA in which:
 > transactions
 
 Their
-[website](https://www.deadiversion.usdoj.gov/arcos/index.html#background)
+[website](https://www.deadiversion.usdoj.gov/arcos/arcos.html)
 indicates that:
 
 > The Controlled Substances Act of 1970 created the requirement for
@@ -857,7 +854,7 @@ The annual report about the data from 2019, can be found
 [here](https://www.deadiversion.usdoj.gov/arcos/retail_drug_summary/report_yr_2019.pdf).
 
 As this is a very large dataset, thus the Washington Post created an
-[application prgoramming interface
+[application programming interface
 (API)](https://en.wikipedia.org/wiki/API) to make it easier for users to
 access the data.
 
@@ -3490,7 +3487,7 @@ Thus we could try a cutoff for small urban populations as less than
 200,000. Of note this is not as ideal as having commuting patterns etc,
 however it is a starting point.
 
-According to the [Economic Reserach Service of the US department of
+According to the [Economic Research Service of the US department of
 Agriculture
 (USDA)](https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural.aspx#:~:text=Small%20population%20size%20typically%20characterizes,50%2C000%2C%20depending%20on%20the%20definition):
 
@@ -4022,7 +4019,7 @@ Here you can see an illustration of the null hypothesis on the left and
 a one-sided alternative hypothesis on the right:
 
 ```{r, echo=FALSE}
-include_graphics(here::here("img", "null.png"))
+knitr::include_graphics(here::here("img", "null.png"))
 ```
 
 ##### [[source]](https://www.stat.auckland.ac.nz/~wild/ChanceEnc/Ch10.wilcoxon.pdf)
@@ -4520,18 +4517,18 @@ Interested in exploring more open case studies? Visit **[opencasestudies.org](ht
 ------------------------------------------------------------------------
 
 [RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}\
-[Cheatsheet on RStuido
-IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}\
+[Cheatsheet on RStudio
+IDE](https://rstudio.github.io/cheatsheets/rstudio-ide.pdf){target="_blank"}\
 [Other RStudio
 cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}\
 [RStudio projects](https://r4ds.had.co.nz/workflow-projects.html)
 [Tidyverse](https://www.tidyverse.org/){target="_blank"}\
-[application prgoramming interface
+[application programming interface
 (API)](https://en.wikipedia.org/wiki/API)\
 [JavaScript Object Notation
 (JSON)](https://fileinfo.com/extension/json#:~:text=A%20JSON%20file%20is%20a,web%20application%20and%20a%20server.)\
 [Lightweight programming
-languagnes](https://en.wikipedia.org/wiki/Lightweight_programming_language)
+languages](https://en.wikipedia.org/wiki/Lightweight_programming_language)
 
 [Table
 formats](https://en.wikipedia.org/wiki/Wide_and_narrow_data){target="_blank"}
@@ -4578,8 +4575,9 @@ Program](https://www.radars.org/radars-system-programs/survey-of-key-informants-
 and the [Researchers and Participants Interacting Directly (RAPID)
 program](https://www.radars.org/radars-system-programs/researchers-and-participants-interacting-directly.html).
 
-The data for this case study is available at this
-[API](https://arcos-api.ext.nile.works/__swagger__/).
+The source data for this case study are documented at the
+[ARCOS API](https://ne.washingtonpost.com/arcos/__docs__/); a snapshot is
+included with this project for reproducible builds.
 
 This data is from the [DEA](https://www.dea.gov/) [Automated Reports and
 Consolidated Ordering System
@@ -4605,7 +4603,7 @@ A wrapper package about this API is available
 | [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"} | to create plots |
 | [formattable](https://cran.r-project.org/web/packages/formattable/formattable.pdf) | to create a formatted table |
 | [forcats](https://forcats.tidyverse.org/){target="_blank"} | to reorder factor for plot |
-| [ggpol](https://cran.r-project.org/web/packages/ggpol/ggpol.pdf) | to create plots that are have jitter and half boxplots |
+| [ggpol](https://github.com/erocoar/ggpol) | to create plots that are have jitter and half boxplots |
 | [ggiraph](https://cran.r-project.org/web/packages/ggiraph/ggiraph.pdf) | to create interactive plots |
 | [patchwork](https://cran.r-project.org/web/packages/patchwork/patchwork.pdf) | to combine plots |
 | [directlabels](https://cran.r-project.org/web/packages/directlabels/directlabels.pdf) | to add labels directly on lines within plots |
