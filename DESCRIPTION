@@ -21,7 +21,6 @@ Imports:
     knitr,
     readxl,
     readr,
-    magrittr,
     stringr,
     dplyr,
     purrr,
